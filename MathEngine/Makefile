@@ -32,8 +32,11 @@ $(TARGET): $(OBJS)
 	@echo Linking $@
 	$(CXX) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(TARGET)
 
-$(BUILDDIR)/%.o: %.cpp $(HEADERS)
+$(BUILDDIR)/%.o: %.cpp $(HEADERS) | $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
+
+$(BUILDDIR):
+	@mkdir -p $@
 
 # Include dependencies
 -include $(DEPS)
