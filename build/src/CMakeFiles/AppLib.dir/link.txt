@@ -1,0 +1,2 @@
+/usr/bin/ar qc libAppLib.a CMakeFiles/AppLib.dir/app.cpp.o CMakeFiles/AppLib.dir/errorHandler.cpp.o CMakeFiles/AppLib.dir/window.cpp.o
+/usr/bin/ranlib libAppLib.a

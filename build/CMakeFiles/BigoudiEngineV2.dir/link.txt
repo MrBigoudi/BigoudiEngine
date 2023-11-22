@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/BigoudiEngineV2.dir/main.cpp.o -o BigoudiEngineV2  src/libAppLib.a /usr/lib/libglfw.so.3.3 /lib/libvulkan.so 

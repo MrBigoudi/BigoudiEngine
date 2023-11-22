@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/build",
+  "command": "/usr/bin/c++  -I/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/build -I/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src -Wall -Wextra -Wshadow -Wformat=2 -Wunused -o CMakeFiles/BigoudiEngineV2.dir/main.cpp.o -c /home/mrbigoudi/Documents/Projects/BigoudiEngineV2/main.cpp",
+  "file": "/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/main.cpp",
+  "output": "CMakeFiles/BigoudiEngineV2.dir/main.cpp.o"
+},
+{
+  "directory": "/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/build/src",
+  "command": "/usr/bin/c++  -I/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src -Wall -Wextra -Wshadow -Wformat=2 -Wunused -o CMakeFiles/AppLib.dir/app.cpp.o -c /home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src/app.cpp",
+  "file": "/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src/app.cpp",
+  "output": "src/CMakeFiles/AppLib.dir/app.cpp.o"
+},
+{
+  "directory": "/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/build/src",
+  "command": "/usr/bin/c++  -I/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src -Wall -Wextra -Wshadow -Wformat=2 -Wunused -o CMakeFiles/AppLib.dir/errorHandler.cpp.o -c /home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src/errorHandler.cpp",
+  "file": "/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src/errorHandler.cpp",
+  "output": "src/CMakeFiles/AppLib.dir/errorHandler.cpp.o"
+},
+{
+  "directory": "/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/build/src",
+  "command": "/usr/bin/c++  -I/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src -Wall -Wextra -Wshadow -Wformat=2 -Wunused -o CMakeFiles/AppLib.dir/window.cpp.o -c /home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src/window.cpp",
+  "file": "/home/mrbigoudi/Documents/Projects/BigoudiEngineV2/src/window.cpp",
+  "output": "src/CMakeFiles/AppLib.dir/window.cpp.o"
+}
+]
