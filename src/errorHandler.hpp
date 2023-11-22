@@ -31,17 +31,24 @@ class ErrorHandler{
 
     public:
         /**
-        * Handle an error
-        * @param error The error to handle
-        * @param level The error level
+         * Handle an error
+         * @param error The error to handle
+         * @param level The error level
         */
         static void handle(ErrorCodes error, ErrorLevel level = FATAL);
 
         /**
-        * Handle a GLFW error
-        * @param error The error to handle
-        * @param level The error level
+         * Handle a GLFW error
+         * @param error The error to handle
+         * @param level The error level
         */
         static void handleGLFW(ErrorCodes error, ErrorLevel level = FATAL);
+
+        /**
+         * Handle a Vulkan error
+         * @param error The error to handle
+         * @param level The error level
+        */
+        static void handleVulkan(ErrorCodes error, ErrorLevel level = FATAL);
 
 };

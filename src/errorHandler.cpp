@@ -32,3 +32,13 @@ void ErrorHandler::handleGLFW(ErrorCodes error, ErrorLevel level){
     fprintf(stderr, "GLFW error!\n");
     handle(error, level);
 }
+
+/**
+ * Handle a Vulkan error
+ * @param error The error to handle
+ * @param level The error level
+*/
+void ErrorHandler::handleVulkan(ErrorCodes error, ErrorLevel level){
+    fprintf(stderr, "Vulkan error!\n");
+    handle(error, level);
+}

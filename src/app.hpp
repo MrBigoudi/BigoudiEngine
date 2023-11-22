@@ -6,6 +6,18 @@
 
 #include "window.hpp"
 
+#include <vector>
+
+const std::vector<const char*> BE_VALIDATION_LAYERS = {
+    "VK_LAYER_KHRONOS_validation"
+};
+
+#ifdef NDEBUG
+    const bool BE_ENABLE_VALIDATION_LAYERS = false;
+#else
+    const bool BE_ENABLE_VALIDATION_LAYERS = true;
+#endif
+
 /**
  * A class representing the main application
 */
@@ -23,6 +35,12 @@ class App{
         VkInstance _VulkanInstance = nullptr;
 
     private:
+        /**
+         * Check if all validation layers are available
+         * @return true if they all exist
+        */
+        bool checkValidationLayerSupport();
+
         /**
          * Create the vulkan instance
         */
