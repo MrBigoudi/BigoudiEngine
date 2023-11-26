@@ -17,6 +17,7 @@ enum ErrorLevel{
 enum ErrorCodes{
     NO_ERROR,
     INIT_FAILURE,
+    IO_ERROR,
 };
 
 /**
