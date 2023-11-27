@@ -18,6 +18,7 @@ enum ErrorCode{
     GL_ERROR,
     IO_ERROR,
     INIT_FAILURE,
+    BAD_VALUE,
 };
 
 /**

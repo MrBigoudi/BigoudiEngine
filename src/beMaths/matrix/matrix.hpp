@@ -1,12 +1,5 @@
 #pragma once
 
-namespace beMaths{
+#include <beCore.hpp>
 
-/**
- * A class representing a matrix
-*/
-class Matrix{
-
-};
-
-}
+#include "matrix2x1.hpp"
