@@ -1,15 +1,10 @@
-#include <cstdlib>
-#include <stdexcept>
+#include <iostream>
 
-#include "app.hpp"
+#include <beCore.hpp>
+#include <beMaths.hpp>
+#include <bePhysics.hpp>
+#include <beRenderer.hpp>
 
-int main() {
-    App app;
-    try{
-        app.run();
-    } catch (const std::exception& e){
-        fprintf(stderr, "Error when running the app: %s!\n", e.what());
-        exit(EXIT_FAILURE);
-    }
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]){
     exit(EXIT_SUCCESS);
 }

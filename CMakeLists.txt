@@ -1,16 +1,13 @@
-# setup project
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 
 # project name
-project(BigoudiEngineV2 VERSION 0.1.0)
+project(BigoudiEngineV2 VERSION 0.1)
 # pass the variable to the source code as a preprocessor definition
 add_compile_definitions(PROJECT_NAME="${PROJECT_NAME}")
 add_compile_definitions(PROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR})
 add_compile_definitions(PROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR})
-add_compile_definitions(PROJECT_VERSION_PATCH=${PROJECT_VERSION_PATCH})
 
-# cmake commands
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# debug
 set(CMAKE_DEBUG_POSTFIX d)
 
 # c++ standard
@@ -24,28 +21,25 @@ target_compile_options(cflags INTERFACE
     "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
 )
 
+# create compile command
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # main executable
 add_executable(${PROJECT_NAME} main.cpp)
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # add source files
 add_subdirectory(src)
-target_link_libraries(${PROJECT_NAME} PUBLIC AppLib cflags)
-
-# add glfw
-find_package(glfw3 REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
-
-# add glm
-find_package(glm REQUIRED)
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLM_INCLUDE_DIRS})
-
-# add vulkan
-find_package(Vulkan REQUIRED)
-target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${Vulkan_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC BeCore cflags)
+target_link_libraries(${PROJECT_NAME} PUBLIC BeMaths cflags)
+target_link_libraries(${PROJECT_NAME} PUBLIC BePhysics cflags)
+target_link_libraries(${PROJECT_NAME} PUBLIC BeRenderer cflags)
 
 # add the headers
 target_include_directories(${PROJECT_NAME} PUBLIC
                            "${PROJECT_BINARY_DIR}"
                           )
+
+# testing
+enable_testing()
+add_test(NAME Runs COMMAND ${PROJECT_NAME})
