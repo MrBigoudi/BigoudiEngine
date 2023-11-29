@@ -3,27 +3,14 @@
 #include <array>
 #include <string>
 
+#include "mathsTypes.hpp"
+
 namespace beMaths{
-
-/**
- * Forward declaration of the Matrix2x1f
-*/
-class Matrix2x1f;
-
-/**
- * Forward declaration of the Matrix1x2f
-*/
-class Matrix1x2f;
-
-/**
- * Forward declaration of the Matrix2x2f
-*/
-class Matrix2x2f;
 
 /**
  * A class representing a 2x1 floating point matrix
 */
-class Matrix2x1f{
+class Matrix1x2f{
     private:
         /**
          * The array containing the values
@@ -34,30 +21,30 @@ class Matrix2x1f{
         /**
          * An empty constructor
         */
-        Matrix2x1f();
+        Matrix1x2f();
 
         /**
          * A basic constructor
          * @param v The value for all the elements in the matrix
         */
-        Matrix2x1f(float v);
+        Matrix1x2f(float v);
 
         /**
          * A basic constructor
          * @param x The first value
          * @param y The second value
         */
-        Matrix2x1f(float x, float y);
+        Matrix1x2f(float x, float y);
 
         /**
          * Create a matrix fill with ones
         */
-        static Matrix2x1f ones();
+        static Matrix1x2f ones();
 
         /**
          * Create a matrix fill with zeros
         */
-        static Matrix2x1f zeros();
+        static Matrix1x2f zeros();
 
         /**
          * Cast the matrix into a string
@@ -108,26 +95,26 @@ class Matrix2x1f{
          * @param matrix The second matrix
          * @return The sum of the two matrices
         */
-        Matrix2x1f operator+(const Matrix2x1f& matrix) const;
+        Matrix1x2f operator+(const Matrix1x2f& matrix) const;
 
         /**
          * Substraction between two matrices
          * @param matrix The second matrix
          * @return The substraction of the two matrices
         */
-        Matrix2x1f operator-(const Matrix2x1f& matrix) const;
+        Matrix1x2f operator-(const Matrix1x2f& matrix) const;
 
         /**
          * Addition between two matrices
          * @param matrix The second matrix
         */
-        void operator+=(const Matrix2x1f& matrix);
+        void operator+=(const Matrix1x2f& matrix);
 
         /**
          * Substraction between two matrices
          * @param matrix The second matrix
         */
-        void operator-=(const Matrix2x1f& matrix);
+        void operator-=(const Matrix1x2f& matrix);
 
         /**
          * Multiplication with a scalar
@@ -136,23 +123,44 @@ class Matrix2x1f{
         void operator*=(float scalar);
 
         /**
+         * Division with a scalar
+         * @param val The scalar
+        */
+        void operator/=(float scalar);
+
+        /**
+         * Multiplication with a vector
+         * @param vector The vector
+         * @return The resulting scalar
+        */
+        float operator*(const Vector2f& vector) const;
+
+        /**
          * Multiplication between two matrices
          * @param matrix The second matrix
         */
-        void operator*=(const Matrix1x2f& matrix);
+        void operator*=(const Matrix2x2f& matrix);
 
         /**
          * Multiplication between two matrices
          * @param matrix The second matrix
          * @return The resulting matrix
         */
-        Matrix2x1f operator*(const Matrix1x2f& matrix) const;
+        Matrix1x2f operator*(const Matrix2x2f& matrix) const;
 
         /**
-         * Division with a scalar
-         * @param val The scalar
+         * Multiplication between two matrices
+         * @param matrix The second matrix
+         * @return The resulting matrix
         */
-        void operator/=(float scalar);
+        Matrix1x3f operator*(const Matrix2x3f& matrix) const;
+
+        /**
+         * Multiplication between two matrices
+         * @param matrix The second matrix
+         * @return The resulting matrix
+        */
+        Matrix1x4f operator*(const Matrix2x4f& matrix) const;
 };
 
 }

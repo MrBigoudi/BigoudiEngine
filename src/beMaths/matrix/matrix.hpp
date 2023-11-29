@@ -2,4 +2,4 @@
 
 #include <beCore.hpp>
 
-#include "matrix2x1.hpp"
+#include "matrix1x2.hpp"  // IWYU pragma: keep
