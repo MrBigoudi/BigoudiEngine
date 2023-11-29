@@ -8,14 +8,14 @@
 namespace beMaths{
 
 /**
- * A class representing a 2x1 floating point matrix
+ * A class representing a 1x2 floating point matrix
 */
 class Matrix1x2f{
     private:
         /**
          * The array containing the values
         */
-        std::array<float, 2> _Mat = {0.f, 0.f};
+        std::array<float, 2> _Values = {0.f, 0.f};
 
     public:
         /**
@@ -31,10 +31,9 @@ class Matrix1x2f{
 
         /**
          * A basic constructor
-         * @param x The first value
-         * @param y The second value
+         * @param values The array containing the values
         */
-        Matrix1x2f(float x, float y);
+        Matrix1x2f(const std::array<float, 2>& values);
 
         /**
          * Create a matrix fill with ones
@@ -51,30 +50,6 @@ class Matrix1x2f{
          * @return The string
         */
         const std::string toString() const;
-
-        /**
-         * Get the x value
-         * @return x
-        */
-        float x() const;
-
-        /**
-         * Get the y value
-         * @return y
-        */
-        float y() const;
-
-        /**
-         * Set the x value
-         * @param x The new value
-        */
-        void x(float x);
-
-        /**
-         * Set the y value
-         * @param y The new value
-        */
-        void y(float y);
 
         /**
          * Getter for the matrices elements
