@@ -5,185 +5,95 @@ namespace beMaths{
 
 // VECTORS
 /**
- * Forward declaration of the Vector2f
- * @see Vector2f
+ * Forward declaration of the Vector2
+ * @see Vector2
 */
-class Vector2f;
+class Vector2;
 
 /**
- * Forward declaration of the Vector3f
- * @see Vector3f
+ * Forward declaration of the Vector3
+ * @see Vector3
 */
-class Vector3f;
+class Vector3;
 
 /**
- * Forward declaration of the Vector4f
- * @see Vector4f
+ * Forward declaration of the Vector4
+ * @see Vector4
 */
-class Vector4f;
-
-/**
- * Forward declaration of the Vector2i
- * @see Vector2i
-*/
-class Vector2i;
-
-/**
- * Forward declaration of the Vector3i
- * @see Vector3i
-*/
-class Vector3i;
-
-/**
- * Forward declaration of the Vector4i
- * @see Vector4i
-*/
-class Vector4i;
+class Vector4;
 
 
 // MATRICES
 /**
- * Forward declaration of the Matrix1x2f
- * @see Matrix1x2f
+ * Forward declaration of the Matrix1x2
+ * @see Matrix1x2
 */
-class Matrix1x2f;
+class Matrix1x2;
 
 /**
- * Forward declaration of the Matrix1x3f
- * @see Matrix1x3f
+ * Forward declaration of the Matrix1x3
+ * @see Matrix1x3
 */
-class Matrix1x3f;
+class Matrix1x3;
 
 /**
- * Forward declaration of the Matrix1x4f
- * @see Matrix1x4f
+ * Forward declaration of the Matrix1x4
+ * @see Matrix1x4
 */
-class Matrix1x4f;
+class Matrix1x4;
 
 /**
- * Forward declaration of the Matrix2x2f
- * @see Matrix2x2f
+ * Forward declaration of the Matrix2x2
+ * @see Matrix2x2
 */
-class Matrix2x2f;
+class Matrix2x2;
 
 /**
- * Forward declaration of the Matrix2x3f
- * @see Matrix2x3f
+ * Forward declaration of the Matrix2x3
+ * @see Matrix2x3
 */
-class Matrix2x3f;
+class Matrix2x3;
 
 /**
- * Forward declaration of the Matrix2x4f
- * @see Matrix2x4f
+ * Forward declaration of the Matrix2x4
+ * @see Matrix2x4
 */
-class Matrix2x4f;
+class Matrix2x4;
 
 /**
- * Forward declaration of the Matrix3x2f
- * @see Matrix3x2f
+ * Forward declaration of the Matrix3x2
+ * @see Matrix3x2
 */
-class Matrix3x2f;
+class Matrix3x2;
 
 /**
- * Forward declaration of the Matrix3x3f
- * @see Matrix3x3f
+ * Forward declaration of the Matrix3x3
+ * @see Matrix3x3
 */
-class Matrix3x3f;
+class Matrix3x3;
 
 /**
- * Forward declaration of the Matrix3x4f
- * @see Matrix3x4f
+ * Forward declaration of the Matrix3x4
+ * @see Matrix3x4
 */
-class Matrix3x4f;
+class Matrix3x4;
 
 /**
- * Forward declaration of the Matrix4x2f
- * @see Matrix4x2f
+ * Forward declaration of the Matrix4x2
+ * @see Matrix4x2
 */
-class Matrix4x2f;
+class Matrix4x2;
 
 /**
- * Forward declaration of the Matrix4x3f
- * @see Matrix4x3f
+ * Forward declaration of the Matrix4x3
+ * @see Matrix4x3
 */
-class Matrix4x3f;
+class Matrix4x3;
 
 /**
- * Forward declaration of the Matrix4x4f
- * @see Matrix4x4f
+ * Forward declaration of the Matrix4x4
+ * @see Matrix4x4
 */
-class Matrix4x4f;
-
-/**
- * Forward declaration of the Matrix1x2i
- * @see Matrix1x2i
-*/
-class Matrix1x2i;
-
-/**
- * Forward declaration of the Matrix1x3i
- * @see Matrix1x3i
-*/
-class Matrix1x3i;
-
-/**
- * Forward declaration of the Matrix1x4i
- * @see Matrix1x4i
-*/
-class Matrix1x4i;
-
-/**
- * Forward declaration of the Matrix2x2i
- * @see Matrix2x2i
-*/
-class Matrix2x2i;
-
-/**
- * Forward declaration of the Matrix2x3i
- * @see Matrix2x3i
-*/
-class Matrix2x3i;
-
-/**
- * Forward declaration of the Matrix2x4i
- * @see Matrix2x4i
-*/
-class Matrix2x4i;
-
-/**
- * Forward declaration of the Matrix3x2i
- * @see Matrix3x2i
-*/
-class Matrix3x2i;
-
-/**
- * Forward declaration of the Matrix3x3i
- * @see Matrix3x3i
-*/
-class Matrix3x3i;
-
-/**
- * Forward declaration of the Matrix3x4i
- * @see Matrix3x4i
-*/
-class Matrix3x4i;
-
-/**
- * Forward declaration of the Matrix4x2i
- * @see Matrix4x2i
-*/
-class Matrix4x2i;
-
-/**
- * Forward declaration of the Matrix4x3i
- * @see Matrix4x3i
-*/
-class Matrix4x3i;
-
-/**
- * Forward declaration of the Matrix4x4i
- * @see Matrix4x4i
-*/
-class Matrix4x4i;
+class Matrix4x4;
 
 }

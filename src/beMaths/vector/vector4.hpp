@@ -8,43 +8,45 @@
 namespace beMaths{
 
 /**
- * A class representing a 2d vector of floating points 
+ * A class representing a 3d vector of floating points 
 */
-class Vector2{
+class Vector4{
     private:
         /**
          * The array containing the values
         */
-        std::array<float, 2> _Values = {0.f, 0.f};
+        std::array<float, 4> _Values = {0.f, 0.f, 0.f, 0.f};
 
     public:
         /**
          * An empty constructor
         */
-        Vector2();
+        Vector4();
 
         /**
          * A basic constructor
          * @param v The value for all the elements in the vector
         */
-        Vector2(float v);
+        Vector4(float v);
 
         /**
          * A basic constructor
          * @param x The first value
          * @param y The second value
+         * @param z The third value
+         * @param w The fourth value
         */
-        Vector2(float x, float y);
+        Vector4(float x, float y, float z, float w);
 
         /**
          * Create a vector fill with ones
         */
-        static Vector2 ones();
+        static Vector4 ones();
 
         /**
          * Create a vector fill with zeros
         */
-        static Vector2 zeros();
+        static Vector4 zeros();
 
         /**
          * Cast the vector into a string
@@ -65,6 +67,18 @@ class Vector2{
         float y() const;
 
         /**
+         * Get the z value
+         * @return z
+        */
+        float z() const;
+
+        /**
+         * Get the w value
+         * @return w
+        */
+        float w() const;
+
+        /**
          * Set the x value
          * @param x The new value
         */
@@ -75,6 +89,18 @@ class Vector2{
          * @param y The new value
         */
         void y(float y);
+
+        /**
+         * Set the z value
+         * @param z The new value
+        */
+        void z(float z);
+
+        /**
+         * Set the w value
+         * @param w The new value
+        */
+        void w(float w);
 
         /**
          * Get the r value
@@ -89,6 +115,18 @@ class Vector2{
         float g() const;
 
         /**
+         * Get the b value
+         * @return b
+        */
+        float b() const;
+
+        /**
+         * Get the a value
+         * @return a
+        */
+        float a() const;
+
+        /**
          * Set the r value
          * @param r The new value
         */
@@ -101,29 +139,16 @@ class Vector2{
         void g(float g);
 
         /**
-         * Get the u value
-         * @return u
+         * Set the b value
+         * @param b The new value
         */
-        float u() const;
+        void b(float b); 
 
         /**
-         * Get the v value
-         * @return v
+         * Set the a value
+         * @param a The new value
         */
-        float v() const;
-
-        /**
-         * Set the u value
-         * @param u The new value
-        */
-        void u(float u);
-
-        /**
-         * Set the v value
-         * @param v The new value
-        */
-        void v(float v);
-        
+        void a(float a);        
 
         /**
          * Getter for the vectors elements
@@ -144,26 +169,26 @@ class Vector2{
          * @param vector The second vertex
          * @return The sum of the two vectors
         */
-        Vector2 operator+(const Vector2& vector) const;
+        Vector4 operator+(const Vector4& vector) const;
 
         /**
          * Substraction between two vectors
          * @param vector The second vertex
          * @return The substraction of the two vectors
         */
-        Vector2 operator-(const Vector2& vector) const;
+        Vector4 operator-(const Vector4& vector) const;
 
         /**
          * Addition between two vectors
          * @param vector The second vector
         */
-        void operator+=(const Vector2& vector);
+        void operator+=(const Vector4& vector);
 
         /**
          * Substraction between two vectors
          * @param vector The second vector
         */
-        void operator-=(const Vector2& vector);
+        void operator-=(const Vector4& vector);
 
         /**
          * Multiplication with a scalar
@@ -181,19 +206,19 @@ class Vector2{
          * Multiplication with a matrix
          * @param matrix The matrix
         */
-        Matrix2x2 operator*(const Matrix1x2& matrix) const;
+        Matrix4x2 operator*(const Matrix1x2& matrix) const;
 
         /**
          * Multiplication with a matrix
          * @param matrix The matrix
         */
-        Matrix2x3 operator*(const Matrix1x3& matrix) const;
+        Matrix4x3 operator*(const Matrix1x3& matrix) const;
 
         /**
          * Multiplication with a matrix
          * @param matrix The matrix
         */
-        Matrix2x4 operator*(const Matrix1x4& matrix) const;
+        Matrix4x4 operator*(const Matrix1x4& matrix) const;
 
         /**
          * Dot product
@@ -201,14 +226,14 @@ class Vector2{
          * @param v2 The second vector
          * @return The dot product
         */
-        static float dot(const Vector2& v1, const Vector2& v2);
+        static float dot(const Vector4& v1, const Vector4& v2);
 
         /**
          * Dot product
          * @param vector
          * @return The dot product
         */
-        float dot(const Vector2& vector) const;
+        float dot(const Vector4& vector) const;
 
         /**
          * Get the vector's norm
@@ -221,7 +246,7 @@ class Vector2{
          * @param vector The vector to normalize
          * @return The normalized vector
         */
-        static Vector2 normalize(const Vector2& vector);
+        static Vector4 normalize(const Vector4& vector);
 
         /**
          * Normalize the vector
