@@ -243,8 +243,8 @@ void Vector2::operator/=(float scalar){
 */
 Matrix2x2 Vector2::operator*(const Matrix1x2& matrix) const{
     return Matrix2x2({
-        {x() * matrix[0], x() * matrix[1]},
-        {y() * matrix[0], y() * matrix[1]}
+        std::array<float, 2>({x() * matrix[0], x() * matrix[1]}),
+        std::array<float, 2>({y() * matrix[0], y() * matrix[1]})
     });
 }
 
@@ -254,8 +254,8 @@ Matrix2x2 Vector2::operator*(const Matrix1x2& matrix) const{
 */
 Matrix2x3 Vector2::operator*(const Matrix1x3& matrix) const{
     return Matrix2x3({
-        {x() * matrix[0], x() * matrix[1], x() * matrix[2]},
-        {y() * matrix[0], y() * matrix[1], y() * matrix[2]}
+        std::array<float, 2>({x() * matrix[0], x() * matrix[1], x() * matrix[2]}),
+        std::array<float, 2>({y() * matrix[0], y() * matrix[1], y() * matrix[2]})
     });
 }
 
@@ -265,8 +265,8 @@ Matrix2x3 Vector2::operator*(const Matrix1x3& matrix) const{
 */
 Matrix2x4 Vector2::operator*(const Matrix1x4& matrix) const{
     return Matrix2x4({
-        {x() * matrix[0], x() * matrix[1], x() * matrix[2], x() * matrix[3]},
-        {y() * matrix[0], y() * matrix[1], y() * matrix[2], y() * matrix[3]}
+        std::array<float, 2>({x() * matrix[0], x() * matrix[1], x() * matrix[2], x() * matrix[3]}),
+        std::array<float, 2>({y() * matrix[0], y() * matrix[1], y() * matrix[2], y() * matrix[3]})
     });
 }
 

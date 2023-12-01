@@ -37,14 +37,14 @@ Matrix1x2::Matrix1x2(const std::array<float, 2>& values){
  * Create a matrix fill with ones
 */
 Matrix1x2 Matrix1x2::ones(){
-    return Matrix1x2({1.f,1.f});
+    return Matrix1x2(1.f);
 }
 
 /**
  * Create a matrix fill with zeros
 */
 Matrix1x2 Matrix1x2::zeros(){
-    return Matrix1x2({0.f,0.f});
+    return Matrix1x2();
 }
 
 /**
@@ -158,7 +158,7 @@ void Matrix1x2::operator/=(float scalar){
  * @return The resulting scalar
 */
 float Matrix1x2::operator*(const Vector2& vector) const{
-    _Values[0] * vector.x() + _Values[1] * vector.y();
+    return _Values[0] * vector.x() + _Values[1] * vector.y();
 }
 
 /**

@@ -298,10 +298,10 @@ void Vector4::operator/=(float scalar){
 */
 Matrix4x2 Vector4::operator*(const Matrix1x2& matrix) const{
     return Matrix4x2({
-        {x() * matrix[0], x() * matrix[1]},
-        {y() * matrix[0], y() * matrix[1]},
-        {z() * matrix[0], z() * matrix[1]},
-        {w() * matrix[0], w() * matrix[1]}
+        std::array<float, 4>({x() * matrix[0], x() * matrix[1]}),
+        std::array<float, 4>({y() * matrix[0], y() * matrix[1]}),
+        std::array<float, 4>({z() * matrix[0], z() * matrix[1]}),
+        std::array<float, 4>({w() * matrix[0], w() * matrix[1]})
     });
 }
 
@@ -311,10 +311,10 @@ Matrix4x2 Vector4::operator*(const Matrix1x2& matrix) const{
 */
 Matrix4x3 Vector4::operator*(const Matrix1x3& matrix) const{
     return Matrix4x3({
-        {x() * matrix[0], x() * matrix[1], x() * matrix[2]},
-        {y() * matrix[0], y() * matrix[1], y() * matrix[2]},
-        {z() * matrix[0], z() * matrix[1], z() * matrix[2]},
-        {w() * matrix[0], w() * matrix[1], w() * matrix[2]}
+        std::array<float, 4>({x() * matrix[0], x() * matrix[1], x() * matrix[2]}),
+        std::array<float, 4>({y() * matrix[0], y() * matrix[1], y() * matrix[2]}),
+        std::array<float, 4>({z() * matrix[0], z() * matrix[1], z() * matrix[2]}),
+        std::array<float, 4>({w() * matrix[0], w() * matrix[1], w() * matrix[2]})
     });
 }
 
@@ -324,10 +324,10 @@ Matrix4x3 Vector4::operator*(const Matrix1x3& matrix) const{
 */
 Matrix4x4 Vector4::operator*(const Matrix1x4& matrix) const{
     return Matrix4x4({
-        {x() * matrix[0], x() * matrix[1], x() * matrix[2], x() * matrix[3]},
-        {y() * matrix[0], y() * matrix[1], y() * matrix[2], y() * matrix[3]},
-        {z() * matrix[0], z() * matrix[1], z() * matrix[2], z() * matrix[3]},
-        {w() * matrix[0], w() * matrix[1], w() * matrix[2], w() * matrix[3]}
+        std::array<float, 4>({x() * matrix[0], x() * matrix[1], x() * matrix[2], x() * matrix[3]}),
+        std::array<float, 4>({y() * matrix[0], y() * matrix[1], y() * matrix[2], y() * matrix[3]}),
+        std::array<float, 4>({z() * matrix[0], z() * matrix[1], z() * matrix[2], z() * matrix[3]}),
+        std::array<float, 4>({w() * matrix[0], w() * matrix[1], w() * matrix[2], w() * matrix[3]})
     });
 }
 

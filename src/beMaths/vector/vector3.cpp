@@ -257,9 +257,9 @@ void Vector3::operator/=(float scalar){
 */
 Matrix3x2 Vector3::operator*(const Matrix1x2& matrix) const{
     return Matrix3x2({
-        {x() * matrix[0], x() * matrix[1]},
-        {y() * matrix[0], y() * matrix[1]},
-        {z() * matrix[0], z() * matrix[1]}
+        std::array<float, 3>({x() * matrix[0], x() * matrix[1]}),
+        std::array<float, 3>({y() * matrix[0], y() * matrix[1]}),
+        std::array<float, 3>({z() * matrix[0], z() * matrix[1]})
     });
 }
 
@@ -269,9 +269,9 @@ Matrix3x2 Vector3::operator*(const Matrix1x2& matrix) const{
 */
 Matrix3x3 Vector3::operator*(const Matrix1x3& matrix) const{
     return Matrix3x3({
-        {x() * matrix[0], x() * matrix[1], x() * matrix[2]},
-        {y() * matrix[0], y() * matrix[1], y() * matrix[2]},
-        {z() * matrix[0], z() * matrix[1], z() * matrix[2]}
+        std::array<float, 3>({x() * matrix[0], x() * matrix[1], x() * matrix[2]}),
+        std::array<float, 3>({y() * matrix[0], y() * matrix[1], y() * matrix[2]}),
+        std::array<float, 3>({z() * matrix[0], z() * matrix[1], z() * matrix[2]})
     });
 }
 
@@ -281,9 +281,9 @@ Matrix3x3 Vector3::operator*(const Matrix1x3& matrix) const{
 */
 Matrix3x4 Vector3::operator*(const Matrix1x4& matrix) const{
     return Matrix3x4({
-        {x() * matrix[0], x() * matrix[1], x() * matrix[2], x() * matrix[3]},
-        {y() * matrix[0], y() * matrix[1], y() * matrix[2], y() * matrix[3]},
-        {z() * matrix[0], z() * matrix[1], z() * matrix[2], z() * matrix[3]}
+        std::array<float, 3>({x() * matrix[0], x() * matrix[1], x() * matrix[2], x() * matrix[3]}),
+        std::array<float, 3>({y() * matrix[0], y() * matrix[1], y() * matrix[2], y() * matrix[3]}),
+        std::array<float, 3>({z() * matrix[0], z() * matrix[1], z() * matrix[2], z() * matrix[3]})
     });
 }
 

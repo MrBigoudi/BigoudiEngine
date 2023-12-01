@@ -1,57 +1,60 @@
-#include "matrix1x3.hpp"
+#include "matrix1x4.hpp"
 
 #include <beCore.hpp>
 #include "matrix1x2.hpp"
-#include "vector3.hpp"
+#include "vector4.hpp"
 
 namespace beMaths{
 
 /**
  * An empty constructor
 */
-Matrix1x3::Matrix1x3()
-    : Matrix1x3({0.f, 0.f, 0.f}){}
+Matrix1x4::Matrix1x4()
+    : Matrix1x4({0.f, 0.f, 0.f, 0.f}){}
 
 /**
  * A basic constructor
  * @param v The value for all the elements in the matrix
 */
-Matrix1x3::Matrix1x3(float v)
-    : Matrix1x3({v,v,v}){}
+Matrix1x4::Matrix1x4(float v)
+    : Matrix1x4({v,v,v,v}){}
+
 
 /**
  * A basic constructor
  * @param values The array containing the values
 */
-Matrix1x3::Matrix1x3(const std::array<float, 3>& values){
+Matrix1x4::Matrix1x4(const std::array<float, 4>& values){
     _Values = values;
 }
 
 /**
  * Create a matrix fill with ones
 */
-Matrix1x3 Matrix1x3::ones(){
-    return Matrix1x3(1.f);
+Matrix1x4 Matrix1x4::ones(){
+    return Matrix1x4(1.f);
 }
 
 /**
  * Create a matrix fill with zeros
 */
-Matrix1x3 Matrix1x3::zeros(){
-    return Matrix1x3();
+Matrix1x4 Matrix1x4::zeros(){
+    return Matrix1x4();
 }
 
 /**
  * Cast the matrix into a string
  * @return The string
 */
-const std::string Matrix1x3::toString() const{
+const std::string Matrix1x4::toString() const{
     return "{{" 
         + std::to_string(_Values[0])
         + ","
         + std::to_string(_Values[1])
         + ","
         + std::to_string(_Values[2])
+        + ","
+        + std::to_string(_Values[3])
         + "}}"
     ;
 }
@@ -61,9 +64,9 @@ const std::string Matrix1x3::toString() const{
  * @param index The index of the element to access
  * @return The wanted value
 */
-float Matrix1x3::operator[](int index) const{
+float Matrix1x4::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for matrix1x3!\n", index);
+        fprintf(stderr, "Index %d out of range for matrix1x4!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -74,9 +77,9 @@ float Matrix1x3::operator[](int index) const{
  * @param index The index of the element to set
  * @return The wanted value
 */
-float& Matrix1x3::operator[](int index){
+float& Matrix1x4::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for matrix1x3!\n", index);
+        fprintf(stderr, "Index %d out of range for matrix1x4!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -87,12 +90,13 @@ float& Matrix1x3::operator[](int index){
  * @param matrix The second matrix
  * @return The sum of the two matrices
 */
-Matrix1x3 Matrix1x3::operator+(const Matrix1x3& matrix) const{
-    return Matrix1x3(
+Matrix1x4 Matrix1x4::operator+(const Matrix1x4& matrix) const{
+    return Matrix1x4(
         {
             _Values[0] + matrix._Values[0], 
             _Values[1] + matrix._Values[1],
-            _Values[2] + matrix._Values[2]
+            _Values[2] + matrix._Values[2],
+            _Values[3] + matrix._Values[3]
         });
 }
 
@@ -101,12 +105,13 @@ Matrix1x3 Matrix1x3::operator+(const Matrix1x3& matrix) const{
  * @param matrix The second matrix
  * @return The substraction of the two matrices
 */
-Matrix1x3 Matrix1x3::operator-(const Matrix1x3& matrix) const{
-    return Matrix1x3(
+Matrix1x4 Matrix1x4::operator-(const Matrix1x4& matrix) const{
+    return Matrix1x4(
         {
             _Values[0] - matrix._Values[0], 
             _Values[1] - matrix._Values[1],
-            _Values[2] - matrix._Values[2]
+            _Values[2] - matrix._Values[2],
+            _Values[3] - matrix._Values[3]
         });
 }
 
@@ -114,7 +119,7 @@ Matrix1x3 Matrix1x3::operator-(const Matrix1x3& matrix) const{
  * Addition between two matrices
  * @param matrix The second matrix
 */
-void Matrix1x3::operator+=(const Matrix1x3& matrix){
+void Matrix1x4::operator+=(const Matrix1x4& matrix){
     for(size_t i=0; i<_Values.size(); i++){
         _Values[i] += matrix._Values[i];
     }
@@ -124,7 +129,7 @@ void Matrix1x3::operator+=(const Matrix1x3& matrix){
  * Substraction between two matrices
  * @param matrix The second matrix
 */
-void Matrix1x3::operator-=(const Matrix1x3& matrix){
+void Matrix1x4::operator-=(const Matrix1x4& matrix){
     for(size_t i=0; i<_Values.size(); i++){
         _Values[i] -= matrix._Values[i];
     }
@@ -134,7 +139,7 @@ void Matrix1x3::operator-=(const Matrix1x3& matrix){
  * Multiplication with a scalar
  * @param val The scalar
 */
-void Matrix1x3::operator*=(float scalar){
+void Matrix1x4::operator*=(float scalar){
     for(size_t i=0; i<_Values.size(); i++){
         _Values[i] *= scalar;
     }
@@ -144,7 +149,7 @@ void Matrix1x3::operator*=(float scalar){
  * Division with a scalar
  * @param val The scalar
 */
-void Matrix1x3::operator/=(float scalar){
+void Matrix1x4::operator/=(float scalar){
     if(scalar == 0.f){
         beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE, beCore::ErrorLevel::WARNING);
         return;
@@ -159,21 +164,26 @@ void Matrix1x3::operator/=(float scalar){
  * @param vector The vector
  * @return The resulting scalar
 */
-float Matrix1x3::operator*(const Vector3& vector) const{
-    return _Values[0] * vector.x() + _Values[1] * vector.y() + _Values[2]*vector.z();
+float Matrix1x4::operator*(const Vector4& vector) const{
+    return _Values[0] * vector.x() 
+        + _Values[1]*vector.y() 
+        + _Values[2]*vector.z()
+        + _Values[3]*vector.w();
 }
 
 /**
  * Multiplication between two matrices
  * @param matrix The second matrix
 */
-void Matrix1x3::operator*=(const Matrix3x3& matrix){
-    float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0];
-    float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1];
-    float val2 = _Values[0] * matrix[0][2] + _Values[1] * matrix[1][2] + _Values[2] * matrix[2][2];
+void Matrix1x4::operator*=(const Matrix4x4& matrix){
+    float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0] + _Values[3] * matrix[3][0];
+    float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1] + _Values[3] * matrix[3][1];
+    float val2 = _Values[0] * matrix[0][2] + _Values[1] * matrix[1][2] + _Values[2] * matrix[2][2] + _Values[3] * matrix[3][2];
+    float val3 = _Values[0] * matrix[0][3] + _Values[1] * matrix[1][3] + _Values[2] * matrix[2][3] + _Values[3] * matrix[3][3];
     _Values[0] = val0;
     _Values[1] = val1;
     _Values[2] = val2;
+    _Values[3] = val3;
 }
 
 /**
@@ -181,9 +191,9 @@ void Matrix1x3::operator*=(const Matrix3x3& matrix){
  * @param matrix The second matrix
  * @return The resulting matrix
 */
-Matrix1x2 Matrix1x3::operator*(const Matrix3x2& matrix) const{
-    float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0];
-    float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1];
+Matrix1x2 Matrix1x4::operator*(const Matrix4x2& matrix) const{
+    float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0] + _Values[3] * matrix[3][0];
+    float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1] + _Values[3] * matrix[3][1];
     return Matrix1x2({val0, val1});
 }
 
@@ -192,10 +202,9 @@ Matrix1x2 Matrix1x3::operator*(const Matrix3x2& matrix) const{
  * @param matrix The second matrix
  * @return The resulting matrix
 */
-Matrix1x3 Matrix1x3::operator*(const Matrix3x3& matrix) const{
-    float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0];
-    float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1];
-    float val2 = _Values[0] * matrix[0][2] + _Values[1] * matrix[1][2] + _Values[2] * matrix[2][2];
+Matrix1x3 Matrix1x4::operator*(const Matrix4x3& matrix) const{
+    float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0] + _Values[3] * matrix[3][0];
+    float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1] + _Values[3] * matrix[3][1];
     return Matrix1x3({val0, val1, val2});
 }
 
@@ -204,11 +213,11 @@ Matrix1x3 Matrix1x3::operator*(const Matrix3x3& matrix) const{
  * @param matrix The second matrix
  * @return The resulting matrix
 */
-Matrix1x4 Matrix1x3::operator*(const Matrix3x4& matrix) const{
-    float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0];
-    float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1];
-    float val2 = _Values[0] * matrix[0][2] + _Values[1] * matrix[1][2] + _Values[2] * matrix[2][2];
-    float val3 = _Values[0] * matrix[0][3] + _Values[1] * matrix[1][3] + _Values[2] * matrix[2][3];
+Matrix1x4 Matrix1x4::operator*(const Matrix4x4& matrix) const{
+    float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0] + _Values[3] * matrix[3][0];
+    float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1] + _Values[3] * matrix[3][1];
+    float val2 = _Values[0] * matrix[0][2] + _Values[1] * matrix[1][2] + _Values[2] * matrix[2][2] + _Values[3] * matrix[3][2];
+    float val3 = _Values[0] * matrix[0][3] + _Values[1] * matrix[1][3] + _Values[2] * matrix[2][3] + _Values[3] * matrix[3][3];
     return Matrix1x4({val0, val1, val2, val3});
 }
 

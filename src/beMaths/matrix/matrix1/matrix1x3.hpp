@@ -64,6 +64,78 @@ class Matrix1x3{
          * @return The wanted value
         */
         float& operator[](int index);
+
+        /**
+         * Addition between two matrices
+         * @param matrix The second matrix
+         * @return The sum of the two matrices
+        */
+        Matrix1x3 operator+(const Matrix1x3& matrix) const;
+
+        /**
+         * Substraction between two matrices
+         * @param matrix The second matrix
+         * @return The substraction of the two matrices
+        */
+        Matrix1x3 operator-(const Matrix1x3& matrix) const;
+
+        /**
+         * Addition between two matrices
+         * @param matrix The second matrix
+        */
+        void operator+=(const Matrix1x3& matrix);
+
+        /**
+         * Substraction between two matrices
+         * @param matrix The second matrix
+        */
+        void operator-=(const Matrix1x3& matrix);
+
+        /**
+         * Multiplication with a scalar
+         * @param val The scalar
+        */
+        void operator*=(float scalar);
+
+        /**
+         * Division with a scalar
+         * @param val The scalar
+        */
+        void operator/=(float scalar);
+
+        /**
+         * Multiplication with a vector
+         * @param vector The vector
+         * @return The resulting scalar
+        */
+        float operator*(const Vector3& vector) const;
+
+        /**
+         * Multiplication between two matrices
+         * @param matrix The second matrix
+        */
+        void operator*=(const Matrix3x3& matrix);
+
+        /**
+         * Multiplication between two matrices
+         * @param matrix The second matrix
+         * @return The resulting matrix
+        */
+        Matrix1x2 operator*(const Matrix3x2& matrix) const;
+
+        /**
+         * Multiplication between two matrices
+         * @param matrix The second matrix
+         * @return The resulting matrix
+        */
+        Matrix1x3 operator*(const Matrix3x3& matrix) const;
+
+        /**
+         * Multiplication between two matrices
+         * @param matrix The second matrix
+         * @return The resulting matrix
+        */
+        Matrix1x4 operator*(const Matrix3x4& matrix) const;
 };
 
 }
