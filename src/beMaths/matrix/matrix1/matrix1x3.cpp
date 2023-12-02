@@ -1,8 +1,9 @@
 #include "matrix1x3.hpp"
 
+#include "matrix.hpp" // IWYU pragma: keep
+#include "vector.hpp" // IWYU pragma: keep
+
 #include <beCore.hpp>
-#include "matrix1x2.hpp"
-#include "vector3.hpp"
 
 namespace beMaths{
 
@@ -25,6 +26,33 @@ Matrix1x3::Matrix1x3(float v)
 */
 Matrix1x3::Matrix1x3(const std::array<float, 3>& values){
     _Values = values;
+}
+
+/**
+ * A constructor by copy
+ * @param matrix The matrix to copy
+*/
+Matrix1x3::Matrix1x3(const Matrix1x3& matrix){
+    copy(matrix);
+}
+
+/**
+ * Copy a matrix
+ * @param matrix The matrix to cpoy
+*/
+Matrix1x3& Matrix1x3::operator=(const Matrix1x3& matrix){
+    copy(matrix);
+    return *this;
+}
+
+/**
+ * Copy a matrix
+ * @param matrix The matrix to copy
+*/
+void Matrix1x3::copy(const Matrix1x3& matrix){
+    _Values[0] = matrix._Values[0];
+    _Values[1] = matrix._Values[1];
+    _Values[2] = matrix._Values[2];
 }
 
 /**
@@ -63,7 +91,7 @@ const std::string Matrix1x3::toString() const{
 */
 float Matrix1x3::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for matrix1x3!\n", index);
+        fprintf(stderr, "Index %d out of range for Matrix1x3!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -76,7 +104,7 @@ float Matrix1x3::operator[](int index) const{
 */
 float& Matrix1x3::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for matrix1x3!\n", index);
+        fprintf(stderr, "Index %d out of range for Matrix1x3!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];

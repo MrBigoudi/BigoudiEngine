@@ -1,9 +1,10 @@
 #include "vector4.hpp"
 
+#include "matrix.hpp" // IWYU pragma: keep
+#include "vector.hpp" // IWYU pragma: keep
+
 #include <beCore.hpp>
 #include <cmath>
-
-#include "errorHandler.hpp"
 
 namespace beMaths{
 
@@ -197,7 +198,7 @@ void Vector4::a(float a){
 */
 float Vector4::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for vector4!\n", index);
+        fprintf(stderr, "Index %d out of range for Vector4!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -210,7 +211,7 @@ float Vector4::operator[](int index) const{
 */
 float& Vector4::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for vector4!\n", index);
+        fprintf(stderr, "Index %d out of range for Vector4!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -298,10 +299,10 @@ void Vector4::operator/=(float scalar){
 */
 Matrix4x2 Vector4::operator*(const Matrix1x2& matrix) const{
     return Matrix4x2({
-        std::array<float, 4>({x() * matrix[0], x() * matrix[1]}),
-        std::array<float, 4>({y() * matrix[0], y() * matrix[1]}),
-        std::array<float, 4>({z() * matrix[0], z() * matrix[1]}),
-        std::array<float, 4>({w() * matrix[0], w() * matrix[1]})
+        std::array<float, 2>({x() * matrix[0], x() * matrix[1]}),
+        std::array<float, 2>({y() * matrix[0], y() * matrix[1]}),
+        std::array<float, 2>({z() * matrix[0], z() * matrix[1]}),
+        std::array<float, 2>({w() * matrix[0], w() * matrix[1]})
     });
 }
 
@@ -311,10 +312,10 @@ Matrix4x2 Vector4::operator*(const Matrix1x2& matrix) const{
 */
 Matrix4x3 Vector4::operator*(const Matrix1x3& matrix) const{
     return Matrix4x3({
-        std::array<float, 4>({x() * matrix[0], x() * matrix[1], x() * matrix[2]}),
-        std::array<float, 4>({y() * matrix[0], y() * matrix[1], y() * matrix[2]}),
-        std::array<float, 4>({z() * matrix[0], z() * matrix[1], z() * matrix[2]}),
-        std::array<float, 4>({w() * matrix[0], w() * matrix[1], w() * matrix[2]})
+        std::array<float, 3>({x() * matrix[0], x() * matrix[1], x() * matrix[2]}),
+        std::array<float, 3>({y() * matrix[0], y() * matrix[1], y() * matrix[2]}),
+        std::array<float, 3>({z() * matrix[0], z() * matrix[1], z() * matrix[2]}),
+        std::array<float, 3>({w() * matrix[0], w() * matrix[1], w() * matrix[2]})
     });
 }
 
@@ -369,17 +370,17 @@ Vector4 Vector4::normalize(const Vector4& vector){
         beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE);
         return Vector4();
     }
-    return Vector4(x() / norm, y() / norm, z() / norm, w() / norm);
+    return Vector4(vector.x() / norm, vector.y() / norm, vector.z() / norm, vector.w() / norm);
 }
 
 /**
-* Normalize the vector
+ * Normalize the vector
 */
 void Vector4::normalize(){
-    float norm = vector.getNorm();
+    float norm = getNorm();
     if(norm == 0.f){
         beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE);
-        return Vector4();
+        return;
     }
     x(x() / norm);
     y(y() / norm);

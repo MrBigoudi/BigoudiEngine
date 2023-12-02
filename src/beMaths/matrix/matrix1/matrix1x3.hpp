@@ -36,6 +36,24 @@ class Matrix1x3{
         Matrix1x3(const std::array<float, 3>& values);
 
         /**
+         * A constructor by copy
+         * @param matrix The matrix to copy
+        */
+        Matrix1x3(const Matrix1x3& matrix);
+
+        /**
+         * Copy a matrix
+         * @param matrix The matrix to cpoy
+        */
+        Matrix1x3& operator=(const Matrix1x3& matrix);
+
+        /**
+         * Copy a matrix
+         * @param matrix The matrix to copy
+        */
+        void copy(const Matrix1x3& matrix);
+
+        /**
          * Create a matrix fill with ones
         */
         static Matrix1x3 ones();

@@ -222,7 +222,7 @@ class Vector3{
          * Cross product
          * @param vector
         */
-        void cross(const Vector3& vector) const;
+        void cross(const Vector3& vector);
 
         /**
          * Get the vector's norm

@@ -1,8 +1,9 @@
 #include "matrix1x4.hpp"
 
+#include "matrix.hpp" // IWYU pragma: keep
+#include "vector.hpp" // IWYU pragma: keep
+
 #include <beCore.hpp>
-#include "matrix1x2.hpp"
-#include "vector4.hpp"
 
 namespace beMaths{
 
@@ -26,6 +27,34 @@ Matrix1x4::Matrix1x4(float v)
 */
 Matrix1x4::Matrix1x4(const std::array<float, 4>& values){
     _Values = values;
+}
+
+/**
+ * A constructor by copy
+ * @param matrix The matrix to copy
+*/
+Matrix1x4::Matrix1x4(const Matrix1x4& matrix){
+    copy(matrix);
+}
+
+/**
+ * Copy a matrix
+ * @param matrix The matrix to cpoy
+*/
+Matrix1x4& Matrix1x4::operator=(const Matrix1x4& matrix){
+    copy(matrix);
+    return *this;
+}
+
+/**
+ * Copy a matrix
+ * @param matrix The matrix to copy
+*/
+void Matrix1x4::copy(const Matrix1x4& matrix){
+    _Values[0] = matrix._Values[0];
+    _Values[1] = matrix._Values[1];
+    _Values[2] = matrix._Values[2];
+    _Values[3] = matrix._Values[3];
 }
 
 /**
@@ -66,7 +95,7 @@ const std::string Matrix1x4::toString() const{
 */
 float Matrix1x4::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for matrix1x4!\n", index);
+        fprintf(stderr, "Index %d out of range for Matrix1x4!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -79,7 +108,7 @@ float Matrix1x4::operator[](int index) const{
 */
 float& Matrix1x4::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for matrix1x4!\n", index);
+        fprintf(stderr, "Index %d out of range for Matrix1x4!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -205,6 +234,7 @@ Matrix1x2 Matrix1x4::operator*(const Matrix4x2& matrix) const{
 Matrix1x3 Matrix1x4::operator*(const Matrix4x3& matrix) const{
     float val0 = _Values[0] * matrix[0][0] + _Values[1] * matrix[1][0] + _Values[2] * matrix[2][0] + _Values[3] * matrix[3][0];
     float val1 = _Values[0] * matrix[0][1] + _Values[1] * matrix[1][1] + _Values[2] * matrix[2][1] + _Values[3] * matrix[3][1];
+    float val2 = _Values[0] * matrix[0][2] + _Values[1] * matrix[1][2] + _Values[2] * matrix[2][2] + _Values[3] * matrix[3][2];
     return Matrix1x3({val0, val1, val2});
 }
 

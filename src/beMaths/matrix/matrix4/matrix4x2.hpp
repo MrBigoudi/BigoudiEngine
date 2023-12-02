@@ -8,14 +8,16 @@
 namespace beMaths{
 
 /**
- * A class representing a 2x2 floating point matrix
+ * A class representing a 4x2 floating point matrix
 */
-class Matrix2x2{
+class Matrix4x2{
     private:
         /**
          * The array containing the values
         */
-        std::array<std::array<float, 2>, 2> _Values = {
+        std::array<std::array<float, 2>, 4> _Values = {
+            std::array<float, 2>({0.f, 0.f}),
+            std::array<float, 2>({0.f, 0.f}),
             std::array<float, 2>({0.f, 0.f}),
             std::array<float, 2>({0.f, 0.f})
         };
@@ -24,58 +26,47 @@ class Matrix2x2{
         /**
          * An empty constructor
         */
-        Matrix2x2();
+        Matrix4x2();
 
         /**
          * A basic constructor
          * @param v The value for all the elements in the matrix
         */
-        Matrix2x2(float v);
+        Matrix4x2(float v);
 
         /**
          * A constructor by copy
          * @param matrix The matrix to copy
         */
-        Matrix2x2(const Matrix2x2& matrix);
+        Matrix4x2(const Matrix4x2& matrix);
 
         /**
          * Copy a matrix
          * @param matrix The matrix to cpoy
         */
-        Matrix2x2& operator=(const Matrix2x2& matrix);
+        Matrix4x2& operator=(const Matrix4x2& matrix);
 
         /**
          * Copy a matrix
          * @param matrix The matrix to copy
         */
-        void copy(const Matrix2x2& matrix);
+        void copy(const Matrix4x2& matrix);
 
         /**
          * A basic constructor
          * @param values The array containing the values
         */
-        Matrix2x2(const std::array<std::array<float, 2>, 2>& values);
+        Matrix4x2(const std::array<std::array<float, 2>, 4>& values);
 
         /**
          * Create a matrix fill with ones
         */
-        static Matrix2x2 ones();
+        static Matrix4x2 ones();
 
         /**
          * Create a matrix fill with zeros
         */
-        static Matrix2x2 zeros();
-
-        /**
-         * Create a diagonal matrix
-         * @param v The value for all the elements in the diagonal
-        */
-        static Matrix2x2 diag(float v);
-
-        /**
-         * Create an identity matrix
-        */
-        static Matrix2x2 identity();
+        static Matrix4x2 zeros();
 
         /**
          * Cast the matrix into a string
@@ -102,26 +93,26 @@ class Matrix2x2{
          * @param matrix The second matrix
          * @return The sum of the two matrices
         */
-        Matrix2x2 operator+(const Matrix2x2& matrix) const;
+        Matrix4x2 operator+(const Matrix4x2& matrix) const;
 
         /**
          * Substraction between two matrices
          * @param matrix The second matrix
          * @return The substraction of the two matrices
         */
-        Matrix2x2 operator-(const Matrix2x2& matrix) const;
+        Matrix4x2 operator-(const Matrix4x2& matrix) const;
 
         /**
          * Addition between two matrices
          * @param matrix The second matrix
         */
-        void operator+=(const Matrix2x2& matrix);
+        void operator+=(const Matrix4x2& matrix);
 
         /**
          * Substraction between two matrices
          * @param matrix The second matrix
         */
-        void operator-=(const Matrix2x2& matrix);
+        void operator-=(const Matrix4x2& matrix);
 
         /**
          * Multiplication with a scalar
@@ -146,28 +137,28 @@ class Matrix2x2{
          * @param vector The vector
          * @return The resulting scalar
         */
-        Vector2 operator*(const Vector2& vector) const;
+        Vector4 operator*(const Vector2& vector) const;
 
         /**
          * Multiplication between two matrices
          * @param matrix The second matrix
          * @return The resulting matrix
         */
-        Matrix2x2 operator*(const Matrix2x2& matrix) const;
+        Matrix4x2 operator*(const Matrix2x2& matrix) const;
 
         /**
          * Multiplication between two matrices
          * @param matrix The second matrix
          * @return The resulting matrix
         */
-        Matrix2x3 operator*(const Matrix2x3& matrix) const;
+        Matrix4x3 operator*(const Matrix2x3& matrix) const;
 
         /**
          * Multiplication between two matrices
          * @param matrix The second matrix
          * @return The resulting matrix
         */
-        Matrix2x4 operator*(const Matrix2x4& matrix) const;
+        Matrix4x4 operator*(const Matrix2x4& matrix) const;
 };
 
 }

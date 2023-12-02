@@ -14,6 +14,7 @@ target_include_directories(BeMaths
         $<INSTALL_INTERFACE:include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/matrix
+        ${CMAKE_CURRENT_SOURCE_DIR}/vector
 )
 
 # set the cpp standards
@@ -21,3 +22,4 @@ target_link_libraries(BeMaths PUBLIC cflags)
 
 #include subdirectories
 add_subdirectory(matrix)
+add_subdirectory(vector)

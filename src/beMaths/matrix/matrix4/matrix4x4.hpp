@@ -4,7 +4,6 @@
 #include <string>
 
 #include "mathsTypes.hpp"
-#include "vector/vector4.hpp"
 
 namespace beMaths{
 

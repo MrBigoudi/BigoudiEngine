@@ -1,4 +1,4 @@
-#include "matrix4x4.hpp"
+#include "matrix2x2.hpp"
 
 #include "matrix.hpp" // IWYU pragma: keep
 #include "vector.hpp" // IWYU pragma: keep
@@ -10,48 +10,44 @@ namespace beMaths{
 /**
  * An empty constructor
 */
-Matrix4x4::Matrix4x4()
-    : Matrix4x4({
-        std::array<float, 4>({0.f, 0.f, 0.f, 0.f}),
-        std::array<float, 4>({0.f, 0.f, 0.f, 0.f}),
-        std::array<float, 4>({0.f, 0.f, 0.f, 0.f}),
-        std::array<float, 4>({0.f, 0.f, 0.f, 0.f})
+Matrix2x2::Matrix2x2()
+    : Matrix2x2({
+        std::array<float, 2>({0.f, 0.f}),
+        std::array<float, 2>({0.f, 0.f})
     }){}
 
 /**
  * A basic constructor
  * @param v The value for all the elements in the matrix
 */
-Matrix4x4::Matrix4x4(float v)
-    : Matrix4x4({
-        std::array<float, 4>({v,v,v,v}),
-        std::array<float, 4>({v,v,v,v}),
-        std::array<float, 4>({v,v,v,v}),
-        std::array<float, 4>({v,v,v,v})
+Matrix2x2::Matrix2x2(float v)
+    : Matrix2x2({
+        std::array<float, 2>({v,v}),
+        std::array<float, 2>({v,v})
     }){}
-
-/**
- * Copy a matrix
- * @param matrix The matrix to cpoy
-*/
-Matrix4x4& Matrix4x4::operator=(const Matrix4x4& matrix){
-    copy(matrix);
-    return *this;
-}
 
 /**
  * A constructor by copy
  * @param matrix The matrix to copy
 */
-Matrix4x4::Matrix4x4(const Matrix4x4& matrix){
+Matrix2x2::Matrix2x2(const Matrix2x2& matrix){
     copy(matrix);
+}
+
+/**
+ * Copy a matrix
+ * @param matrix The matrix to cpoy
+*/
+Matrix2x2& Matrix2x2::operator=(const Matrix2x2& matrix){
+    copy(matrix);
+    return *this;
 }
 
 /**
  * Copy a matrix
  * @param matrix The matrix to copy
 */
-void Matrix4x4::copy(const Matrix4x4& matrix){
+void Matrix2x2::copy(const Matrix2x2& matrix){
     for(size_t i = 0; i<matrix._Values.size(); i++){
         for(size_t j = 0; j<matrix._Values[0].size(); j++){
             _Values[i][j] = matrix._Values[i][j];
@@ -63,30 +59,30 @@ void Matrix4x4::copy(const Matrix4x4& matrix){
  * A basic constructor
  * @param values The array containing the values
 */
-Matrix4x4::Matrix4x4(const std::array<std::array<float, 4>, 4>& values){
+Matrix2x2::Matrix2x2(const std::array<std::array<float, 2>, 2>& values){
     _Values = values;
 }
 
 /**
  * Create a matrix fill with ones
 */
-Matrix4x4 Matrix4x4::ones(){
-    return Matrix4x4(1.f);
+Matrix2x2 Matrix2x2::ones(){
+    return Matrix2x2(1.f);
 }
 
 /**
  * Create a matrix fill with zeros
 */
-Matrix4x4 Matrix4x4::zeros(){
-    return Matrix4x4();
+Matrix2x2 Matrix2x2::zeros(){
+    return Matrix2x2();
 }
 
 /**
  * Create a diagonal matrix
  * @param v The value for all the elements in the diagonal
 */
-Matrix4x4 Matrix4x4::diag(float v){
-    Matrix4x4 newMat{};
+Matrix2x2 Matrix2x2::diag(float v){
+    Matrix2x2 newMat{};
     for(size_t i = 0; i<newMat._Values.size(); i++){
         newMat._Values[i][i] = v;
     }
@@ -96,7 +92,7 @@ Matrix4x4 Matrix4x4::diag(float v){
 /**
  * Create an identity matrix
 */
-Matrix4x4 Matrix4x4::identity(){
+Matrix2x2 Matrix2x2::identity(){
     return diag(1.f);
 }
 
@@ -104,7 +100,7 @@ Matrix4x4 Matrix4x4::identity(){
  * Cast the matrix into a string
  * @return The string
 */
-const std::string Matrix4x4::toString() const{
+const std::string Matrix2x2::toString() const{
     std::string str = "{";
     for(size_t i = 0; i<_Values.size(); i++){
         str += "\n{" + std::to_string(_Values[i][0]);
@@ -121,9 +117,9 @@ const std::string Matrix4x4::toString() const{
  * @param index The index of the element to access
  * @return The wanted value
 */
-std::array<float, 4> Matrix4x4::operator[](int index) const{
+std::array<float, 2> Matrix2x2::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for Matrix4x4!\n", index);
+        fprintf(stderr, "Index %d out of range for Matrix2x2!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -134,9 +130,9 @@ std::array<float, 4> Matrix4x4::operator[](int index) const{
  * @param index The index of the element to set
  * @return The wanted value
 */
-std::array<float, 4>& Matrix4x4::operator[](int index){
+std::array<float, 2>& Matrix2x2::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for Matrix4x4!\n", index);
+        fprintf(stderr, "Index %d out of range for Matrix2x2!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -147,8 +143,8 @@ std::array<float, 4>& Matrix4x4::operator[](int index){
  * @param matrix The second matrix
  * @return The sum of the two matrices
 */
-Matrix4x4 Matrix4x4::operator+(const Matrix4x4& matrix) const{
-    Matrix4x4 newMat{};
+Matrix2x2 Matrix2x2::operator+(const Matrix2x2& matrix) const{
+    Matrix2x2 newMat{};
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<_Values[0].size(); j++){
             newMat._Values[i][j] = _Values[i][j] + matrix[i][j];
@@ -162,8 +158,8 @@ Matrix4x4 Matrix4x4::operator+(const Matrix4x4& matrix) const{
  * @param matrix The second matrix
  * @return The substraction of the two matrices
 */
-Matrix4x4 Matrix4x4::operator-(const Matrix4x4& matrix) const{
-    Matrix4x4 newMat{};
+Matrix2x2 Matrix2x2::operator-(const Matrix2x2& matrix) const{
+    Matrix2x2 newMat{};
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<_Values[0].size(); j++){
             newMat._Values[i][j] = _Values[i][j] - matrix[i][j];
@@ -176,7 +172,7 @@ Matrix4x4 Matrix4x4::operator-(const Matrix4x4& matrix) const{
  * Addition between two matrices
  * @param matrix The second matrix
 */
-void Matrix4x4::operator+=(const Matrix4x4& matrix){
+void Matrix2x2::operator+=(const Matrix2x2& matrix){
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<_Values[0].size(); j++){
             _Values[i][j] += matrix[i][j];
@@ -188,7 +184,7 @@ void Matrix4x4::operator+=(const Matrix4x4& matrix){
  * Substraction between two matrices
  * @param matrix The second matrix
 */
-void Matrix4x4::operator-=(const Matrix4x4& matrix){
+void Matrix2x2::operator-=(const Matrix2x2& matrix){
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<_Values[0].size(); j++){
             _Values[i][j] -= matrix[i][j];
@@ -200,7 +196,7 @@ void Matrix4x4::operator-=(const Matrix4x4& matrix){
  * Multiplication with a scalar
  * @param val The scalar
 */
-void Matrix4x4::operator*=(float scalar){
+void Matrix2x2::operator*=(float scalar){
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<_Values[0].size(); j++){
             _Values[i][j] *= scalar;
@@ -212,7 +208,7 @@ void Matrix4x4::operator*=(float scalar){
  * Division with a scalar
  * @param val The scalar
 */
-void Matrix4x4::operator/=(float scalar){
+void Matrix2x2::operator/=(float scalar){
     if(scalar == 0.f){
         beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE, beCore::ErrorLevel::WARNING);
         return;
@@ -228,8 +224,8 @@ void Matrix4x4::operator/=(float scalar){
  * Multiplication between two matrices
  * @param matrix The second matrix
 */
-void Matrix4x4::operator*=(const Matrix4x4& matrix){
-    Matrix4x4 newMat{};
+void Matrix2x2::operator*=(const Matrix2x2& matrix){
+    Matrix2x2 newMat{};
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<_Values[0].size(); j++){
             for (size_t k = 0; k < _Values.size(); k++) {
@@ -245,8 +241,8 @@ void Matrix4x4::operator*=(const Matrix4x4& matrix){
  * @param vector The vector
  * @return The resulting scalar
 */
-Vector4 Matrix4x4::operator*(const Vector4& vector) const{
-    Vector4 newVector{};
+Vector2 Matrix2x2::operator*(const Vector2& vector) const{
+    Vector2 newVector{};
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<_Values[0].size(); j++){
             newVector[i] += _Values[i][j]*vector[j];
@@ -260,8 +256,8 @@ Vector4 Matrix4x4::operator*(const Vector4& vector) const{
  * @param matrix The second matrix
  * @return The resulting matrix
 */
-Matrix4x2 Matrix4x4::operator*(const Matrix4x2& matrix) const{
-    Matrix4x2 newMat{};
+Matrix2x2 Matrix2x2::operator*(const Matrix2x2& matrix) const{
+    Matrix2x2 newMat{};
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<2; j++){
             for (size_t k = 0; k < _Values[0].size(); k++) {
@@ -277,8 +273,8 @@ Matrix4x2 Matrix4x4::operator*(const Matrix4x2& matrix) const{
  * @param matrix The second matrix
  * @return The resulting matrix
 */
-Matrix4x3 Matrix4x4::operator*(const Matrix4x3& matrix) const{
-    Matrix4x3 newMat{};
+Matrix2x3 Matrix2x2::operator*(const Matrix2x3& matrix) const{
+    Matrix2x3 newMat{};
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<3; j++){
             for (size_t k = 0; k < _Values[0].size(); k++) {
@@ -294,8 +290,8 @@ Matrix4x3 Matrix4x4::operator*(const Matrix4x3& matrix) const{
  * @param matrix The second matrix
  * @return The resulting matrix
 */
-Matrix4x4 Matrix4x4::operator*(const Matrix4x4& matrix) const{
-    Matrix4x4 newMat{};
+Matrix2x4 Matrix2x2::operator*(const Matrix2x4& matrix) const{
+    Matrix2x4 newMat{};
     for(size_t i = 0; i<_Values.size(); i++){
         for(size_t j = 0; j<4; j++){
             for (size_t k = 0; k < _Values[0].size(); k++) {

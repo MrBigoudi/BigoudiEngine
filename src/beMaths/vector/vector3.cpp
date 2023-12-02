@@ -1,9 +1,10 @@
 #include "vector3.hpp"
 
+#include "matrix.hpp" // IWYU pragma: keep
+#include "vector.hpp" // IWYU pragma: keep
+
 #include <beCore.hpp>
 #include <cmath>
-
-#include "errorHandler.hpp"
 
 namespace beMaths{
 
@@ -162,7 +163,7 @@ void Vector3::b(float b){
 */
 float Vector3::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for vector3!\n", index);
+        fprintf(stderr, "Index %d out of range for Vector3!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -175,7 +176,7 @@ float Vector3::operator[](int index) const{
 */
 float& Vector3::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for vector3!\n", index);
+        fprintf(stderr, "Index %d out of range for Vector3!\n", index);
         beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
     }
     return _Values[index];
@@ -257,9 +258,9 @@ void Vector3::operator/=(float scalar){
 */
 Matrix3x2 Vector3::operator*(const Matrix1x2& matrix) const{
     return Matrix3x2({
-        std::array<float, 3>({x() * matrix[0], x() * matrix[1]}),
-        std::array<float, 3>({y() * matrix[0], y() * matrix[1]}),
-        std::array<float, 3>({z() * matrix[0], z() * matrix[1]})
+        std::array<float, 2>({x() * matrix[0], x() * matrix[1]}),
+        std::array<float, 2>({y() * matrix[0], y() * matrix[1]}),
+        std::array<float, 2>({z() * matrix[0], z() * matrix[1]})
     });
 }
 
@@ -281,9 +282,9 @@ Matrix3x3 Vector3::operator*(const Matrix1x3& matrix) const{
 */
 Matrix3x4 Vector3::operator*(const Matrix1x4& matrix) const{
     return Matrix3x4({
-        std::array<float, 3>({x() * matrix[0], x() * matrix[1], x() * matrix[2], x() * matrix[3]}),
-        std::array<float, 3>({y() * matrix[0], y() * matrix[1], y() * matrix[2], y() * matrix[3]}),
-        std::array<float, 3>({z() * matrix[0], z() * matrix[1], z() * matrix[2], z() * matrix[3]})
+        std::array<float, 4>({x() * matrix[0], x() * matrix[1], x() * matrix[2], x() * matrix[3]}),
+        std::array<float, 4>({y() * matrix[0], y() * matrix[1], y() * matrix[2], y() * matrix[3]}),
+        std::array<float, 4>({z() * matrix[0], z() * matrix[1], z() * matrix[2], z() * matrix[3]})
     });
 }
 
@@ -317,20 +318,20 @@ Vector3 Vector3::cross(const Vector3& v1, const Vector3& v2){
         v1.y()*v2.z() - v1.z()*v2.y(),
         v1.z()*v2.x() - v1.x()*v2.z(),
         v1.x()*v2.y() - v1.y()*v2.x()
-    )
+    );
 }
 
 /**
  * Cross product
  * @param vector
 */
-void Vector3::cross(const Vector3& vector) const{
-    float x = y()*v2.z() - z()*v2.y();
-    float y = z()*v2.x() - x()*v2.z();
-    float z = x()*v2.y() - y()*v2.x();
-    x(x);
-    y(y);
-    z(z);
+void Vector3::cross(const Vector3& vector){
+    float x1 = y()*vector.z() - z()*vector.y();
+    float y1 = z()*vector.x() - x()*vector.z();
+    float z1 = x()*vector.y() - y()*vector.x();
+    x(x1);
+    y(y1);
+    z(z1);
 }
 
 /**
@@ -352,17 +353,17 @@ Vector3 Vector3::normalize(const Vector3& vector){
         beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE);
         return Vector3();
     }
-    return Vector3(x() / norm, y() / norm, z() / norm);
+    return Vector3(vector.x() / norm, vector.y() / norm, vector.z() / norm);
 }
 
 /**
-* Normalize the vector
+ * Normalize the vector
 */
 void Vector3::normalize(){
-    float norm = vector.getNorm();
+    float norm = getNorm();
     if(norm == 0.f){
         beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE);
-        return Vector3();
+        return;
     }
     x(x() / norm);
     y(y() / norm);
