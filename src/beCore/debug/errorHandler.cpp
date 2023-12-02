@@ -22,16 +22,21 @@ void ErrorHandler::handle(ErrorCode error, ErrorLevel level){
     switch(error){
         case NO_ERROR:
             break;
+        case ZERO_DIVIDE:
+            fprintf(stderr, "Can't divide by zero!\n");
+            break;
         default:
-            if(level == FATAL){
-                std::cerr << "Exiting the program!" << std::endl;
-                exit(EXIT_FAILURE);
-                break;
-            }
-            if(level == WARNING){
-                std::cerr << "Warning, continue the program!" << std::endl;
-                break;
-            }
+            break;
+    }
+    switch(level){
+        case FATAL:
+            fprintf(stderr, "Exiting the program!\n");
+            exit(EXIT_FAILURE);
+            break;
+        
+        case WARNING:
+            fprintf(stderr, "Warning, continue the program!\n");
+            break;
     }
 }
 

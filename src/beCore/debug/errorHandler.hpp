@@ -19,6 +19,7 @@ enum ErrorCode{
     IO_ERROR,
     INIT_FAILURE,
     BAD_VALUE,
+    ZERO_DIVIDE,
 };
 
 /**
