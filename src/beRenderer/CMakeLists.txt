@@ -17,11 +17,11 @@ target_include_directories(BeRenderer
         ${CMAKE_CURRENT_SOURCE_DIR}/shaders
 )
 
-# use OpenGL
-find_package(OpenGL REQUIRED)
+# use Vulkan
+find_package(Vulkan REQUIRED)
 
 # set the cpp standards
-target_link_libraries(BeRenderer PUBLIC cflags ${OPENGL_LIBRARIES})
+target_link_libraries(BeRenderer PUBLIC cflags Vulkan::Vulkan)
 
 # add the subdirectories
 add_subdirectory(shaders)

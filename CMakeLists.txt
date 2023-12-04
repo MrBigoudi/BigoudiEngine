@@ -30,6 +30,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POS
 
 # add source files
 add_subdirectory(src)
+target_link_libraries(${PROJECT_NAME} PUBLIC BigoudiEngine cflags)
 target_link_libraries(${PROJECT_NAME} PUBLIC BeCore cflags)
 target_link_libraries(${PROJECT_NAME} PUBLIC BeMaths cflags)
 target_link_libraries(${PROJECT_NAME} PUBLIC BePhysics cflags)
