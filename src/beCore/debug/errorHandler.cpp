@@ -40,19 +40,4 @@ void ErrorHandler::handle(ErrorCode error, ErrorLevel level){
     }
 }
 
-/**
- * Handle an OpenGL error
- * @param format The error message
-*/
-void ErrorHandler::handleGL(const char* format, ...){
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        va_list args;
-        va_start(args, format);
-        vfprintf(stderr, format, args);
-        va_end(args);
-        handle(GL_ERROR);
-    }
-}
-
 };

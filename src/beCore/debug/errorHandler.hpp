@@ -40,12 +40,6 @@ class ErrorHandler{
         */
         static void handle(ErrorCode error, ErrorLevel level = FATAL);
 
-        /**
-         * Handle an OpenGL error
-         * @param format The error message
-        */
-        static void handleGL(const char* format, ...);
-
 };
 
 }

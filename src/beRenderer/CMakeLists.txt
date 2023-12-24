@@ -14,7 +14,8 @@ target_include_directories(BeRenderer
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include>
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/shaders
+        ${CMAKE_CURRENT_SOURCE_DIR}/backEnd
+        ${CMAKE_CURRENT_SOURCE_DIR}/frontEnd
 )
 
 # use Vulkan
@@ -24,4 +25,5 @@ find_package(Vulkan REQUIRED)
 target_link_libraries(BeRenderer PUBLIC cflags Vulkan::Vulkan)
 
 # add the subdirectories
-add_subdirectory(shaders)
+add_subdirectory(backEnd)
+add_subdirectory(frontEnd)

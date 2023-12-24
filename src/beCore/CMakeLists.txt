@@ -11,13 +11,9 @@ target_include_directories(BeCore
         $<INSTALL_INTERFACE:include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/debug
+        ${CMAKE_CURRENT_SOURCE_DIR}/time
 )
-
-# use OpenGL
-find_package(OpenGL REQUIRED)
-
-# set the cpp standards
-target_link_libraries(BeCore PUBLIC cflags ${OPENGL_LIBRARIES})
 
 # add the subdirectories
 add_subdirectory(debug)
+add_subdirectory(time)
