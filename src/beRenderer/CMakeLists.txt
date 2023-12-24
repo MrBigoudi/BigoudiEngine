@@ -18,12 +18,7 @@ target_include_directories(BeRenderer
         ${CMAKE_CURRENT_SOURCE_DIR}/frontEnd
 )
 
-# use Vulkan
-find_package(Vulkan REQUIRED)
-
-# set the cpp standards
-target_link_libraries(BeRenderer PUBLIC cflags Vulkan::Vulkan)
-
 # add the subdirectories
 add_subdirectory(backEnd)
 add_subdirectory(frontEnd)
+add_subdirectory(window)

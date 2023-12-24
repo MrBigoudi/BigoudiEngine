@@ -1,7 +1,7 @@
 #pragma once
 
+#include "backEnd.hpp"
 #include "frontEndTypes.hpp"
-
 #include <memory>
 
 namespace beRenderer{
@@ -9,37 +9,37 @@ namespace beRenderer{
 /**
  * Forward declaration for the Backend class
 */
-class BackEnd;
+class FrontEnd;
 
 /**
  * A type defining a smart pointer to a backend
 */
-using BackEndPtr = std::shared_ptr<BackEnd>;
+using FrontEndPtr = std::shared_ptr<FrontEnd>;
 
 /**
- * A class representing a backend api abstraction for the renderer
+ * A class representing a front end of the renderer
 */
-class BackEnd{
+class FrontEnd{
 
     private:
 
     public:
         /**
-         * Initiate the backend
+         * Initiate the frontend
         */
-        virtual void init() = 0;
+        void init();
 
         /**
-         * Shut down the backend
+         * Shut down the frontend
         */
-        virtual void shutdown() = 0;
+        void shutdown();
 
         /**
          * Render using the packet infos
          * @param packet The packet containing info about the rendering
+         * @param backend The backend to use
          * @see frontEndTypes
         */
-        virtual void render(const RenderPacket& packet) = 0;
+        void render(const RenderPacket& packet, const BackEndPtr& backend);
 };
-
 }

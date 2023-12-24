@@ -1,8 +1,8 @@
 # find the source files in the folder
-file(GLOB BE_RENDERER_BACKEND_VULKAN_SOURCE_FILES "*.cpp")
+file(GLOB BE_RENDERER_WINDOW_SOURCE_FILES "*.cpp")
 
 # add the source files to the Bigoudi Engine Renderer library
-target_sources(BeRenderer PRIVATE ${BE_RENDERER_BACKEND_VULKAN_SOURCE_FILES})
+target_sources(BeRenderer PRIVATE ${BE_RENDERER_WINDOW_SOURCE_FILES})
 
 # include directories for the Bigoudi Engine Renderer library (if needed)
 target_include_directories(BeRenderer PUBLIC
@@ -10,8 +10,4 @@ target_include_directories(BeRenderer PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-# use Vulkan
-find_package(Vulkan REQUIRED)
-
-# set the cpp standards
-target_link_libraries(BeRenderer PUBLIC cflags Vulkan::Vulkan)
+add_subdirectory(glfw)
