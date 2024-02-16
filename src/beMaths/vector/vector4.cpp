@@ -3,7 +3,7 @@
 #include "matrix.hpp" // IWYU pragma: keep
 #include "vector.hpp" // IWYU pragma: keep
 
-#include <beCore.hpp>
+#include "beCore.hpp"
 #include <cmath>
 
 namespace beMaths{
@@ -198,8 +198,11 @@ void Vector4::a(float a){
 */
 float Vector4::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for Vector4!\n", index);
-        beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
+        beCore::ErrorHandler::handle(
+            beCore::ErrorCode::BAD_VALUE_ERROR, 
+            "Index " + std::to_string(index) + " out of range for Vector4!\n",
+            beCore::ErrorLevel::WARNING
+        );
     }
     return _Values[index];
 }
@@ -211,8 +214,11 @@ float Vector4::operator[](int index) const{
 */
 float& Vector4::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for Vector4!\n", index);
-        beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
+        beCore::ErrorHandler::handle(
+            beCore::ErrorCode::BAD_VALUE_ERROR, 
+            "Index " + std::to_string(index) + " out of range for Vector4!\n",
+            beCore::ErrorLevel::WARNING
+        );
     }
     return _Values[index];
 }
@@ -284,7 +290,11 @@ void Vector4::operator*=(float scalar){
 */
 void Vector4::operator/=(float scalar){
     if(scalar == 0.f){
-        beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE, beCore::ErrorLevel::WARNING);
+        beCore::ErrorHandler::handle(
+            beCore::ErrorCode::ZERO_DIVIDE_ERROR, 
+            "Cannot divide by 0!\n",
+            beCore::ErrorLevel::WARNING
+        );
         return;
     }
     x(x() / scalar);
@@ -367,7 +377,7 @@ float Vector4::getNorm() const{
 Vector4 Vector4::normalize(const Vector4& vector){
     float norm = vector.getNorm();
     if(norm == 0.f){
-        beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE);
+        beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE_ERROR);
         return Vector4();
     }
     return Vector4(vector.x() / norm, vector.y() / norm, vector.z() / norm, vector.w() / norm);
@@ -379,7 +389,7 @@ Vector4 Vector4::normalize(const Vector4& vector){
 void Vector4::normalize(){
     float norm = getNorm();
     if(norm == 0.f){
-        beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE);
+        beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE_ERROR);
         return;
     }
     x(x() / norm);

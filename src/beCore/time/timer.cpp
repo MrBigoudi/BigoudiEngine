@@ -23,12 +23,18 @@ TimerState Timer::getState() const {
 void Timer::start(){
     switch(_State){
         case ON_GOING:
-            fprintf(stderr, "The timer is already running!\n");
-            ErrorHandler::handle(ErrorCode::BAD_VALUE, ErrorLevel::WARNING);
+            ErrorHandler::handle(
+                ErrorCode::BAD_VALUE_ERROR, 
+                "The timer is already running!\n", 
+                ErrorLevel::WARNING
+            );
             break;
         case PAUSED:
-            fprintf(stderr, "The timer is on pause!\n");
-            ErrorHandler::handle(ErrorCode::BAD_VALUE, ErrorLevel::WARNING);
+            ErrorHandler::handle(
+                ErrorCode::BAD_VALUE_ERROR, 
+                "The timer is on pause!\n", 
+                ErrorLevel::WARNING
+            );
             break;
         case STOPPED:
             _State = ON_GOING;
@@ -49,12 +55,18 @@ void Timer::pause(){
             _StartTicks = 0;
             break;
         case PAUSED:
-            fprintf(stderr, "The timer is already on pause!\n");
-            ErrorHandler::handle(ErrorCode::BAD_VALUE, ErrorLevel::WARNING);
+            ErrorHandler::handle(
+                ErrorCode::BAD_VALUE_ERROR,
+                "The timer is already on pause!\n",
+                ErrorLevel::WARNING
+            );
             break;
         case STOPPED:
-            fprintf(stderr, "The timer is stopped!\n");
-            ErrorHandler::handle(ErrorCode::BAD_VALUE, ErrorLevel::WARNING);
+            ErrorHandler::handle(
+                ErrorCode::BAD_VALUE_ERROR,
+                "The timer is stopped!\n",
+                ErrorLevel::WARNING
+            );
             break;
     }
 }
@@ -65,8 +77,11 @@ void Timer::pause(){
 void Timer::unpause(){
     switch(_State){                
         case ON_GOING:
-            fprintf(stderr, "The timer is running!\n");
-            ErrorHandler::handle(ErrorCode::BAD_VALUE, ErrorLevel::WARNING);
+            ErrorHandler::handle(
+                ErrorCode::BAD_VALUE_ERROR,
+                "The timer is running!\n",
+                ErrorLevel::WARNING
+            );
             break;
         case PAUSED:
             _State = ON_GOING;
@@ -74,8 +89,11 @@ void Timer::unpause(){
             _StartTicks = 0;
             break;
         case STOPPED:
-            fprintf(stderr, "The timer is stopped!\n");
-            ErrorHandler::handle(ErrorCode::BAD_VALUE, ErrorLevel::WARNING);
+            ErrorHandler::handle(
+                ErrorCode::BAD_VALUE_ERROR, 
+                "The timer is stopped!\n",
+                ErrorLevel::WARNING
+            );
             break;
     }
 }
@@ -102,8 +120,11 @@ unsigned int Timer::getTicks() const {
         case PAUSED:
             return _PauseTicks;
         case STOPPED:
-            fprintf(stderr, "The timer is stopped!\n");
-            ErrorHandler::handle(ErrorCode::BAD_VALUE, ErrorLevel::WARNING);
+            ErrorHandler::handle(
+                ErrorCode::BAD_VALUE_ERROR,
+                "The timer is stopped!\n",
+                ErrorLevel::WARNING
+            );
             break;
     }
     return 0;

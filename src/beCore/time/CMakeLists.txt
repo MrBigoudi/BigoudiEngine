@@ -2,10 +2,11 @@
 file(GLOB BE_CORE_TIME_SOURCE_FILES "*.cpp")
 
 # add the source files to the Bigoudi Engine Core library
-target_sources(BeCore PRIVATE ${BE_CORE_TIME_SOURCE_FILES})
+target_sources(BigoudiEngine PRIVATE ${BE_CORE_TIME_SOURCE_FILES})
 
 # include directories for the Bigoudi Engine Core library (if needed)
-target_include_directories(BeCore PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include>
+target_include_directories(BigoudiEngine 
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:include>
 )
