@@ -14,6 +14,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
+#define TINYOBJLOADER_IMPLEMENTATION
 #include "beDep.hpp"
 
 template<>
