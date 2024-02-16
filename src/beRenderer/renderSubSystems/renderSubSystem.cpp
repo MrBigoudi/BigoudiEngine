@@ -2,7 +2,6 @@
 
 namespace be{
 
-
 IRenderSubSystem::IRenderSubSystem(VulkanAppPtr vulkanApp, VkRenderPass renderPass[[maybe_unused]])
     : _VulkanApp(vulkanApp){
 }

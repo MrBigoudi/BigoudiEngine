@@ -1,4 +1,3 @@
 #pragma once
 
-#include "ecstest.hpp"
-#include "ecsSimpleRenderSystem.hpp"
+#include "renderSystem.hpp" // IWYU pragma: keep
