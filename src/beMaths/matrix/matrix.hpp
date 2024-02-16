@@ -1,6 +1,6 @@
 #pragma once
 
-#include <beCore.hpp>
+#include "beCore.hpp"
 
 #include "matrix1x2.hpp"  // IWYU pragma: keep
 #include "matrix1x3.hpp"  // IWYU pragma: keep

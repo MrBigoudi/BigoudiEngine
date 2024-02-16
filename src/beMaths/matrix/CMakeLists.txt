@@ -1,5 +1,5 @@
 # include directories for the Bigoudi Engine Maths library (if needed)
-target_include_directories(BeMaths PUBLIC
+target_include_directories(BigoudiEngine PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:include>
 )

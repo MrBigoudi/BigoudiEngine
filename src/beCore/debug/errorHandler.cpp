@@ -1,58 +1,66 @@
 #include "errorHandler.hpp"
 
-#include <GL/gl.h>
-#include <cstdlib>
-#include <iostream>
-#include <stdarg.h>
-
 namespace beCore{
 
 /**
- * Private constructor to make the class purely virtual
-*/
-ErrorHandler::ErrorHandler(){
-}
-
-/**
- * Handle the error
- * @param error The error to handle
+ * Default error handler
+ * @note if level == FATAL, exit the program
+ * @note if level == WARNING, print the warning
+ * @param msg The error message to display
  * @param level The error level
 */
-void ErrorHandler::handle(ErrorCode error, ErrorLevel level){
-    switch(error){
-        case NO_ERROR:
+void ErrorHandler::defaultCase(const std::string& msg, ErrorLevel level){
+    switch(level){
+        case FATAL:
+            fprintf(stderr, "%s", msg.c_str());
+            fprintf(stderr, "Exiting the program!\n");
+            exit(EXIT_FAILURE);
             break;
-        case ZERO_DIVIDE:
-            fprintf(stderr, "Can't divide by zero!\n");
+        case WARNING:
+            fprintf(stderr, "%s", msg.c_str());
+            fprintf(stderr, "Warning, continue the program!\n");
             break;
         default:
             break;
     }
-    switch(level){
-        case FATAL:
-            fprintf(stderr, "Exiting the program!\n");
-            exit(EXIT_FAILURE);
+}
+
+/**
+ * Handle an error
+ * @param error The error to handle
+ * @param msg The error message to display
+ * @param level The error level
+*/
+void ErrorHandler::handle(ErrorCode error, const std::string& msg, ErrorLevel level){
+    switch(error){
+        case NO_ERROR:
             break;
-        
-        case WARNING:
-            fprintf(stderr, "Warning, continue the program!\n");
+        default:
+            defaultCase(msg, level);
             break;
     }
 }
 
 /**
- * Handle an OpenGL error
- * @param format The error message
+ * Handle a vulkan error
+ * @param error The error to handle
+ * @param msg Th error message to display
+ * @param level The error level
 */
-void ErrorHandler::handleGL(const char* format, ...){
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        va_list args;
-        va_start(args, format);
-        vfprintf(stderr, format, args);
-        va_end(args);
-        handle(GL_ERROR);
+void ErrorHandler::vulkanError(VkResult result, const std::string& msg, ErrorLevel level){
+    if(result == VK_SUCCESS){
+        return;
     }
+    handle(VULKAN_ERROR, msg, level);
+}
+
+/**
+ * Handle a glfw error
+ * @param msg Th error message to display
+ * @param level The error level
+*/
+void ErrorHandler::glfwError(const std::string& msg, ErrorLevel level){
+    handle(GLFW_ERROR, msg, level);
 }
 
 };

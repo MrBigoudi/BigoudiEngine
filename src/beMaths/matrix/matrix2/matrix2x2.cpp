@@ -3,7 +3,7 @@
 #include "matrix.hpp" // IWYU pragma: keep
 #include "vector.hpp" // IWYU pragma: keep
 
-#include <beCore.hpp>
+#include "beCore.hpp"
 
 namespace beMaths{
 
@@ -119,8 +119,11 @@ const std::string Matrix2x2::toString() const{
 */
 std::array<float, 2> Matrix2x2::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for Matrix2x2!\n", index);
-        beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
+        beCore::ErrorHandler::handle(
+            beCore::ErrorCode::BAD_VALUE_ERROR, 
+            "Index " + std::to_string(index) + " out of range for Matrix2x2!\n",
+            beCore::ErrorLevel::WARNING
+        );
     }
     return _Values[index];
 }
@@ -132,8 +135,11 @@ std::array<float, 2> Matrix2x2::operator[](int index) const{
 */
 std::array<float, 2>& Matrix2x2::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        fprintf(stderr, "Index %d out of range for Matrix2x2!\n", index);
-        beCore::ErrorHandler::handle(beCore::ErrorCode::BAD_VALUE, beCore::ErrorLevel::WARNING);
+        beCore::ErrorHandler::handle(
+            beCore::ErrorCode::BAD_VALUE_ERROR, 
+            "Index " + std::to_string(index) + " out of range for Matrix2x2!\n",
+            beCore::ErrorLevel::WARNING
+        );
     }
     return _Values[index];
 }
@@ -210,7 +216,11 @@ void Matrix2x2::operator*=(float scalar){
 */
 void Matrix2x2::operator/=(float scalar){
     if(scalar == 0.f){
-        beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE, beCore::ErrorLevel::WARNING);
+        beCore::ErrorHandler::handle(
+            beCore::ErrorCode::ZERO_DIVIDE_ERROR, 
+            "Cannot divide by 0!\n",
+            beCore::ErrorLevel::WARNING
+        );
         return;
     }
     for(size_t i = 0; i<_Values.size(); i++){

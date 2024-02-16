@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vulkan/vulkan.hpp>
+
 namespace beCore{
 
 /**
@@ -14,12 +16,22 @@ enum ErrorLevel{
  * @enum The different error codes
 */
 enum ErrorCode{
-    NO_ERROR,
-    GL_ERROR,
+    NO_ERROR, 
+
+    GLFW_ERROR,
+    VULKAN_ERROR,
+    TINYOBJ_ERROR,
+    STB_IMAGE_ERROR,
+
     IO_ERROR,
-    INIT_FAILURE,
-    BAD_VALUE,
-    ZERO_DIVIDE,
+    NOT_INITIALIZED_ERROR,
+    UNKNOWN_VALUE_ERROR,
+    BAD_VALUE_ERROR,
+    OUT_OF_RANGE_ERROR,
+    UNEXPECTED_VALUE_ERROR,
+    ZERO_DIVIDE_ERROR,
+
+    SYSTEM_ERROR,
 };
 
 /**
@@ -34,17 +46,37 @@ class ErrorHandler{
 
     public:
         /**
-         * Handle the error
+         * Handle an error
          * @param error The error to handle
+         * @param msg The error message to display
          * @param level The error level
         */
-        static void handle(ErrorCode error, ErrorLevel level = FATAL);
+        static void handle(ErrorCode error, const std::string& msg = "", ErrorLevel level = FATAL);
 
         /**
-         * Handle an OpenGL error
-         * @param format The error message
+         * Handle a vulkan error
+         * @param error The error to handle
+         * @param msg Th error message to display
+         * @param level The error level
         */
-        static void handleGL(const char* format, ...);
+        static void vulkanError(VkResult result, const std::string& msg = "", ErrorLevel level = FATAL);
+
+        /**
+         * Handle a glfw error
+         * @param msg Th error message to display
+         * @param level The error level
+        */
+        static void glfwError(const std::string& msg, ErrorLevel level = FATAL);
+
+    private:
+        /**
+         * Default error handler
+         * @note if level == FATAL, exit the program
+         * @note if level == WARNING, print the warning
+         * @param msg The error message to display
+         * @param level The error level
+        */
+        static void defaultCase(const std::string& msg = "", ErrorLevel level = FATAL);
 
 };
 
