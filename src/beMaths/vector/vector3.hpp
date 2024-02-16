@@ -31,6 +31,13 @@ class Vector3{
 
         /**
          * A basic constructor
+         * @param v The values for the first 2 elements
+         * @param z The third value
+        */
+        Vector3(const Vector2& v, float z);
+
+        /**
+         * A basic constructor
          * @param x The first value
          * @param y The second value
          * @param z The third value
@@ -154,6 +161,20 @@ class Vector3{
         Vector3 operator-(const Vector3& vector) const;
 
         /**
+         * Multiplication with a scalar
+         * @param val The scalar
+         * @return A new vector which is the results of the multiplication
+        */
+        Vector3 operator*(float scalar);
+
+        /**
+         * Division with a scalar
+         * @param val The scalar
+         * @return A new vector which is the results of the division
+        */
+        Vector3 operator/(float scalar);
+
+        /**
          * Addition between two vectors
          * @param vector The second vector
         */
@@ -166,6 +187,12 @@ class Vector3{
         void operator-=(const Vector3& vector);
 
         /**
+         * Negate a vector
+         * @return The negated vector
+        */
+        Vector3 operator-(void);
+
+        /**
          * Multiplication with a scalar
          * @param val The scalar
         */
@@ -176,6 +203,13 @@ class Vector3{
          * @param val The scalar
         */
         void operator/=(float scalar);
+
+        /**
+         * Redefine the equality operator
+         * @param vector The second vector
+         * @return True if vectors are equal
+        */
+        bool operator==(const Vector3& vector) const;
 
         /**
          * Multiplication with a matrix
@@ -205,7 +239,7 @@ class Vector3{
 
         /**
          * Dot product
-         * @param vector
+         * @param vector The vector for which to get the dot product
          * @return The dot product
         */
         float dot(const Vector3& vector) const;
@@ -220,7 +254,7 @@ class Vector3{
 
         /**
          * Cross product
-         * @param vector
+         * @param vector The vector with which do the cross product
         */
         void cross(const Vector3& vector);
 

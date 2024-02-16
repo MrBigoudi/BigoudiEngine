@@ -154,6 +154,20 @@ class Vector2{
         Vector2 operator-(const Vector2& vector) const;
 
         /**
+         * Multiplication with a scalar
+         * @param val The scalar
+         * @return A new vector which is the results of the multiplication
+        */
+        Vector2 operator*(float scalar);
+
+        /**
+         * Division with a scalar
+         * @param val The scalar
+         * @return A new vector which is the results of the division
+        */
+        Vector2 operator/(float scalar);
+
+        /**
          * Addition between two vectors
          * @param vector The second vector
         */
@@ -166,6 +180,12 @@ class Vector2{
         void operator-=(const Vector2& vector);
 
         /**
+         * Negate a vector
+         * @return The negated vector
+        */
+        Vector2 operator-(void);
+
+        /**
          * Multiplication with a scalar
          * @param val The scalar
         */
@@ -176,6 +196,13 @@ class Vector2{
          * @param val The scalar
         */
         void operator/=(float scalar);
+
+        /**
+         * Redefine the equality operator
+         * @param vector The second vector
+         * @return True if vectors are equal
+        */
+        bool operator==(const Vector2& vector) const;
 
         /**
          * Multiplication with a matrix

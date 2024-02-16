@@ -23,6 +23,15 @@ Vector3::Vector3(float v)
 
 /**
  * A basic constructor
+ * @param v The values for the first 2 elements
+ * @param z The third value
+*/
+Vector3::Vector3(const Vector2& v, float z){
+    _Values = {v.x(), v.y(), z};
+}
+
+/**
+ * A basic constructor
  * @param x The first value
  * @param y The second value
  * @param z The third value
@@ -215,6 +224,28 @@ Vector3 Vector3::operator-(const Vector3& vector) const{
 }
 
 /**
+ * Multiplication with a scalar
+ * @param val The scalar
+ * @return A new vector which is the results of the multiplication
+*/
+Vector3 Vector3::operator*(float scalar){
+    Vector3 newVec(*this);
+    newVec *= scalar;
+    return newVec;
+}
+
+/**
+ * Division with a scalar
+ * @param val The scalar
+ * @return A new vector which is the results of the division
+*/
+Vector3 Vector3::operator/(float scalar){
+    Vector3 newVec(*this);
+    newVec /= scalar;
+    return newVec;
+}
+
+/**
  * Addition between two vectors
  * @param vector The second vector
 */
@@ -232,6 +263,14 @@ void Vector3::operator-=(const Vector3& vector){
     x(x() - vector.x());
     y(y() - vector.y());
     z(z() - vector.z());
+}
+
+/**
+ * Negate a vector
+ * @return The negated vector
+*/
+Vector3 Vector3::operator-(void){
+    return Vector3(-x(), -y(), -z());
 }
 
 /**
@@ -260,6 +299,17 @@ void Vector3::operator/=(float scalar){
     x(x() / scalar);
     y(y() / scalar);
     z(z() / scalar);
+}
+
+/**
+ * Redefine the equality operator
+ * @param vector The second vector
+ * @return True if vectors are equal
+*/
+bool Vector3::operator==(const Vector3& vector) const {
+    return x() == vector.x() 
+        && y() == vector.y()
+        && z() == vector.z();
 }
 
 /**

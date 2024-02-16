@@ -170,6 +170,17 @@ class Matrix4x4{
          * @return The resulting matrix
         */
         Matrix4x4 operator*(const Matrix4x4& matrix) const;
+
+        /**
+         * Transpose the current matrix
+        */
+        void transpose(void);
+
+        /**
+         * Transpose the current matrix
+         * @return The transposed matrix
+        */
+        Matrix4x4 transpose(void) const;
 };
 
 }

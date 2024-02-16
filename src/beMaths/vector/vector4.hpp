@@ -31,6 +31,21 @@ class Vector4{
 
         /**
          * A basic constructor
+         * @param v The values for the first 2 elements
+         * @param z The third value
+         * @param w The fourth value
+        */
+        Vector4(const Vector2& v, float z, float w);
+
+        /**
+         * A basic constructor
+         * @param v The values for the first 3 elements
+         * @param w The fourth value
+        */
+        Vector4(const Vector3& v, float w);
+
+        /**
+         * A basic constructor
          * @param x The first value
          * @param y The second value
          * @param z The third value
@@ -179,6 +194,20 @@ class Vector4{
         Vector4 operator-(const Vector4& vector) const;
 
         /**
+         * Multiplication with a scalar
+         * @param val The scalar
+         * @return A new vector which is the results of the multiplication
+        */
+        Vector4 operator*(float scalar);
+
+        /**
+         * Division with a scalar
+         * @param val The scalar
+         * @return A new vector which is the results of the division
+        */
+        Vector4 operator/(float scalar);
+
+        /**
          * Addition between two vectors
          * @param vector The second vector
         */
@@ -191,6 +220,12 @@ class Vector4{
         void operator-=(const Vector4& vector);
 
         /**
+         * Negate a vector
+         * @return The negated vector
+        */
+        Vector4 operator-(void);
+
+        /**
          * Multiplication with a scalar
          * @param val The scalar
         */
@@ -201,6 +236,13 @@ class Vector4{
          * @param val The scalar
         */
         void operator/=(float scalar);
+
+        /**
+         * Redefine the equality operator
+         * @param vector The second vector
+         * @return True if vectors are equal
+        */
+        bool operator==(const Vector4& vector) const;
 
         /**
          * Multiplication with a matrix

@@ -23,6 +23,25 @@ Vector4::Vector4(float v)
 
 /**
  * A basic constructor
+ * @param v The values for the first 2 elements
+ * @param z The third value
+ * @param w The fourth value
+*/
+Vector4::Vector4(const Vector2& v, float z, float w){
+    _Values = {v.x(), v.y(), z, w};
+}
+
+/**
+ * A basic constructor
+ * @param v The values for the first 3 elements
+ * @param w The fourth value
+*/
+Vector4::Vector4(const Vector3& v, float w){
+    _Values = {v.x(), v.y(), v.z(), w};
+}
+
+/**
+ * A basic constructor
  * @param x The first value
  * @param y The second value
  * @param z The third value
@@ -252,6 +271,28 @@ Vector4 Vector4::operator-(const Vector4& vector) const{
 }
 
 /**
+ * Multiplication with a scalar
+ * @param val The scalar
+ * @return A new vector which is the results of the multiplication
+*/
+Vector4 Vector4::operator*(float scalar){
+    Vector4 newVec(*this);
+    newVec *= scalar;
+    return newVec;
+}
+
+/**
+ * Division with a scalar
+ * @param val The scalar
+ * @return A new vector which is the results of the division
+*/
+Vector4 Vector4::operator/(float scalar){
+    Vector4 newVec(*this);
+    newVec /= scalar;
+    return newVec;
+}
+
+/**
  * Addition between two vectors
  * @param vector The second vector
 */
@@ -271,6 +312,14 @@ void Vector4::operator-=(const Vector4& vector){
     y(y() - vector.y());
     z(z() - vector.z());
     w(w() - vector.w());
+}
+
+/**
+ * Negate a vector
+ * @return The negated vector
+*/
+Vector4 Vector4::operator-(void){
+    return Vector4(-x(), -y(), -z(), -w());
 }
 
 /**
@@ -301,6 +350,18 @@ void Vector4::operator/=(float scalar){
     y(y() / scalar);
     z(z() / scalar);
     w(w() / scalar);
+}
+
+/**
+ * Redefine the equality operator
+ * @param vector The second vector
+ * @return True if vectors are equal
+*/
+bool Vector4::operator==(const Vector4& vector) const {
+    return x() == vector.x() 
+        && y() == vector.y()
+        && w() == vector.w()
+        && z() == vector.z();
 }
 
 /**

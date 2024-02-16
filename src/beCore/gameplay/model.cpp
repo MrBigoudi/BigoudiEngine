@@ -7,15 +7,15 @@
 #include <fstream>
 #include <sstream>
 
+#include "vector3.hpp"
 #include "vulkanApp.hpp"
 
 #include "utilityFunctions.hpp"
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "beDep.hpp"
+
+#include "hash.hpp" // IWYU pragma: keep
 
 template<>
 struct std::hash<be::VertexData>{
@@ -217,7 +217,7 @@ void VertexDataBuilder::loadOffModel(const std::string& filePath){
         float y = 0.f;
         float z = 0.f;
         vertIss >> x >> y >> z;
-        vertex._Pos = glm::vec3(x, y, z);
+        vertex._Pos = {x, y, z};
         _Vertices.push_back(vertex);
     }
 
@@ -239,15 +239,15 @@ void VertexDataBuilder::loadOffModel(const std::string& filePath){
         int v1 = _Indices[i+1];
         int v2 = _Indices[i+2];
 
-		glm::vec3 e0 = _Vertices[v1]._Pos - _Vertices[v0]._Pos;
-		glm::vec3 e1 = _Vertices[v2]._Pos - _Vertices[v0]._Pos;
-		glm::vec3 n = normalize (cross (e0, e1));
+		Vector3 e0 = _Vertices[v1]._Pos - _Vertices[v0]._Pos;
+		Vector3 e1 = _Vertices[v2]._Pos - _Vertices[v0]._Pos;
+		Vector3 n = Vector3::normalize(Vector3::cross(e0, e1));
 		for(int j=0; j<3; j++){
             _Vertices[_Indices[i+j]]._Norm += n;
         }
 	}
 	for(auto& vert : _Vertices){
-        vert._Norm = glm::normalize(vert._Norm); 
+        vert._Norm.normalize(); 
     }
 
     file.close();

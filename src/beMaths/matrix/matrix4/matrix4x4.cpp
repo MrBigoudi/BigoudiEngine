@@ -316,4 +316,25 @@ Matrix4x4 Matrix4x4::operator*(const Matrix4x4& matrix) const{
     return newMat;
 }
 
+/**
+ * Transpose the current matrix
+*/
+void Matrix4x4::transpose(void){
+    for(int i=0; i<4; i++){
+        for(int j=0; j<i; j++){
+            _Values[i][j] = _Values[j][i];
+        }
+    }
+}
+
+/**
+ * Transpose the current matrix
+ * @return The transposed matrix
+*/
+Matrix4x4 Matrix4x4::transpose(void) const{
+    Matrix4x4 newMat(*this);
+    newMat.transpose();
+    return newMat;
+}
+
 }

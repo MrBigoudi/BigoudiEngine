@@ -1,12 +1,13 @@
 #pragma once
 
 
+#include "matrix4x4.hpp"
+#include "projections.hpp"
+#include "trigonometry.hpp"
+#include "vector3.hpp"
 #include <memory>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_ONE
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
+#include <cmath>
 
 namespace be{
 
@@ -25,12 +26,12 @@ enum CameraMovement {
 class Camera{
     private:
         // camera Attributes
-        glm::vec3 _Eye;
-        glm::vec3 _At;
-        glm::vec3 _WorldUp;
+        Vector3 _Eye{};
+        Vector3 _At{};
+        Vector3 _WorldUp{};
 
-        glm::vec3 _Up;
-        glm::vec3 _Right;
+        Vector3 _Up{};
+        Vector3 _Right{};
 
         float _Fov = 0.f;
         float _AspectRatio = 0.f;
@@ -51,12 +52,12 @@ class Camera{
     public:
         // constructor with vectors
         Camera(
-            const glm::vec3& position,
+            const Vector3& position,
             float aspectRatio = 1.f,
             float fov = 50.f,
             float near = 0.1f,
             float far = 10.f,
-            const glm::vec3& worldUp = glm::vec3(0.f, -1.f, 0.f)
+            const Vector3& worldUp = {0.f, -1.f, 0.f}
         ){
             _AspectRatio = aspectRatio;
             _Fov = fov;
@@ -69,20 +70,20 @@ class Camera{
 
         void setDt(float dt){_Dt = dt;}
 
-        glm::vec3 getAt() const {
+        Vector3 getAt() const {
             return _At;
         }
 
-        glm::vec3 getPosition() const {
+        Vector3 getPosition() const {
             return _Eye;
         }
 
-        glm::mat4 getView() const {
-            return glm::lookAt(_Eye, _Eye + _At, _Up);
+        Matrix4x4 getView() const {
+            return  lookAt(_Eye, _Eye + _At, _Up);
         }
-
-        glm::mat4 getPerspective() const {
-            return glm::perspective(glm::radians(_Fov), _AspectRatio, _Near, _Far);
+        
+        Matrix4x4 getPerspective() const {
+            return perspective(radians(_Fov), _AspectRatio, _Near, _Far);
         }
 
         virtual void processKeyboard(CameraMovement direction){
@@ -137,14 +138,14 @@ class Camera{
     private:
         void updateCameraVectors(){
             // calculate the new at vector
-            glm::vec3 front;
-            front.x = cos(glm::radians(_Yaw)) * cos(glm::radians(_Pitch));
-            front.y = sin(glm::radians(_Pitch));
-            front.z = sin(glm::radians(_Yaw)) * cos(glm::radians(_Pitch));
-            _At = glm::normalize(front);
+            Vector3 front{};
+            front.x(cos(radians(_Yaw)) * cos(radians(_Pitch)));
+            front.y(sin(radians(_Pitch)));
+            front.z(sin(radians(_Yaw)) * cos(radians(_Pitch)));
+            _At = Vector3::normalize(front);
             // also re-calculate the Right and Up vector
-            _Right = glm::normalize(glm::cross(_At, _WorldUp));
-            _Up    = glm::normalize(glm::cross(_Right, _At));
+            _Right = Vector3::normalize(Vector3::cross(_At, _WorldUp));
+            _Up    = Vector3::normalize(Vector3::cross(_Right, _At));
         }
 };
 

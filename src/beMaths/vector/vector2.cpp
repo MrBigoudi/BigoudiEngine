@@ -206,6 +206,28 @@ Vector2 Vector2::operator-(const Vector2& vector) const{
 }
 
 /**
+ * Multiplication with a scalar
+ * @param val The scalar
+ * @return A new vector which is the results of the multiplication
+*/
+Vector2 Vector2::operator*(float scalar){
+    Vector2 newVec(*this);
+    newVec *= scalar;
+    return newVec;
+}
+
+/**
+ * Division with a scalar
+ * @param val The scalar
+ * @return A new vector which is the results of the division
+*/
+Vector2 Vector2::operator/(float scalar){
+    Vector2 newVec(*this);
+    newVec /= scalar;
+    return newVec;
+}
+
+/**
  * Addition between two vectors
  * @param vector The second vector
 */
@@ -221,6 +243,14 @@ void Vector2::operator+=(const Vector2& vector){
 void Vector2::operator-=(const Vector2& vector){
     x(x() - vector.x());
     y(y() - vector.y());
+}
+
+/**
+ * Negate a vector
+ * @return The negated vector
+*/
+Vector2 Vector2::operator-(void){
+    return Vector2(-x(), -y());
 }
 
 /**
@@ -247,6 +277,15 @@ void Vector2::operator/=(float scalar){
     }
     x(x() / scalar);
     y(y() / scalar);
+}
+
+/**
+ * Redefine the equality operator
+ * @param vector The second vector
+ * @return True if vectors are equal
+*/
+bool Vector2::operator==(const Vector2& vector)const{
+    return x() == vector.x() && y() == vector.y();
 }
 
 /**

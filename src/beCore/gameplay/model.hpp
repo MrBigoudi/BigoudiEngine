@@ -1,5 +1,8 @@
 #pragma once
 
+#include "vector2.hpp"
+#include "vector3.hpp"
+#include "vector4.hpp"
 #include <map>
 #include <vulkan/vulkan.hpp>
 #include <cstdint>
@@ -9,10 +12,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_ONE
-#include <glm/glm.hpp>
-
 #include "buffer.hpp"
 
 namespace be{
@@ -21,10 +20,10 @@ class Model;
 using ModelPtr = std::shared_ptr<Model>;
 
 struct VertexData{
-    glm::vec3 _Pos = {0.f,0.f,0.f};
-    glm::vec4 _Col = {1.f,1.f,1.f,1.f};
-    glm::vec3 _Norm = {0.f,0.f,0.f};
-    glm::vec2 _Tex = {0.f,0.f};
+    Vector3 _Pos = {0.f,0.f,0.f};
+    Vector4 _Col = {1.f,1.f,1.f,1.f};
+    Vector3 _Norm = {0.f,0.f,0.f};
+    Vector2 _Tex = {0.f,0.f};
 
     static const uint32_t NB_LAYOUTS = 4;
     static const std::vector<VkFormat> FORMATS;
