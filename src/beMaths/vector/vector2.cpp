@@ -3,7 +3,7 @@
 #include "matrix.hpp" // IWYU pragma: keep
 #include "vector.hpp" // IWYU pragma: keep
 
-#include "beCore.hpp"
+#include "errorHandler.hpp"
 #include <cmath>
 
 namespace be{

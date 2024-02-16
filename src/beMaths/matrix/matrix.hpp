@@ -1,7 +1,5 @@
 #pragma once
 
-#include "beCore.hpp"
-
 #include "matrix1x2.hpp"  // IWYU pragma: keep
 #include "matrix1x3.hpp"  // IWYU pragma: keep
 #include "matrix1x4.hpp"  // IWYU pragma: keep
