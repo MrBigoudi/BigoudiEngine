@@ -31,14 +31,14 @@ target_compile_features(BigoudiEngine PUBLIC cxx_std_20)
 # compile flags
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
-set(cflags BigoudiEngine_compiler_flags)
+set(BigoudiEngine_cflags BigoudiEngine_compiler_flags)
 
-add_library(cflags INTERFACE)
-target_compile_features(cflags INTERFACE cxx_std_20)
-target_compile_options(cflags INTERFACE
+add_library(BigoudiEngine_cflags INTERFACE)
+target_compile_features(BigoudiEngine_cflags INTERFACE cxx_std_20)
+target_compile_options(BigoudiEngine_cflags INTERFACE
     "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
     "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
 )
 
 # set the cpp standards
-target_link_libraries(BigoudiEngine PRIVATE glfw Vulkan::Vulkan cflags)
+target_link_libraries(BigoudiEngine PRIVATE glfw Vulkan::Vulkan BigoudiEngine_cflags)
