@@ -9,27 +9,27 @@
 
 #include "model.hpp"
 
-namespace beCore{
+namespace be{
 
 
 void Pipeline::createGraphicsPipeline(PipelineConfigInfo configInfo){
     if(!_VertexShader->exists() || !_FragmentShader->exists()){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR,
             "Can't create a graphics pipeline without a vertex and a fragment shader!\n"
         );
     }
 
     if(configInfo._PipelineLayout == VK_NULL_HANDLE){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR,
             "Can't create a graphics pipeline without a pipeline layout!\n"
         );
     }
 
     if(configInfo._RenderPass == VK_NULL_HANDLE){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR,
             "Can't create a graphics pipeline without a render pass!\n"
         );
     }
@@ -79,7 +79,7 @@ void Pipeline::createGraphicsPipeline(PipelineConfigInfo configInfo){
         nullptr, 
         &_GraphicsPipeline
     );
-    beCore::ErrorHandler::vulkanError(result, "Failed to create graphics pipeline!\n");
+    ErrorHandler::vulkanError(result, "Failed to create graphics pipeline!\n");
 
 }
 
@@ -193,8 +193,8 @@ PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(){
 std::vector<char> GraphicsShader::readShaderFile(const std::string& filepath){
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
     if(!file.is_open()){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::IO_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::IO_ERROR, 
             "Failed to open the file " + filepath + "!\n"
         );
     }
@@ -216,7 +216,7 @@ void GraphicsShader::createModule(const VulkanAppPtr vulkanApp){
 
     VkShaderModule shaderModule;
     VkResult result = vkCreateShaderModule(vulkanApp->getDevice(), &createInfo, nullptr, &shaderModule);
-    beCore::ErrorHandler::vulkanError(result, "Failed to create shader module!\n");
+    ErrorHandler::vulkanError(result, "Failed to create shader module!\n");
 
     _Module = shaderModule;
 }

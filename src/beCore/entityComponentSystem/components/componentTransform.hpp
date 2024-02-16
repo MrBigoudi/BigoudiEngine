@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 
-namespace beCore{
+namespace be{
 
 struct ComponentTransform{
     glm::vec3 _Position = glm::vec3();

@@ -10,7 +10,7 @@
 
 #include "errorHandler.hpp"
 
-namespace beCore{
+namespace be{
 
 class Window;
 using WindowPtr = std::shared_ptr<Window>;

@@ -4,7 +4,7 @@
 #include "frameInfo.hpp"
 #include "pipeline.hpp"
 
-namespace beCore{
+namespace be{
 
 class ECStest;
 using ECStestPtr = std::shared_ptr<ECStest>;

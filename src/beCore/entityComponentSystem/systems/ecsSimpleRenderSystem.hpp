@@ -4,7 +4,7 @@
 #include "frameInfo.hpp"
 #include "pipeline.hpp"
 
-namespace beCore{
+namespace be{
 
 class ECSSimpleRenderSystem;
 using ECSSimpleRenderSystemPtr = std::shared_ptr<ECSSimpleRenderSystem>;

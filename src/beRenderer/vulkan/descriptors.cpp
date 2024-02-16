@@ -5,7 +5,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace beCore{
+namespace be{
 
 
 // *************** Descriptor Set Layout Builder *********************
@@ -18,8 +18,8 @@ DescriptorSetLayout::Builder &DescriptorSetLayout::Builder::addBinding(
     {
     
     if(_Bindings.count(binding) != 0){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR,
             "Binding is already in use!\n"
         );
     }
@@ -60,7 +60,7 @@ DescriptorSetLayout::DescriptorSetLayout(
             &_DescriptorSetLayout
     );
     
-    beCore::ErrorHandler::vulkanError(result, "Failed to create descriptor set layout!\n");
+    ErrorHandler::vulkanError(result, "Failed to create descriptor set layout!\n");
 }
 
 
@@ -106,7 +106,7 @@ DescriptorPool::DescriptorPool(
     descriptorPoolInfo.flags = poolFlags;
 
     VkResult result = vkCreateDescriptorPool(_VulkanApp->getDevice(), &descriptorPoolInfo, nullptr, &_DescriptorPool);
-    beCore::ErrorHandler::vulkanError(result, "Failed to create descriptor pool!\n");
+    ErrorHandler::vulkanError(result, "Failed to create descriptor pool!\n");
 }
 
 
@@ -152,16 +152,16 @@ DescriptorWriter& DescriptorWriter::writeBuffer(
     uint32_t binding, VkDescriptorBufferInfo *bufferInfo) {
     
     if(_SetLayout._Bindings.count(binding) != 1){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR,
             "Layout does not contain specified binding!\n"
         );
     }
 
     auto& bindingDescription = _SetLayout._Bindings[binding];
     if(bindingDescription.descriptorCount != 1){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR,
             "Binding single descriptor info, but binding expects multiple!\n"
         );
     }
@@ -181,16 +181,16 @@ DescriptorWriter& DescriptorWriter::writeImage(
     uint32_t binding, VkDescriptorImageInfo *imageInfo) {
 
     if(_SetLayout._Bindings.count(binding) != 1){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR,
             "Layout does not contain specified binding!\n"
         );
     }
 
     auto& bindingDescription = _SetLayout._Bindings[binding];
     if(bindingDescription.descriptorCount != 1){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR,
             "Binding single descriptor info, but binding expects multiple!\n"
         );
     }

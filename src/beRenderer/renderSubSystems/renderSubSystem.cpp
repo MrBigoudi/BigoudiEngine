@@ -1,6 +1,6 @@
 #include "renderSubSystem.hpp"
 
-namespace beCore{
+namespace be{
 
 
 IRenderSubSystem::IRenderSubSystem(VulkanAppPtr vulkanApp, VkRenderPass renderPass[[maybe_unused]])

@@ -5,7 +5,7 @@
 #include "simpleRenderSubSystem.hpp"
 #include "model.hpp"
 
-namespace beCore{
+namespace be{
 
 void ECSSimpleRenderSystem::renderGameObjects(FrameInfo frameInfo, PipelinePtr pipeline, VkPipelineLayout pipelineLayout){
     pipeline->bind(frameInfo._CommandBuffer);

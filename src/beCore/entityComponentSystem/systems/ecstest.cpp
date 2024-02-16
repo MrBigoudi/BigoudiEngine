@@ -9,7 +9,7 @@
 
 #include "globalFrameRenderSubSystem.hpp"
 
-namespace beCore{
+namespace be{
 
 void ECStest::renderGameObjects(FrameInfo frameInfo, PipelinePtr pipeline, VkPipelineLayout pipelineLayout){
     pipeline->bind(frameInfo._CommandBuffer);

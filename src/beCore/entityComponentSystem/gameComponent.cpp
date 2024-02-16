@@ -1,6 +1,6 @@
 #include "gameComponent.hpp"
 
-namespace beCore{
+namespace be{
 
 GameComponentManagerPtr GameComponentManager::_GameComponentManager = nullptr;
 

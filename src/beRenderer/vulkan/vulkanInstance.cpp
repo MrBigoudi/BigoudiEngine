@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
-namespace beCore{
+namespace be{
 
 VkInstance VulkanInstance::getInstance() const {
     return _Instance;
@@ -63,7 +63,7 @@ void VulkanInstance::init(){
     }
 
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_Instance);
-    beCore::ErrorHandler::vulkanError(result, "Failed to create the vulkan instance!\n");
+    ErrorHandler::vulkanError(result, "Failed to create the vulkan instance!\n");
 }
 
 std::vector<const char*> VulkanInstance::vulkanGetRequiredExtensions(){
@@ -104,7 +104,7 @@ void VulkanInstance::vulkanCheckValidationLayerSupport(const std::vector<VkLayer
             }
         }
         if(!layerFound){
-            beCore::ErrorHandler::handle(beCore::ErrorCode::VULKAN_ERROR, "Not all the validation layers are available!\n");
+            ErrorHandler::handle(ErrorCode::VULKAN_ERROR, "Not all the validation layers are available!\n");
         }
     }
 }
@@ -137,7 +137,7 @@ void VulkanInstance::vulkanSetupDebugMessenger(){
     VkResult result = vulkanCreateDebugUtilsMessengerEXT(
                 _Instance, &createInfo, nullptr, &_DebugMessenger
                         );
-    beCore::ErrorHandler::vulkanError(result, "Failed to set up debug messenger!\n");
+    ErrorHandler::vulkanError(result, "Failed to set up debug messenger!\n");
     fprintf(stdout, "Debug messenger set up properly!\n");
 }
 
@@ -180,8 +180,8 @@ void VulkanInstance::vulkanCheckGlfwExtensions(
             }
         }
         if(!found){
-            beCore::ErrorHandler::handle(
-                beCore::ErrorCode::GLFW_ERROR, 
+            ErrorHandler::handle(
+                ErrorCode::GLFW_ERROR, 
                 "GLFW extension: " + std::string(glfwExtension) + " is not supported!\n",
                 ErrorLevel::WARNING
             );

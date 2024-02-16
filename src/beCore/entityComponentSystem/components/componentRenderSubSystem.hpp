@@ -2,7 +2,7 @@
 
 #include "renderSubSystem.hpp"
 
-namespace beCore{
+namespace be{
 
 struct ComponentRenderSubSystem{
     IRenderSubSystemPtr _RenderSubSystem = nullptr;

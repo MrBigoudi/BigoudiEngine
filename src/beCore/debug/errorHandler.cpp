@@ -1,6 +1,6 @@
 #include "errorHandler.hpp"
 
-namespace beCore{
+namespace be{
 
 /**
  * Default error handler

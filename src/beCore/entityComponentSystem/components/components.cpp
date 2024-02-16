@@ -2,7 +2,7 @@
 
 #include "gameCoordinator.hpp"
 
-namespace beCore{
+namespace be{
 
 void Components::registerComponents(){
     GameCoordinator::registerComponent<ComponentModel>();

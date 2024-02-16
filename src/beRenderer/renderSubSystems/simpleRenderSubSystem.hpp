@@ -11,7 +11,7 @@
 #include "ecsSimpleRenderSystem.hpp"
 #include "swapChain.hpp"
 
-namespace beCore{
+namespace be{
 
 struct SimplePushConstantData{
     alignas(4) float _Random;

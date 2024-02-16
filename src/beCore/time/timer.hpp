@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace beCore{
+namespace be{
 
 /**
  * Forward declaration for the Timer class

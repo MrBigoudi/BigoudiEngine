@@ -15,7 +15,7 @@
 
 #include "buffer.hpp"
 
-namespace beCore{
+namespace be{
 
 class Model;
 using ModelPtr = std::shared_ptr<Model>;

@@ -8,7 +8,7 @@
 #include "window.hpp"
 #include "vulkanApp.hpp"
 
-namespace beCore{
+namespace be{
 
 class IApplication{
 

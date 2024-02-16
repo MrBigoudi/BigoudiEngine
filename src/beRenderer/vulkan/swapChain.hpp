@@ -6,7 +6,7 @@
 
 #include "vulkanApp.hpp"
 
-namespace beCore{
+namespace be{
 
 
 class SwapChain;

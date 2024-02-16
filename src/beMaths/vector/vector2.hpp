@@ -5,7 +5,7 @@
 #include <array>
 #include <string>
 
-namespace beMaths{
+namespace be{
 
 /**
  * A class representing a 2d vector of floating points 

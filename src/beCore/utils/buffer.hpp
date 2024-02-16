@@ -5,7 +5,7 @@
 
 #include "vulkanApp.hpp"
 
-namespace beCore{
+namespace be{
 
 class Buffer;
 using BufferPtr = std::shared_ptr<Buffer>;

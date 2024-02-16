@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace beCore{
+namespace be{
 
 
 class GameCoordinator{

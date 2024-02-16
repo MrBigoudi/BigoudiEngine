@@ -13,7 +13,7 @@
 
 #include "descriptors.hpp"
 
-namespace beCore{
+namespace be{
 
 struct GlobalFramePushConstantData{
     glm::mat4 _Model;

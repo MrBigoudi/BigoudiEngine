@@ -1,6 +1,6 @@
 #pragma once
 
-namespace beMaths{
+namespace be{
 
 
 // VECTORS

@@ -17,7 +17,7 @@
 #include "errorHandler.hpp"
 #include "vulkanApp.hpp"
 
-namespace beCore{
+namespace be{
 
 class Renderer;
 using RendererPtr = std::shared_ptr<Renderer>;
@@ -55,8 +55,8 @@ class Renderer{
 
         VkCommandBuffer getCurrentCommandBuffer() const {
             if(!_IsFrameStarted){
-                beCore::ErrorHandler::handle(
-                    beCore::ErrorCode::NOT_INITIALIZED_ERROR, 
+                ErrorHandler::handle(
+                    ErrorCode::NOT_INITIALIZED_ERROR, 
                     "Can't get command buffer when frame not in progress!\n"
                 );
             }
@@ -73,8 +73,8 @@ class Renderer{
 
         uint32_t getFrameIndex() const {
             if(!_IsFrameStarted){
-                beCore::ErrorHandler::handle(
-                    beCore::ErrorCode::NOT_INITIALIZED_ERROR, 
+                ErrorHandler::handle(
+                    ErrorCode::NOT_INITIALIZED_ERROR, 
                     "Can't get current frame index when frame not in progress!\n"
                 );
             }

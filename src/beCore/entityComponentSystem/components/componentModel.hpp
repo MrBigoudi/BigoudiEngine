@@ -2,7 +2,7 @@
 
 #include "model.hpp"
 
-namespace beCore{
+namespace be{
 
 struct ComponentModel{
     ModelPtr _Model = nullptr;

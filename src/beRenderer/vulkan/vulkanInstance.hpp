@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace beCore{
+namespace be{
 
 
 class VulkanInstance;

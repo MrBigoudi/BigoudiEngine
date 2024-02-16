@@ -12,7 +12,7 @@
 #include "vulkanInstance.hpp"
 #include "window.hpp"
 
-namespace beCore{
+namespace be{
 
 class VulkanApp;
 using VulkanAppPtr = std::shared_ptr<VulkanApp>;

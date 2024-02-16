@@ -5,7 +5,7 @@
 
 #include "beCore.hpp"
 
-namespace beMaths{
+namespace be{
 
 /**
  * An empty constructor
@@ -121,10 +121,10 @@ const std::string Matrix3x3::toString() const{
 */
 std::array<float, 3> Matrix3x3::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR, 
             "Index " + std::to_string(index) + " out of range for Matrix3x3!\n",
-            beCore::ErrorLevel::WARNING
+            ErrorLevel::WARNING
         );
     }
     return _Values[index];
@@ -137,10 +137,10 @@ std::array<float, 3> Matrix3x3::operator[](int index) const{
 */
 std::array<float, 3>& Matrix3x3::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR, 
             "Index " + std::to_string(index) + " out of range for Matrix3x3!\n",
-            beCore::ErrorLevel::WARNING
+            ErrorLevel::WARNING
         );
     }
     return _Values[index];
@@ -218,10 +218,10 @@ void Matrix3x3::operator*=(float scalar){
 */
 void Matrix3x3::operator/=(float scalar){
     if(scalar == 0.f){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::ZERO_DIVIDE_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::ZERO_DIVIDE_ERROR, 
             "Cannot divide by 0!\n",
-            beCore::ErrorLevel::WARNING
+            ErrorLevel::WARNING
         );
         return;
     }

@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-namespace beCore{
+namespace be{
 
 template <typename T, typename... Rest>
 void hashCombine(std::size_t& seed, const T& v, const Rest&... rest) {

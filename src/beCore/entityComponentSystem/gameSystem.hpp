@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace beCore{
+namespace be{
 
 class GameCoordinator;
 class GameSystem;

@@ -2,7 +2,7 @@
 #include "errorHandler.hpp"
 #include <string>
 
-namespace beCore{
+namespace be{
 
 GameObjectManagerPtr GameObjectManager::_GameObjectManager = nullptr;
 

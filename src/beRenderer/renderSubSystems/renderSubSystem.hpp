@@ -4,7 +4,7 @@
 #include "pipeline.hpp"
 #include "vulkanApp.hpp"
 
-namespace beCore{
+namespace be{
 
 class IRenderSubSystem;
 using IRenderSubSystemPtr = std::shared_ptr<IRenderSubSystem>;

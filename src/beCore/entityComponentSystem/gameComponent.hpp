@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <string>
 
-namespace beCore{
+namespace be{
 
 class GameCoordinator;
 class GameComponentManager;

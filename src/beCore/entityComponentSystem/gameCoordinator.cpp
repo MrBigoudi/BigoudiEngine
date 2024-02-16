@@ -4,7 +4,7 @@
 #include "gameObject.hpp"
 #include "gameSystem.hpp"
         
-namespace beCore{
+namespace be{
 
 // game object manager methods
 GameObject GameCoordinator::createObject(){

@@ -5,7 +5,7 @@
 
 #include "mathsTypes.hpp"
 
-namespace beMaths{
+namespace be{
 
 /**
  * A class representing a 2x3 floating point matrix

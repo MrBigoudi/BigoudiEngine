@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.hpp>
 
-namespace beCore{
+namespace be{
 
 /**
  * @enum The level of the error

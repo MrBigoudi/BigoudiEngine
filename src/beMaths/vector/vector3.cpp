@@ -6,7 +6,7 @@
 #include "beCore.hpp"
 #include <cmath>
 
-namespace beMaths{
+namespace be{
 
 /**
  * An empty constructor
@@ -163,10 +163,10 @@ void Vector3::b(float b){
 */
 float Vector3::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR, 
             "Index " + std::to_string(index) + " out of range for Vector3!\n",
-            beCore::ErrorLevel::WARNING
+            ErrorLevel::WARNING
         );
     }
     return _Values[index];
@@ -179,10 +179,10 @@ float Vector3::operator[](int index) const{
 */
 float& Vector3::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::BAD_VALUE_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR, 
             "Index " + std::to_string(index) + " out of range for Vector3!\n",
-            beCore::ErrorLevel::WARNING
+            ErrorLevel::WARNING
         );
     }
     return _Values[index];
@@ -250,10 +250,10 @@ void Vector3::operator*=(float scalar){
 */
 void Vector3::operator/=(float scalar){
     if(scalar == 0.f){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::ZERO_DIVIDE_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::ZERO_DIVIDE_ERROR, 
             "Cannot divide by 0!\n",
-            beCore::ErrorLevel::WARNING
+            ErrorLevel::WARNING
         );
         return;
     }
@@ -360,7 +360,7 @@ float Vector3::getNorm() const{
 Vector3 Vector3::normalize(const Vector3& vector){
     float norm = vector.getNorm();
     if(norm == 0.f){
-        beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE_ERROR);
+        ErrorHandler::handle(ErrorCode::ZERO_DIVIDE_ERROR);
         return Vector3();
     }
     return Vector3(vector.x() / norm, vector.y() / norm, vector.z() / norm);
@@ -372,7 +372,7 @@ Vector3 Vector3::normalize(const Vector3& vector){
 void Vector3::normalize(){
     float norm = getNorm();
     if(norm == 0.f){
-        beCore::ErrorHandler::handle(beCore::ErrorCode::ZERO_DIVIDE_ERROR);
+        ErrorHandler::handle(ErrorCode::ZERO_DIVIDE_ERROR);
         return;
     }
     x(x() / norm);

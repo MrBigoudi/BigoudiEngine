@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <vulkan/vulkan_core.h>
 
-namespace beCore{
+namespace be{
 
 SimpleRenderSubSystem::SimpleRenderSubSystem(VulkanAppPtr vulkanApp, VkRenderPass renderPass, DescriptorPoolPtr globalPool)
     : IRenderSubSystem(vulkanApp, renderPass), _GlobalPool(globalPool){
@@ -65,8 +65,8 @@ void SimpleRenderSubSystem::renderGameObjects(FrameInfo& frameInfo){
 
 void SimpleRenderSubSystem::initPipelineLayout(){
     if(_VulkanApp == nullptr){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR, 
             "Can't create a pipeline layout without a vulkan app!\n"
         );
     }
@@ -96,7 +96,7 @@ void SimpleRenderSubSystem::initPipelineLayout(){
         nullptr, 
         &_PipelineLayout
     );
-    beCore::ErrorHandler::vulkanError(result, "Failed to create pipeline layout!\n");
+    ErrorHandler::vulkanError(result, "Failed to create pipeline layout!\n");
 }
 
 void SimpleRenderSubSystem::initPipeline(VkRenderPass renderPass){
@@ -105,15 +105,15 @@ void SimpleRenderSubSystem::initPipeline(VkRenderPass renderPass){
     }
 
     if(_VulkanApp == nullptr){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR, 
             "Can't create a pipeline without a vulkan app!\n"
         );
     }
 
     if(_PipelineLayout == nullptr){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR, 
             "Can't create a pipeline without a pipeline layout!\n"
         );
     }
@@ -138,8 +138,8 @@ void SimpleRenderSubSystem::cleanUpPipelineLayout(){
 void SimpleRenderSubSystem::initECSRender(){
     _ECSRenderSystem = GameCoordinator::registerSystem<ECSSimpleRenderSystem>();
     if(_ECSRenderSystem == nullptr){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR,
             "Failed to initialize the ECS render system!\n"
         );
     }

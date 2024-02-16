@@ -4,7 +4,7 @@
 #include "componentTransform.hpp"
 #include "componentRenderSubSystem.hpp"
 
-namespace beCore{
+namespace be{
 
 class Components{
 

@@ -18,15 +18,15 @@
 #include "beDep.hpp"
 
 template<>
-struct std::hash<beCore::VertexData>{
-    size_t operator()(const beCore::VertexData& vert) const {
+struct std::hash<be::VertexData>{
+    size_t operator()(const be::VertexData& vert) const {
         size_t seed = 0;
-        beCore::hashCombine(seed, vert._Pos, vert._Col, vert._Norm, vert._Tex);
+        be::hashCombine(seed, vert._Pos, vert._Col, vert._Norm, vert._Tex);
         return seed;
     }
 };
 
-namespace beCore{
+namespace be{
 
 void Model::createVertexBuffer(const std::vector<VertexData>& vertices){
     _VertexCount = static_cast<uint32_t>(vertices.size());

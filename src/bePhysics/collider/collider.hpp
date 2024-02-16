@@ -1,6 +1,6 @@
 #pragma once
 
-namespace bePhysics{
+namespace be{
 
 /**
  * A class representing a collider

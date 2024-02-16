@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vulkan/vulkan.hpp>
 
-namespace beCore{
+namespace be{
 
 struct FrameInfo{
     uint32_t _FrameIndex = 0;

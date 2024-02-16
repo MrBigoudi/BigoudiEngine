@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-namespace beCore{
+namespace be{
 
 void GlobalFrameRenderSubSystem::renderGameObjects(FrameInfo& frameInfo){
     uint32_t frameIndex = frameInfo._FrameIndex;
@@ -32,8 +32,8 @@ void GlobalFrameRenderSubSystem::renderGameObjects(FrameInfo& frameInfo){
 
 void GlobalFrameRenderSubSystem::initPipelineLayout(){
     if(_VulkanApp == nullptr){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR, 
             "Can't create a pipeline layout without a vulkan app!\n"
         );
     }
@@ -62,7 +62,7 @@ void GlobalFrameRenderSubSystem::initPipelineLayout(){
         nullptr, 
         &_PipelineLayout
     );
-    beCore::ErrorHandler::vulkanError(result, "Failed to create pipeline layout!\n");
+    ErrorHandler::vulkanError(result, "Failed to create pipeline layout!\n");
 }
 
 void GlobalFrameRenderSubSystem::initPipeline(VkRenderPass renderPass){
@@ -71,15 +71,15 @@ void GlobalFrameRenderSubSystem::initPipeline(VkRenderPass renderPass){
     }
 
     if(_VulkanApp == nullptr){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR, 
             "Can't create a pipeline without a vulkan app!\n"
         );
     }
 
     if(_PipelineLayout == nullptr){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR, 
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR, 
             "Can't create a pipeline without a pipeline layout!\n"
         );
     }
@@ -134,8 +134,8 @@ void GlobalFrameRenderSubSystem::initDescriptors(){
 void GlobalFrameRenderSubSystem::initECSRender(){
     _ECSRenderSystem = GameCoordinator::registerSystem<ECStest>();
     if(_ECSRenderSystem == nullptr){
-        beCore::ErrorHandler::handle(
-            beCore::ErrorCode::NOT_INITIALIZED_ERROR,
+        ErrorHandler::handle(
+            ErrorCode::NOT_INITIALIZED_ERROR,
             "Failed to initialize the ECS render system!\n"
         );
     }

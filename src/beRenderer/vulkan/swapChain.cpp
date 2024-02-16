@@ -3,7 +3,7 @@
 #include "vulkanApp.hpp"
 #include <cstdint>
 
-namespace beCore{
+namespace be{
 
 
 void SwapChain::init(){
@@ -107,7 +107,7 @@ VkResult SwapChain::submitCommandBuffers(
         &submitInfo, 
         _InFlightFences[_CurrentFrame]
     );
-    beCore::ErrorHandler::vulkanError(result, "Failed to submit draw command buffer!\n");
+    ErrorHandler::vulkanError(result, "Failed to submit draw command buffer!\n");
 
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -178,7 +178,7 @@ void SwapChain::createSwapChain() {
     ;
 
     VkResult result = vkCreateSwapchainKHR(_VulkanApp->getDevice(), &createInfo, nullptr, &_SwapChain);
-    beCore::ErrorHandler::vulkanError(result, "Failed to create swap chain!\n");
+    ErrorHandler::vulkanError(result, "Failed to create swap chain!\n");
 
     vkGetSwapchainImagesKHR(_VulkanApp->getDevice(), _SwapChain, &imageCount, nullptr);
     _SwapChainImages.resize(imageCount);
@@ -203,7 +203,7 @@ void SwapChain::createImageViews() {
         viewInfo.subresourceRange.layerCount = 1;
 
         VkResult result = vkCreateImageView(_VulkanApp->getDevice(), &viewInfo, nullptr, &_SwapChainImageViews[i]);
-        beCore::ErrorHandler::vulkanError(result, "Failed to create texture image view!\n");
+        ErrorHandler::vulkanError(result, "Failed to create texture image view!\n");
     }
 }
 
@@ -264,7 +264,7 @@ void SwapChain::createRenderPass() {
     renderPassInfo.pDependencies = &dependency;
 
     VkResult result = vkCreateRenderPass(_VulkanApp->getDevice(), &renderPassInfo, nullptr, &_RenderPass);
-    beCore::ErrorHandler::vulkanError(result, "Failed to create render pass!\n");
+    ErrorHandler::vulkanError(result, "Failed to create render pass!\n");
 }
 
 void SwapChain::createFramebuffers() {
@@ -292,7 +292,7 @@ void SwapChain::createFramebuffers() {
                 nullptr,
                 &_SwapChainFramebuffers[i]
         );
-        beCore::ErrorHandler::vulkanError(result, "Failed to create framebuffer!\n");
+        ErrorHandler::vulkanError(result, "Failed to create framebuffer!\n");
     }
 }
 
@@ -347,7 +347,7 @@ void SwapChain::createDepthResources() {
             nullptr, 
             &_DepthImageViews[i]
         );
-        beCore::ErrorHandler::vulkanError(result, "Failed to create texture image view!\n");
+        ErrorHandler::vulkanError(result, "Failed to create texture image view!\n");
     }
 }
 
@@ -372,7 +372,7 @@ void SwapChain::createSyncObjects() {
                     nullptr, 
                     &_ImageAvailableSemaphores[i]
         );
-        beCore::ErrorHandler::vulkanError(result, "Failed to create `image available` semaphore!\n");
+        ErrorHandler::vulkanError(result, "Failed to create `image available` semaphore!\n");
 
         result = vkCreateSemaphore(
                     _VulkanApp->getDevice(), 
@@ -380,7 +380,7 @@ void SwapChain::createSyncObjects() {
                     nullptr, 
                     &_RenderFinishedSemaphores[i]
         );
-        beCore::ErrorHandler::vulkanError(result, "Failed to create `render finished` semaphore!\n");
+        ErrorHandler::vulkanError(result, "Failed to create `render finished` semaphore!\n");
          
         result = vkCreateFence(
             _VulkanApp->getDevice(), 
@@ -388,7 +388,7 @@ void SwapChain::createSyncObjects() {
             nullptr, 
             &_InFlightFences[i]
         );
-        beCore::ErrorHandler::vulkanError(result, "Failed to create `in flight` fence!\n");
+        ErrorHandler::vulkanError(result, "Failed to create `in flight` fence!\n");
     }
 }
 

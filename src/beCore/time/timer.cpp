@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <chrono>
 
-namespace beCore{
+namespace be{
 
 /**
  * A basic constructor

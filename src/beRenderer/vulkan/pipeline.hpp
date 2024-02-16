@@ -10,7 +10,7 @@
 #include "errorHandler.hpp"
 #include "vulkanApp.hpp"
 
-namespace beCore{
+namespace be{
 
 class Pipeline;
 class GraphicsShader;
@@ -89,7 +89,7 @@ class GraphicsShader{
                     shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
                     break;
                 default:
-                    beCore::ErrorHandler::handle(beCore::ErrorCode::UNKNOWN_VALUE_ERROR, "Unkown shader stage!\n");
+                    ErrorHandler::handle(ErrorCode::UNKNOWN_VALUE_ERROR, "Unkown shader stage!\n");
                     break;
             }
             return shaderStageInfo;

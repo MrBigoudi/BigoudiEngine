@@ -7,7 +7,7 @@
 #include <queue>
 #include <array>
 
-namespace beCore{
+namespace be{
 
 class GameCoordinator;
 

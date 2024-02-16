@@ -8,7 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-namespace beCore{
+namespace be{
 
 class Camera;
 using CameraPtr = std::shared_ptr<Camera>;

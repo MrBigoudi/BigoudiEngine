@@ -1,6 +1,6 @@
 #include "gameSystem.hpp"
 
-namespace beCore{
+namespace be{
 
 GameSystemManagerPtr GameSystemManager::_GameSystemManager = nullptr;
 
