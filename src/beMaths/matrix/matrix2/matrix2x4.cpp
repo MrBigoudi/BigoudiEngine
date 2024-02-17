@@ -90,6 +90,7 @@ const std::string Matrix2x4::toString() const{
         }
         str += "}";
     }
+    str += "\n}";
     return str;
 }
 

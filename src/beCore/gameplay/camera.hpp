@@ -2,18 +2,24 @@
 
 
 #include "matrix4x4.hpp"
-#include "projections.hpp"
-#include "trigonometry.hpp"
 #include "vector3.hpp"
 #include <memory>
 
-#include <cmath>
-
 namespace be{
 
+/**
+ * Forward declaration of the camera class
+*/
 class Camera;
+
+/**
+ * Smart pointer to a camera
+*/
 using CameraPtr = std::shared_ptr<Camera>;
 
+/**
+ * @enum All the possible camera movements
+*/
 enum CameraMovement {
     FORWARD,
     BACKWARD,
@@ -23,130 +29,156 @@ enum CameraMovement {
     DOWN
 };
 
+/**
+ * A class representing a camera
+*/
 class Camera{
     private:
-        // camera Attributes
+        /**
+         * The camera's position
+        */
         Vector3 _Eye{};
+
+        /**
+         * The camera's target
+        */
         Vector3 _At{};
+
+        /**
+         * The world up vector
+        */
         Vector3 _WorldUp{};
 
+        /**
+         * The camera's frame up vector
+        */
         Vector3 _Up{};
+
+        /**
+         * The camera's frame right vector
+        */
         Vector3 _Right{};
 
+
+        /**
+         * The camera's field of view
+        */
         float _Fov = 0.f;
+
+        /**
+         * The camera's aspect ratio
+        */
         float _AspectRatio = 0.f;
+
+        /**
+         * The camera's near plane
+        */
         float _Near = 0.f;
+
+        /**
+         * The camera's far plane
+        */
         float _Far = 0.f;
 
+
+        /**
+         * The camera's movement speed
+        */
         float _MovementSpeed = 3.f;
+
+        /**
+         * The camera's mouse sensitivity for panning movement
+        */
         float _MouseSensitivity = 0.1f;
 
+        /**
+         * The camera's yaw angle (in degrees)
+        */
         float _Yaw = -90.f;
+
+        /**
+         * The camera's pitch angle (in degrees)
+        */
         float _Pitch = 0.f;
 
+        /**
+         * The ellapsed time since last frame
+        */
         float _Dt = 0.f;
-    
-    public:
-        bool _Accelerate = false;
 
     public:
-        // constructor with vectors
+        /**
+         * A basic constructor
+         * @param position The camera's position
+         * @param aspectRatio The camera's aspect ratio
+         * @param fov The camera's field of view
+         * @param near The camera's near plane
+         * @param far The camera's far plane
+         * @param worldUp The global frame up vector
+        */
         Camera(
             const Vector3& position,
             float aspectRatio = 1.f,
             float fov = 50.f,
             float near = 0.1f,
             float far = 10.f,
-            const Vector3& worldUp = {0.f, -1.f, 0.f}
-        ){
-            _AspectRatio = aspectRatio;
-            _Fov = fov;
-            _Near = near;
-            _Far = far;
-            _WorldUp = worldUp;
-            _Eye = position;
-            updateCameraVectors();
-        }
+            const Vector3& worldUp = {0.f, -1.f, 0.f});
 
-        void setDt(float dt){_Dt = dt;}
+        /**
+         * Set the camera's delta time
+         * @param dt The current delta time
+        */
+        void setDt(float dt);
 
-        Vector3 getAt() const {
-            return _At;
-        }
+        /**
+         * Getter for the target position
+         * @return The target position as a vector
+        */
+        Vector3 getAt() const;
 
-        Vector3 getPosition() const {
-            return _Eye;
-        }
+        /**
+         * Getter for the camera position
+         * @return The camera position as a vector
+        */
+        Vector3 getPosition() const;
 
-        Matrix4x4 getView() const {
-            return  lookAt(_Eye, _Eye + _At, _Up);
-        }
+        /**
+         * Build the camera's view matrix
+         * @return The 4x4 view matrix
+        */
+        Matrix4x4 getView() const;
         
-        Matrix4x4 getPerspective() const {
-            return perspective(radians(_Fov), _AspectRatio, _Near, _Far);
-        }
+        /**
+         * Build the camera's perspective projection matrix
+         * @return The 4x4 projection matrix
+        */
+        Matrix4x4 getPerspective() const;
 
-        virtual void processKeyboard(CameraMovement direction){
-            float velocity = _MovementSpeed * _Dt;
-            if(_Accelerate) velocity *= 5.f;
+        /**
+         * Handle camera's movement
+         * @param direction The direction where to move the camera
+        */
+        virtual void processKeyboard(CameraMovement direction);
 
-            switch(direction){
-                case FORWARD:
-                    _Eye += _At * velocity;
-                    break;
-                case BACKWARD:
-                    _Eye -= _At * velocity;
-                    break;
-                case LEFT:
-                    _Eye -= _Right * velocity;
-                    break;
-                case RIGHT:
-                    _Eye += _Right * velocity;
-                    break;
-                case UP:
-                    _Eye -= _WorldUp * velocity;
-                    break;
-                case DOWN:
-                    _Eye += _WorldUp * velocity;
-                    break;
-            }
-        }
+        /**
+         * Handle camera's panning
+         * @param xoffset The movement in the x direction
+         * @param yoffset The movement in the y direction
+         * @param constrainPitch Boolean to activate or deactivate the pitch rotation constrain that can leads to weird effect
+        */
+        virtual void processMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
 
-        virtual void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true){
-            xoffset *= _MouseSensitivity;
-            yoffset *= _MouseSensitivity;
-
-            _Yaw   += xoffset;
-            _Pitch += yoffset;
-
-            // make sure that when pitch is out of bounds, screen doesn't get flipped
-            if (constrainPitch){
-                if (_Pitch > 89.0f)
-                    _Pitch = 89.0f;
-                if (_Pitch < -89.0f)
-                    _Pitch = -89.0f;
-            }
-
-            // update Front, Right and Up Vectors using the updated Euler angles
-            updateCameraVectors();
-        }
-
-        void setAspectRatio(float aspectRatio){
-            _AspectRatio = aspectRatio;
-        }
+        /**
+         * A setter for the aspect ratio
+         * @param aspectRatio The new aspect ratio
+        */
+        void setAspectRatio(float aspectRatio);
 
     private:
-        void updateCameraVectors(){
-            // calculate the new at vector
-            Vector3 front{};
-            front.x(cos(radians(_Yaw)) * cos(radians(_Pitch)));
-            front.y(sin(radians(_Pitch)));
-            front.z(sin(radians(_Yaw)) * cos(radians(_Pitch)));
-            _At = Vector3::normalize(front);
-            // also re-calculate the Right and Up vector
-            _Right = Vector3::normalize(Vector3::cross(_At, _WorldUp));
-            _Up    = Vector3::normalize(Vector3::cross(_Right, _At));
-        }
+        /**
+         * Update camera's frame
+        */
+        void updateCameraVectors();
 };
 
 };

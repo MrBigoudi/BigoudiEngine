@@ -91,6 +91,7 @@ const std::string Matrix2x3::toString() const{
         }
         str += "}";
     }
+    str += "\n}";
     return str;
 }
 

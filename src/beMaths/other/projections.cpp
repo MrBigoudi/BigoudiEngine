@@ -19,26 +19,26 @@ Matrix4x4 lookAt(
     const Vector3& at, 
     const Vector3& up
 ){
-    Vector3 baseFront = Vector3::normalize(position - at);
-    Vector3 baseRight = Vector3::normalize(Vector3::cross(up, baseFront));
-    Vector3 baseUp = Vector3::cross(baseFront, baseRight);
+    Vector3 baseBack = Vector3::normalize(position - at);
+    Vector3 baseRight = Vector3::normalize(Vector3::cross(up, baseBack));
+    Vector3 baseUp = Vector3::cross(baseBack, baseRight);
 
     Matrix4x4 newMat = Matrix4x4::identity();
-    newMat[0][0] = baseRight.x();
+    newMat[0][0] = -baseRight.x();
     newMat[1][0] = baseRight.y();
     newMat[2][0] = baseRight.z();
 
-    newMat[0][1] = baseUp.x();
+    newMat[0][1] = -baseUp.x();
     newMat[1][1] = baseUp.y();
     newMat[2][1] = baseUp.z();
 
-    newMat[0][2] = baseFront.x();
-    newMat[1][2] = baseFront.y();
-    newMat[2][2] = baseFront.z();
+    newMat[0][2] = -baseBack.x();
+    newMat[1][2] = baseBack.y();
+    newMat[2][2] = baseBack.z();
 
     newMat[3][0] = Vector3::dot(-baseRight, position);
     newMat[3][1] = Vector3::dot(-baseUp, position);
-    newMat[3][2] = Vector3::dot(-baseFront, position);
+    newMat[3][2] = Vector3::dot(-baseBack, position);
 
     return newMat;
 }
@@ -81,9 +81,9 @@ Matrix4x4 perspective(
     Matrix4x4 newMat = Matrix4x4::zeros();
     newMat[0][0] = cot / aspectRatio;
     newMat[1][1] = cot;
-    newMat[2][2] = far / (near - far);
+    newMat[2][2] = -(far+near) / (far - near);
     newMat[2][3] = -1.f;
-    newMat[3][2] = -(far * near) / (far - near);
+    newMat[3][2] = -2.f * (far * near) / (far - near);
 
     return newMat;
 }

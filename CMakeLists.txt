@@ -6,9 +6,10 @@ project(BigoudiEngine)
 add_library(BigoudiEngine STATIC ${BE_SOURCE_FILES})
 
 # pass the variable to the source code as a preprocessor definition
-add_compile_definitions(PROJECT_NAME="${PROJECT_NAME}")
-add_compile_definitions(PROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR})
-add_compile_definitions(PROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR})
+add_compile_definitions(ENGINE_NAME="${PROJECT_NAME}")
+add_compile_definitions(ENGINE_VERSION_MAJOR=${PROJECT_VERSION_MAJOR})
+add_compile_definitions(ENGINE_VERSION_MINOR=${PROJECT_VERSION_MINOR})
+add_compile_definitions(ENGINE_DIRECTORY_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
 
 # create compile command
 set(CMAKE_CXX_STANDARD 20)
@@ -41,3 +42,14 @@ target_compile_options(BigoudiEngine_cflags INTERFACE
 
 # set the cpp standards
 target_link_libraries(BigoudiEngine PRIVATE glfw Vulkan::Vulkan BigoudiEngine_cflags)
+
+# compile shaders
+add_custom_target(
+    BigoudiEngine_compile_shaders
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/compileShaders.sh
+    COMMENT "Compiling engine default shaders..."
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM
+)
+
+add_dependencies(BigoudiEngine BigoudiEngine_compile_shaders)

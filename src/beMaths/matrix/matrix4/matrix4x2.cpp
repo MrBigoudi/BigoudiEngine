@@ -94,6 +94,7 @@ const std::string Matrix4x2::toString() const{
         }
         str += "}";
     }
+    str += "\n}";
     return str;
 }
 

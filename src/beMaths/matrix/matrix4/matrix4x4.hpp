@@ -178,9 +178,10 @@ class Matrix4x4{
 
         /**
          * Transpose the current matrix
+         * @param matrix The matrix to transpose
          * @return The transposed matrix
         */
-        Matrix4x4 transpose(void) const;
+        static Matrix4x4 transpose(const Matrix4x4& matrix);
 };
 
 }
