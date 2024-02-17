@@ -11,6 +11,11 @@
 
 namespace be{
 
+const std::string GraphicsShader::SHADER_DIR = 
+            std::string(ENGINE_DIRECTORY_PATH) 
+            + std::string("/shaders/compiled/")
+        ;
+
 
 void Pipeline::createGraphicsPipeline(PipelineConfigInfo configInfo){
     if(!_VertexShader->exists() || !_FragmentShader->exists()){

@@ -16,7 +16,7 @@ void RenderSystem::renderGameObjects(
         VK_PIPELINE_BIND_POINT_GRAPHICS,
         pipelineLayout,
         0,
-        2,
+        static_cast<uint32_t>(descriptorSets.size()),
         descriptorSets.data(),
         0,
         nullptr

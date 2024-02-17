@@ -51,6 +51,9 @@ class GraphicsShader{
         GraphicsShaderStage _Stage;
 
     public:
+        static const std::string SHADER_DIR;
+
+    public:
         GraphicsShader(GraphicsShaderStage stage, const std::string& path = ""){
             _Stage = stage;
             if(path != "")
@@ -64,6 +67,7 @@ class GraphicsShader{
         void createModule(const VulkanAppPtr vulkanApp);
         
         bool exists(){return _Code.has_value();}
+
         VkPipelineShaderStageCreateInfo getShaderStageCreateInfo(){
             VkPipelineShaderStageCreateInfo shaderStageInfo{};
             shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -121,6 +125,40 @@ class Pipeline{
     public:
         Pipeline(VulkanAppPtr vulkanApp) : _VulkanApp(vulkanApp){
         };
+
+        /**
+         * Initiate basic passthrough shaders 
+         * @note Shaders return the interpolated input colors as outputs 
+         * @see shaders/passThroughColor.vert
+         * @see shaders/passThrough.frag
+        */
+        void initColorPassThroughShaders(){
+            initVertexShader(
+                GraphicsShader::SHADER_DIR
+                + std::string("passThroughColor.vert.spv")
+            );
+            initFragmentShader(
+                GraphicsShader::SHADER_DIR
+                + std::string("passThrough.frag.spv")
+            );
+        }
+
+        /**
+         * Initiate basic passthrough shaders 
+         * @note Shaders return the interpolated input normals as outputs 
+         * @see shaders/passThroughColor.vert
+         * @see shaders/passThrough.frag
+        */
+        void initNormalPassThroughShaders(){
+            initVertexShader(
+                GraphicsShader::SHADER_DIR
+                + std::string("passThroughNormal.vert.spv")
+            );
+            initFragmentShader(
+                GraphicsShader::SHADER_DIR
+                + std::string("passThrough.frag.spv")
+            );
+        }
         
         void initVertexShader(const std::string& vert){
             _VertexShader = GraphicsShaderPtr(
