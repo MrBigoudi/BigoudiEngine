@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "trigonometry.hpp"
 #include "vector3.hpp"
 #include "vulkanApp.hpp"
 
@@ -251,6 +252,231 @@ void VertexDataBuilder::loadOffModel(const std::string& filePath){
     }
 
     file.close();
+}
+
+
+VertexDataBuilder VertexDataBuilder::primitiveTriangle(
+    const Vector3& v0,
+    const Vector3& v1,
+    const Vector3& v2,
+    const Vector4& c){
+    VertexDataBuilder builder{};
+    builder._Vertices = {
+        {._Pos = v0, ._Col = c},
+        {._Pos = v1, ._Col = c},
+        {._Pos = v2, ._Col = c},
+    };
+    builder._Indices = {0,1,2};
+    return builder;
+}
+
+VertexDataBuilder VertexDataBuilder::primitiveRectangle(
+    float height,
+    float width,
+    const Vector4& c){
+    Vector3 v0{-width/2.f, -height/2.f, 0.f};
+    Vector3 v1{width/2.f, -height/2.f, 0.f};
+    Vector3 v2{-width/2.f, height/2.f, 0.f};
+    Vector3 v3{width/2.f, height/2.f, 0.f};
+    VertexDataBuilder builder{};
+    builder._Vertices = {
+        {._Pos = v0, ._Col = c},
+        {._Pos = v1, ._Col = c},
+        {._Pos = v2, ._Col = c},
+        {._Pos = v3, ._Col = c},
+    };
+    builder._Indices = {
+        0,1,2,
+        2,1,3
+    };
+    return builder;
+}
+
+
+VertexDataBuilder VertexDataBuilder::primitiveCube(
+    float length,
+    const Vector4& c){
+    float hl = length / 2.f;
+    VertexDataBuilder builder{};
+    builder._Vertices = {
+        {._Pos = {-hl, -hl, hl}, ._Col = c},
+        {._Pos = {hl, -hl, hl}, ._Col = c},
+        {._Pos = {-hl, hl, hl}, ._Col = c},
+        {._Pos = {hl, hl, hl}, ._Col = c},
+
+        {._Pos = {-hl, -hl, -hl}, ._Col = c},
+        {._Pos = {hl, -hl, -hl}, ._Col = c},
+        {._Pos = {-hl, hl, -hl}, ._Col = c},
+        {._Pos = {hl, hl, -hl}, ._Col = c},
+    };
+    builder._Indices = {
+        // front face
+        0, 1, 2,
+        2, 1, 3,
+        // back face
+        4, 5, 6,
+        6, 5, 7,
+        // left face
+        4, 0, 6,
+        6, 0, 2,
+        // right face
+        1, 5, 3,
+        3, 5, 7,
+        // top face
+        2, 3, 6,
+        6, 3, 7,
+        // bottom face
+        0, 4, 1,
+        1, 4, 5
+    };
+    return builder;
+}
+
+
+VertexDataBuilder VertexDataBuilder::primitiveSphere(
+    size_t resolution,
+    const Vector4& c){
+    VertexDataBuilder builder{};
+    // vertices
+    std::vector<Vector3> vertices{};
+    {
+        const float stepPhi = PI / resolution;
+        const float stepTheta = 2 * PI / resolution;
+        float phi = 0.0f;
+        for (int i = 0; i <= int(resolution); i++) {
+            phi += stepPhi;
+            float theta = 0.0f;
+            for (int j = 0; j <= int(resolution); j++) {
+                theta += stepTheta;
+
+                float x = sin(theta)*sin(phi);
+                float y = cos(phi);
+                float z = cos(theta)*sin(phi);
+
+                vertices.push_back({x,y,z});
+            }
+        }
+    }
+
+    // normals
+    std::vector<Vector3> normals;
+    {
+        for(int i=0; i<int(vertices.size()); i++){
+            normals.push_back(Vector3::normalize(vertices[i]));
+        }
+    }
+
+    for(int i=0; i<int(vertices.size()); i++){
+        builder._Vertices.push_back({
+            ._Pos = vertices[i],
+            ._Col = c,
+            ._Norm = normals[i]
+            }
+        );
+    }
+
+    // indices
+    {
+        for (int i = 0; i < int(resolution); i++) {
+            for (int j = 0; j < int(resolution); j++) {
+                int first = i * (resolution + 1) + j;
+                int second = first + resolution + 1;
+
+                builder._Indices.push_back(first);
+                builder._Indices.push_back(second);
+                builder._Indices.push_back(first + 1);
+
+                builder._Indices.push_back(second);
+                builder._Indices.push_back(second + 1);
+                builder._Indices.push_back(first + 1);
+            }
+        }
+    }
+    return builder;    
+}
+
+
+VertexDataBuilder VertexDataBuilder::primitiveFrame(){
+    VertexDataBuilder builder{};
+
+    float width = 0.02f;    
+    builder._Vertices = {
+        // x axis
+        {._Pos = {0.f, -width, -width}, ._Col = {1.f,0.f,0.f,1.f}},
+        {._Pos = {1.f, -width, -width}, ._Col = {1.f,0.f,0.f,1.f}},
+        {._Pos = {0.f, -width, width}, ._Col = {1.f,0.f,0.f,1.f}},
+        {._Pos = {1.f, -width, width}, ._Col = {1.f,0.f,0.f,1.f}},
+        {._Pos = {0.f, width, -width}, ._Col = {1.f,0.f,0.f,1.f}},
+        {._Pos = {1.f, width, -width}, ._Col = {1.f,0.f,0.f,1.f}},
+        {._Pos = {0.f, width, width}, ._Col = {1.f,0.f,0.f,1.f}},
+        {._Pos = {1.f, width, width}, ._Col = {1.f,0.f,0.f,1.f}},
+        
+        // y axis
+        {._Pos = {-width, 0.f, -width}, ._Col = {0.f,1.f,0.f,1.f}},
+        {._Pos = {width, 0.f, -width}, ._Col = {0.f,1.f,0.f,1.f}},
+        {._Pos = {-width, 1.f, -width}, ._Col = {0.f,1.f,0.f,1.f}},
+        {._Pos = {width, 1.f, -width}, ._Col = {0.f,1.f,0.f,1.f}},
+        {._Pos = {-width, 0.f, width}, ._Col = {0.f,1.f,0.f,1.f}},
+        {._Pos = {width, 0.f, width}, ._Col = {0.f,1.f,0.f,1.f}},
+        {._Pos = {-width, 1.f, width}, ._Col = {0.f,1.f,0.f,1.f}},
+        {._Pos = {width, 1.f, width}, ._Col = {0.f,1.f,0.f,1.f}},
+
+        // z axis
+        {._Pos = {-width, -width, 0.f}, ._Col = {0.f,0.f,1.f,1.f}},
+        {._Pos = {width, -width, 0.f}, ._Col = {0.f,0.f,1.f,1.f}},
+        {._Pos = {-width, -width, 1.f}, ._Col = {0.f,0.f,1.f,1.f}},
+        {._Pos = {width, -width, 1.f}, ._Col = {0.f,0.f,1.f,1.f}},
+        {._Pos = {-width, width, 0.f}, ._Col = {0.f,0.f,1.f,1.f}},
+        {._Pos = {width, width, 0.f}, ._Col = {0.f,0.f,1.f,1.f}},
+        {._Pos = {-width, width, 1.f}, ._Col = {0.f,0.f,1.f,1.f}},
+        {._Pos = {width, width, 1.f}, ._Col = {0.f,0.f,1.f,1.f}}
+    };
+
+    builder._Indices = {
+        // x-axis faces
+        0, 1, 2,
+        1, 3, 2,
+        4, 5, 6,
+        5, 7, 6,
+        4, 0, 6,
+        0, 2, 6,
+        1, 5, 3,
+        5, 7, 3,
+        2, 3, 6,
+        3, 7, 6,
+        0, 4, 1,
+        4, 5, 1,
+        
+        // y-axis faces
+        8, 10, 9,
+        10, 11, 9,
+        12, 13, 14,
+        13, 15, 14,
+        8, 12, 9,
+        12, 13, 9,
+        10, 14, 11,
+        14, 15, 11,
+        9, 13, 11,
+        13, 15, 11,
+        8, 10, 12,
+        10, 14, 12,
+        
+        // z-axis faces
+        16, 17, 18,
+        17, 19, 18,
+        20, 21, 22,
+        21, 23, 22,
+        16, 20, 17,
+        20, 21, 17,
+        18, 19, 22,
+        19, 23, 22,
+        17, 21, 19,
+        21, 23, 19,
+        16, 18, 20,
+        18, 22, 20
+    };
+
+    return builder;
 }
 
 const std::map<std::string, Model::ModelExtension> Model::MODEL_EXTENSIONS_MAP = {
