@@ -484,6 +484,40 @@ const std::map<std::string, Model::ModelExtension> Model::MODEL_EXTENSIONS_MAP =
     {"obj", OBJ},
 };
 
+void Model::bind(VkCommandBuffer commandBuffer){
+    VkBuffer buffers[] = {_VertexBuffer->getBuffer()};
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+    if(_HasIndexBuffer){
+        vkCmdBindIndexBuffer(commandBuffer, _IndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+    }
+}
+
+void Model::draw(VkCommandBuffer commandBuffer){
+    if(_HasIndexBuffer){
+        vkCmdDrawIndexed(commandBuffer, _IndexCount, 1, 0, 0, 0);
+    } else {
+        vkCmdDraw(commandBuffer, _VertexCount, 1, 0, 0);
+    }
+}
+
+void Model::cleanUp(){
+    if(_VertexBuffer != nullptr){
+        _VertexBuffer->cleanUp();
+        _VertexBuffer = nullptr;
+    }
+    if(_IndexBuffer != nullptr){
+        _IndexBuffer->cleanUp();
+        _IndexBuffer = nullptr;
+    }
+}
+
+Model::Model(VulkanAppPtr vulkanApp, const VertexDataBuilder& dataBuilder) 
+    : _VulkanApp(vulkanApp){
+    createVertexBuffer(dataBuilder._Vertices);
+    createIndexBuffer(dataBuilder._Indices);
+}
+
 Model::Model(VulkanAppPtr vulkanApp, const std::string& filePath)
     : _VulkanApp(vulkanApp){
     // check extension type

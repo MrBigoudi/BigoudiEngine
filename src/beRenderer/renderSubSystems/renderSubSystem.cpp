@@ -23,4 +23,8 @@ void IRenderSubSystem::cleanUpPipeline(){
     _Pipeline->cleanUp();
 }
 
+std::vector<VkDescriptorSet> IRenderSubSystem::getDescriptorSets() const {
+    return _DescriptorSets;
+}
+
 };

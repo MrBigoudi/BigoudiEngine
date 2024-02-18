@@ -207,60 +207,102 @@ class Model{
             OBJ,
         };
 
+        /**
+         * A map to bind string representation of the format to the model extension enum
+         * @see ModelExtension
+        */
         static const std::map<std::string, ModelExtension> MODEL_EXTENSIONS_MAP;
 
     public:
+        /**
+         * The minimum number of vertices required to represent a model
+        */
         static const uint32_t MIN_VERTEX_COUNT = 3;
 
     private:
+        /**
+         * A smart pointer to the vulkan application
+         * @see VulkanApp
+        */
         VulkanAppPtr _VulkanApp = nullptr; 
 
+        /**
+         * A smart pointer to the buffer containing the vertices informations
+         * @see Buffer
+        */
         BufferPtr _VertexBuffer = nullptr;
+
+        /**
+         * The number of vertices in the model
+        */
         uint32_t _VertexCount = 0;
 
+        /**
+         * Boolean to tell if the model has an index buffer
+        */
         bool _HasIndexBuffer = false;
+
+        /**
+         * A smart pointer to the index buffer of the model
+         * @see Buffer
+        */
         BufferPtr _IndexBuffer = nullptr;
+
+        /**
+         * The number of indices in the model
+        */
         uint32_t _IndexCount = 0;
 
     public:
-        Model(VulkanAppPtr vulkanApp, const VertexDataBuilder& dataBuilder) 
-            : _VulkanApp(vulkanApp){
-            createVertexBuffer(dataBuilder._Vertices);
-            createIndexBuffer(dataBuilder._Indices);
-        }
+        /**
+         * Build a model from a vulkan application and a vertex data builder
+         * @param vulkanApp The vulkan application
+         * @param dataBuilder The vertex data builder
+        */
+        Model(VulkanAppPtr vulkanApp, const VertexDataBuilder& dataBuilder);
 
+        /**
+         * Build a model from a vulkan application and an object file
+         * @param vulkanApp The vulkan application
+         * @param filePath The path to the file containing the model
+         * @note The sile must have a supported extension
+         * @see ModelExtension
+        */
         Model(VulkanAppPtr vulkanApp, const std::string& filePath);
 
-        void bind(VkCommandBuffer commandBuffer){
-            VkBuffer buffers[] = {_VertexBuffer->getBuffer()};
-            VkDeviceSize offsets[] = {0};
-            vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
-            if(_HasIndexBuffer){
-                vkCmdBindIndexBuffer(commandBuffer, _IndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
-            }
-        }
+        /**
+         * Register a bind command for the current model
+         * @param commandBuffer The current command buffer
+         * @see _VertexBuffer
+         * @see _IndexBuffer
+        */
+        void bind(VkCommandBuffer commandBuffer);
 
-        void draw(VkCommandBuffer commandBuffer){
-            if(_HasIndexBuffer){
-                vkCmdDrawIndexed(commandBuffer, _IndexCount, 1, 0, 0, 0);
-            } else {
-                vkCmdDraw(commandBuffer, _VertexCount, 1, 0, 0);
-            }
-        }
+        /**
+         * Register a draw command for the current model
+         * @param commandBuffer The current command buffer
+        */
+        void draw(VkCommandBuffer commandBuffer);
         
-        void cleanUp(){
-            if(_VertexBuffer != nullptr){
-                _VertexBuffer->cleanUp();
-                _VertexBuffer = nullptr;
-            }
-            if(_IndexBuffer != nullptr){
-                _IndexBuffer->cleanUp();
-                _IndexBuffer = nullptr;
-            }
-        }
+        /**
+         * Cleanup the model
+        */
+        void cleanUp();
 
     private:
+        /**
+         * Fill the vertex buffer from a list of vertices
+         * @param vertices The list of vertices
+         * @see VertexData
+         * @see _VertexBuffer
+        */
         void createVertexBuffer(const std::vector<VertexData>& vertices);
+
+        /**
+         * Fill the index buffer from a list of indices
+         * @param indices The list of indices
+         * @see _IndexBuffer
+        */
         void createIndexBuffer(const std::vector<uint32_t>& indices);
 };
 
