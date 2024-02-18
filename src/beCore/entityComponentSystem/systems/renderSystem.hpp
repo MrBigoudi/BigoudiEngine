@@ -1,5 +1,7 @@
 #pragma once
 
+#include "components.hpp" // IWYU pragma: keep
+
 #include "frameInfo.hpp"
 #include "gameSystem.hpp"
 #include "renderSubSystem.hpp"
@@ -60,5 +62,19 @@ class RenderSystem : public GameSystem{
          * Init the render system
         */
         static void init();
+
+        /**
+         * Create a renderable object
+         * @param model The model of the new object
+         * @param transform The transform component of the new object
+         * @param renderSubSystem The render sub system of the new object
+         * @return The id representing the newly created object
+         * @see GameObject
+        */
+        static GameObject createRenderableObject(
+            ComponentModel model,
+            ComponentTransform transform,
+            ComponentRenderSubSystem renderSubSystem
+        );
 };
 };

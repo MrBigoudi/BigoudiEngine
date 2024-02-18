@@ -156,6 +156,7 @@ void VulkanApp::createLogicalDevice(){
 
 
     VkPhysicalDeviceFeatures deviceFeatures{};
+    deviceFeatures.fillModeNonSolid = VK_TRUE; // wireframe feature enabled
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

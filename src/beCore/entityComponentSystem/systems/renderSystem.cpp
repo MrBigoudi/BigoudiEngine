@@ -61,4 +61,27 @@ void RenderSystem::init(){
     GameCoordinator::setSystemSignature<be::RenderSystem>(signature);
 }
 
+GameObject RenderSystem::createRenderableObject(
+        ComponentModel model,
+        ComponentTransform transform,
+        ComponentRenderSubSystem renderSubSystem
+    ){
+
+    auto newGameObject = GameCoordinator::createObject();
+    GameCoordinator::addComponent(
+        newGameObject, 
+        model
+    );
+    GameCoordinator::addComponent(
+        newGameObject, 
+        transform
+    );
+    GameCoordinator::addComponent(
+        newGameObject, 
+        renderSubSystem
+    );
+
+    return newGameObject;
+}
+
 };

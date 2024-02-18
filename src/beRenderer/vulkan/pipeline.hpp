@@ -111,6 +111,7 @@ class Pipeline{
 
     public:
         static PipelineConfigInfo defaultPipelineConfigInfo();
+        static PipelineConfigInfo defaultWireFramePipelineConfigInfo();
 
     private:
         GraphicsShaderPtr _VertexShader = GraphicsShaderPtr(new GraphicsShader(VERTEX_STAGE));

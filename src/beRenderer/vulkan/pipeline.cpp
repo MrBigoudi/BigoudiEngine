@@ -125,6 +125,7 @@ PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(){
     configInfo._RasterizationInfo.depthClampEnable = VK_FALSE;
     configInfo._RasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
     configInfo._RasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+    // configInfo._RasterizationInfo.polygonMode = VK_POLYGON_MODE_LINE;
     configInfo._RasterizationInfo.lineWidth = 1.0f;
     configInfo._RasterizationInfo.cullMode = VK_CULL_MODE_NONE;
     // configInfo._RasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
@@ -191,6 +192,12 @@ PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(){
     configInfo._DynamicStateInfo.pDynamicStates = configInfo._DynamicStateEnables.data();
     configInfo._DynamicStateInfo.flags = 0;
 
+    return configInfo;
+}
+
+PipelineConfigInfo Pipeline::defaultWireFramePipelineConfigInfo(){
+    auto configInfo = defaultPipelineConfigInfo();
+    configInfo._RasterizationInfo.polygonMode = VK_POLYGON_MODE_LINE;
     return configInfo;
 }
 

@@ -16,4 +16,5 @@ void GameCoordinator::destroyObject(GameObject object){
     GameComponentManager::gameObjectDestroyed(object);
     GameSystemManager::gameObjectDestroyed(object);
 }
+
 };
