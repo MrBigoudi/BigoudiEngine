@@ -1,7 +1,7 @@
 #pragma once
 
-#include "beDep.hpp" // IWYU pragma: keep
-#include "beCore.hpp" // IWYU pragma: keep
-#include "beMaths.hpp" // IWYU pragma: keep
-#include "bePhysics.hpp" // IWYU pragma: keep
-#include "beRenderer.hpp" // IWYU pragma: keep
+#include "be_dep.hpp" // IWYU pragma: keep
+#include "be_core.hpp" // IWYU pragma: keep
+#include "be_maths.hpp" // IWYU pragma: keep
+#include "be_physics.hpp" // IWYU pragma: keep
+#include "be_renderer.hpp" // IWYU pragma: keep
