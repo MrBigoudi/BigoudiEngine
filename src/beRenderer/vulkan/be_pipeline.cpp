@@ -16,6 +16,47 @@ const std::string GraphicsShader::SHADER_DIR =
             + std::string("/shaders/compiled/")
         ;
 
+GraphicsShader::GraphicsShader(GraphicsShaderStage stage, const std::string& path){
+    _Stage = stage;
+    if(path != "")
+        init(path);
+}
+
+VkPipelineShaderStageCreateInfo GraphicsShader::getShaderStageCreateInfo() const {
+    VkPipelineShaderStageCreateInfo shaderStageInfo{};
+    shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    shaderStageInfo.module = _Module;
+    shaderStageInfo.pName = "main";
+    shaderStageInfo.flags = 0;
+    shaderStageInfo.pSpecializationInfo = nullptr;
+    shaderStageInfo.pNext = nullptr;
+    switch(_Stage){
+        case VERTEX_STAGE:
+            shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+            break;
+        case FRAGMENT_STAGE:
+            shaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+            break;
+        case GEOMETRY_STAGE:
+            shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+            break;
+        case TESSELLATION_CONTROL_STAGE:
+            shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+            break;
+        case TESSELLATION_EVALUATION_STAGE:
+            shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+            break;
+        default:
+            ErrorHandler::handle(ErrorCode::UNKNOWN_VALUE_ERROR, "Unkown shader stage!\n");
+            break;
+    }
+    return shaderStageInfo;
+}
+
+void GraphicsShader::init(const std::string& path){
+    _Path = path,
+    _Code = readShaderFile(path);
+}
 
 void Pipeline::createGraphicsPipeline(PipelineConfigInfo configInfo){
     if(!_VertexShader->exists() || !_FragmentShader->exists()){
@@ -237,5 +278,110 @@ void Pipeline::bind(VkCommandBuffer commandBuffer){
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _GraphicsPipeline);    
 }  
 
+void Pipeline::copyShaders(PipelinePtr pipeline){
+    if(pipeline->_VertexShader->exists()){
+        initVertexShader(pipeline->_VertexShader->getPath());
+    }
+    if(pipeline->_FragmentShader->exists()){
+        initFragmentShader(pipeline->_FragmentShader->getPath());
+    }
+    if(pipeline->_GeometryShader->exists()){
+        initGeometryShader(pipeline->_GeometryShader->getPath());
+    }
+    if(pipeline->_TesselationControlShader->exists()
+        && pipeline->_TesselationEvaluationShader->exists()){
+        initTessellationShaders(
+            pipeline->_TesselationControlShader->getPath(),
+            pipeline->_TesselationEvaluationShader->getPath()
+        );
+    }
+}
+
+void Pipeline::initColorPassThroughShaders(){
+    initVertexShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("passThroughColor.vert.spv")
+    );
+    initFragmentShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("passThrough.frag.spv")
+    );
+}
+
+void Pipeline::initNormalPassThroughShaders(){
+    initVertexShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("passThroughNormal.vert.spv")
+    );
+    initFragmentShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("passThrough.frag.spv")
+    );
+}
+
+void Pipeline::initLambertShaders(){
+    initVertexShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("lambertBRDF.vert.spv")
+    );
+    initFragmentShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("lambertBRDF.frag.spv")
+    );
+}
+
+void Pipeline::initVertexShader(const std::string& vert){
+    _VertexShader = GraphicsShaderPtr(
+                        new GraphicsShader(VERTEX_STAGE, vert)
+                    );
+    _VertexShader->createModule(_VulkanApp);
+} 
+
+void Pipeline::initFragmentShader(const std::string& frag){
+    _FragmentShader = GraphicsShaderPtr(
+                        new GraphicsShader(FRAGMENT_STAGE, frag)
+                    );
+    _FragmentShader->createModule(_VulkanApp);
+} 
+
+void Pipeline::initTessellationShaders(const std::string& cont, const std::string& eval){
+    _TesselationControlShader = GraphicsShaderPtr(
+                                    new GraphicsShader(TESSELLATION_CONTROL_STAGE, cont)
+                                );
+    _TesselationControlShader->createModule(_VulkanApp);
+    _TesselationEvaluationShader = GraphicsShaderPtr(
+                                        new GraphicsShader(TESSELLATION_EVALUATION_STAGE, eval)
+                                    );
+    _TesselationEvaluationShader->createModule(_VulkanApp);
+}
+
+void Pipeline::initGeometryShader(const std::string& geom){
+    _GeometryShader = GraphicsShaderPtr(
+                        new GraphicsShader(GEOMETRY_STAGE, geom)
+                    );
+    _GeometryShader->createModule(_VulkanApp);
+}
+
+std::vector<VkPipelineShaderStageCreateInfo> Pipeline::createShaderStages() const {
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+    shaderStages.push_back(_VertexShader->getShaderStageCreateInfo());
+    shaderStages.push_back(_FragmentShader->getShaderStageCreateInfo());
+    if(_TesselationControlShader->exists()){
+        shaderStages.push_back(_TesselationControlShader->getShaderStageCreateInfo());
+        shaderStages.push_back(_TesselationEvaluationShader->getShaderStageCreateInfo());
+    }
+    if(_GeometryShader->exists()){
+        shaderStages.push_back(_GeometryShader->getShaderStageCreateInfo());
+    }
+    return shaderStages;
+};
+
+uint32_t Pipeline::getNbShaderStages() const {
+    return _VertexShader->exists()
+        + _FragmentShader->exists()
+        + _GeometryShader->exists()
+        + _TesselationControlShader->exists()
+        + _TesselationEvaluationShader->exists();
+}
 
 };

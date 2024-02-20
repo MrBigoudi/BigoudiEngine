@@ -47,6 +47,11 @@ class IRenderSubSystem{
         */
         std::vector<VkDescriptorSet> _DescriptorSets{};
 
+        /**
+         * Boolean set to true if the sub system needs to bind new descriptor sets per objects
+        */
+        bool _NeedPerObjectBind = false;
+
     public:
         /**
          * A basic constructor
@@ -80,6 +85,13 @@ class IRenderSubSystem{
         */
         virtual void renderingFunction(GameObject object) = 0;
 
+        /**
+         * Getter to see if the sub system need to be bind for each object
+         * @return The value of _NeedPerObjectBind
+        */
+        bool needPerObjectBind() const;
+        
+
     public:
         /**
          * A getter to the current pipeline
@@ -98,6 +110,22 @@ class IRenderSubSystem{
          * @return The associated descriptor sets
         */
         std::vector<VkDescriptorSet> getDescriptorSets() const;
+
+        /**
+         * Create a command to bind the descriptor sets
+         * @param frameInfo the current frame
+         * @param bindPoint the pipeline bind point (default to GRAPHICS)
+        */
+        void cmdBindDescriptoSets(FrameInfo& frameInfo, 
+            VkPipelineBindPoint bindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS) const;
+
+        /**
+         * Update the descriptor sets
+         * @param object The current game object
+         * @param frameInfo the current frame
+         * @note This function should only be called when _NeedPerObjectBind is set to true
+        */
+        virtual void updateDescriptorSets(GameObject object, FrameInfo& frameInfo);
 
 
     protected:
@@ -121,7 +149,6 @@ class IRenderSubSystem{
          * A cleaner for the pipeline
         */
         virtual void cleanUpPipeline();
-
 };
 
 };

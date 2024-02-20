@@ -7,11 +7,32 @@
 
 namespace be{
 
+/**
+ * A component structure to store game objects transforms
+ * @see Components
+*/
 struct ComponentTransform{
+    /**
+     * The object position
+    */
     Vector3 _Position{};
+
+    /**
+     * The object rotation
+     * @note Euler angle rotation (might switch to quaternions at some point)
+    */
     Vector3 _Rotation{};
+
+    /**
+     * The object scaling
+     * @note Allowing non uniform scaling but in practice this feature is not yet handled by the engine
+    */
     Vector3 _Scale{1.f, 1.f, 1.f};
 
+    /**
+     * Getter to the object's model matrix
+     * @return The 4x4 model matrix
+    */
     Matrix4x4 getModel(){
         const float c3 = cos(_Rotation.z());
         const float s3 = sin(_Rotation.z());

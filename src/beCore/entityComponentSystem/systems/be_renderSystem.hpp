@@ -67,6 +67,7 @@ class RenderSystem : public GameSystem{
          * Create a renderable object
          * @param model The model of the new object
          * @param transform The transform component of the new object
+         * @param material The material component of the new object
          * @param renderSubSystem The render sub system of the new object
          * @return The id representing the newly created object
          * @see GameObject
@@ -74,6 +75,7 @@ class RenderSystem : public GameSystem{
         static GameObject createRenderableObject(
             ComponentModel model,
             ComponentTransform transform,
+            ComponentMaterial material,
             ComponentRenderSubSystem renderSubSystem
         );
 };

@@ -16,22 +16,19 @@ RenderSystemPtr RenderSystem::get(){
 void RenderSystem::renderGameObjects(FrameInfo frameInfo, IRenderSubSystem* renderSubSystem){
     renderSubSystem->getPipeline()->bind(frameInfo._CommandBuffer);
 
-    vkCmdBindDescriptorSets(
-        frameInfo._CommandBuffer,
-        VK_PIPELINE_BIND_POINT_GRAPHICS,
-        renderSubSystem->getPipelineLayout(),
-        0,
-        static_cast<uint32_t>(renderSubSystem->getDescriptorSets().size()),
-        renderSubSystem->getDescriptorSets().data(),
-        0,
-        nullptr
-    );
+    if(!renderSubSystem->needPerObjectBind()){
+        renderSubSystem->cmdBindDescriptoSets(frameInfo);
+    }
 
     auto instance = get();
 
     for(auto const& object : instance->_Objects){
         auto rss = be::GameCoordinator::getComponent<be::ComponentRenderSubSystem>(object);
         if(rss._RenderSubSystem.get() == renderSubSystem){
+            if(renderSubSystem->needPerObjectBind()){
+                renderSubSystem->updateDescriptorSets(object, frameInfo);
+                renderSubSystem->cmdBindDescriptoSets(frameInfo);
+            }
             renderSubSystem->renderingFunction(object);
         }
     }
@@ -58,12 +55,14 @@ void RenderSystem::init(){
     signature.set(be::GameCoordinator::getComponentType<ComponentModel>());
     signature.set(be::GameCoordinator::getComponentType<ComponentTransform>());
     signature.set(be::GameCoordinator::getComponentType<ComponentRenderSubSystem>());
+    signature.set(be::GameCoordinator::getComponentType<ComponentMaterial>());
     GameCoordinator::setSystemSignature<be::RenderSystem>(signature);
 }
 
 GameObject RenderSystem::createRenderableObject(
         ComponentModel model,
         ComponentTransform transform,
+        ComponentMaterial material,
         ComponentRenderSubSystem renderSubSystem
     ){
 
@@ -75,6 +74,10 @@ GameObject RenderSystem::createRenderableObject(
     GameCoordinator::addComponent(
         newGameObject, 
         transform
+    );
+    GameCoordinator::addComponent(
+        newGameObject, 
+        material
     );
     GameCoordinator::addComponent(
         newGameObject, 
