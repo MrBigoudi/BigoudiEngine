@@ -43,10 +43,19 @@ layout(set = 2, binding = 0) uniform MaterialUbo{
 } materialUbo;
 
 
+/**
+ * Get the diffuse model for the point light
+ * @param light The current point light
+ * @param objPos The world pos of the current vertex
+ * @param objNorm The norm of the current vertex
+ * @param objColor The vertex color
+ * @return The color value of the response
+*/
 vec4 getDiffusePointLight(PointLight light, vec4 objPos, vec3 objNorm, vec4 objColor){
-    vec3 lightDir = normalize((cameraUbo._Proj * cameraUbo._View * light._Position - objPos).xyz);
+    vec4 lightWorldPos = cameraUbo._Proj * cameraUbo._View * light._Position;
+    vec3 lightDir = normalize((lightWorldPos - objPos).xyz);
     float weight = light._Intensity * dot(lightDir, objNorm);
-    return light._Intensity * light._Color * objColor;
+    return max(weight, 0.f) * light._Color * objColor;
 }
 
 
@@ -57,9 +66,5 @@ void main() {
         finalColor += getDiffusePointLight(curPointLight, fPos, normalize(fNorm), fCol).xyz;
     }
     outColor = vec4(finalColor, 1.f);
-
-    vec3 lightDir = (cameraUbo._Proj * cameraUbo._View * lightsUbo._PointLights[0]._Position - fPos).xyz;
-    lightDir = normalize(lightDir);
-    outColor = vec4(lightDir, 1.f);
     
 }
