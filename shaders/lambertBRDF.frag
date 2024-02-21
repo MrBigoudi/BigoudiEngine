@@ -52,8 +52,7 @@ layout(set = 2, binding = 0) uniform MaterialUbo{
  * @return The color value of the response
 */
 vec4 getDiffusePointLight(PointLight light, vec4 objPos, vec3 objNorm, vec4 objColor){
-    vec4 lightWorldPos = cameraUbo._Proj * cameraUbo._View * light._Position;
-    vec3 lightDir = normalize((lightWorldPos - objPos).xyz);
+    vec3 lightDir = normalize(light._Position - objPos).xyz;
     float weight = light._Intensity * dot(lightDir, objNorm);
     return max(weight, 0.f) * light._Color * objColor;
 }

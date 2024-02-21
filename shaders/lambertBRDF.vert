@@ -21,7 +21,7 @@ layout(set = 0, binding = 0) uniform CameraUbo{
 
 void main() {
     gl_Position = cameraUbo._Proj * cameraUbo._View * push._Model * vec4(vPos, 1.f);
-    fPos = gl_Position;
+    fPos = push._Model * vec4(vPos, 1.f);
     fCol = vCol;
     fNorm = vNorm;
     fTex = vTex;
