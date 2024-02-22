@@ -58,10 +58,10 @@ void Camera::processKeyboard(CameraMovement direction){
             _Eye += _Right * velocity;
             break;
         case UP:
-            _Eye += _WorldUp * velocity;
+            _Eye -= _WorldUp * velocity;
             break;
         case DOWN:
-            _Eye -= _WorldUp * velocity;
+            _Eye += _WorldUp * velocity;
             break;
     }
 }

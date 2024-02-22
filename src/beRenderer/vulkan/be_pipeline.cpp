@@ -330,6 +330,17 @@ void Pipeline::initLambertShaders(){
     );
 }
 
+void Pipeline::initBlinnPhongShaders(){
+    initVertexShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("blinnPhongBRDF.vert.spv")
+    );
+    initFragmentShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("blinnPhongBRDF.frag.spv")
+    );
+}
+
 void Pipeline::initVertexShader(const std::string& vert){
     _VertexShader = GraphicsShaderPtr(
                         new GraphicsShader(VERTEX_STAGE, vert)

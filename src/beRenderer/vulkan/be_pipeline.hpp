@@ -293,10 +293,17 @@ class Pipeline{
 
         /**
          * Initiate shaders for the Lambert BRDF
-         * @see shaders/passThroughNormal.vert
-         * @see shaders/passThrough.frag
+         * @see shaders/lambertBRDF.vert
+         * @see shaders/lambertBRDF.frag
         */
         void initLambertShaders();
+
+        /**
+         * Initiate shaders for the Blinn-Phong BRDF
+         * @see shaders/blinnPhongBRDF.vert
+         * @see shaders/blinnPhongBRDF.frag
+        */
+        void initBlinnPhongShaders();
         
         /**
          * Init the vertex shader given the path to its file implementation
