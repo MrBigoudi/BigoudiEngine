@@ -315,4 +315,38 @@ Matrix3x4 Matrix3x3::operator*(const Matrix3x4& matrix) const{
     return newMat;
 }
 
+/**
+ * Get the determinant of the current matrix
+ * @return The determinant as a float
+*/
+float Matrix3x3::det() const {
+    Matrix2x2 matA = Matrix2x2({
+        std::array<float, 2>({_Values[1][1], _Values[1][2]}), 
+        std::array<float, 2>({_Values[2][1], _Values[2][2]})
+    });
+
+    Matrix2x2 matB = Matrix2x2({
+        std::array<float, 2>({_Values[1][0], _Values[1][2]}), 
+        std::array<float, 2>({_Values[2][0], _Values[2][2]})
+    });
+
+    Matrix2x2 matC = Matrix2x2({
+        std::array<float, 2>({_Values[1][0], _Values[1][1]}), 
+        std::array<float, 2>({_Values[2][0], _Values[2][1]})
+    });
+
+    return _Values[0][0] * matA.det()
+        - _Values[0][1] * matB.det()
+        + _Values[0][2] * matC.det();
+}
+
+/**
+ * Get the determinant of the given matrix
+ * @param matrix The given matrix
+ * @return The determinant as a float
+*/
+float Matrix3x3::det(const Matrix3x3& matrix){
+    return matrix.det();
+}
+
 }

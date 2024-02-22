@@ -341,4 +341,106 @@ Matrix4x4 Matrix4x4::transpose(const Matrix4x4& matrix){
     return newMat;
 }
 
+/**
+ * Get the determinant of the current matrix
+ * @return The determinant as a float
+*/
+float Matrix4x4::det() const {
+    Matrix3x3 matA = Matrix3x3({
+        std::array<float, 3>({_Values[1][1], _Values[1][2], _Values[1][3]}), 
+        std::array<float, 3>({_Values[2][1], _Values[2][2], _Values[2][3]}),
+        std::array<float, 3>({_Values[3][1], _Values[3][2], _Values[3][3]})
+    });
+
+    Matrix3x3 matB = Matrix3x3({
+        std::array<float, 3>({_Values[1][0], _Values[1][2], _Values[1][3]}), 
+        std::array<float, 3>({_Values[2][0], _Values[2][2], _Values[2][3]}),
+        std::array<float, 3>({_Values[3][0], _Values[3][2], _Values[3][3]})
+    });
+
+    Matrix3x3 matC = Matrix3x3({
+        std::array<float, 3>({_Values[1][0], _Values[1][1], _Values[1][3]}), 
+        std::array<float, 3>({_Values[2][0], _Values[2][1], _Values[2][3]}),
+        std::array<float, 3>({_Values[3][0], _Values[3][1], _Values[3][3]})
+    });
+
+    Matrix3x3 matD = Matrix3x3({
+        std::array<float, 3>({_Values[1][0], _Values[1][1], _Values[1][2]}), 
+        std::array<float, 3>({_Values[2][0], _Values[2][1], _Values[2][2]}),
+        std::array<float, 3>({_Values[3][0], _Values[3][1], _Values[3][2]})
+    });
+
+    return _Values[0][0] * matA.det()
+        - _Values[0][1] * matB.det()
+        + _Values[0][2] * matC.det()
+        - _Values[0][3] * matD.det();
+}
+
+/**
+ * Get the determinant of the given matrix
+ * @param matrix The given matrix
+ * @return The determinant as a float
+*/
+float Matrix4x4::det(const Matrix4x4& matrix){
+    return matrix.det();
+}
+
+/**
+ * Inverse a the current matrix
+*/
+void Matrix4x4::inverse(){
+    float A2323 = _Values[2][2] * _Values[3][3] - _Values[2][3] * _Values[3][2];
+    float A1323 = _Values[2][1] * _Values[3][3] - _Values[2][3] * _Values[3][1];
+    float A1223 = _Values[2][1] * _Values[3][2] - _Values[2][2] * _Values[3][1];
+    float A0323 = _Values[2][0] * _Values[3][3] - _Values[2][3] * _Values[3][0];
+    float A0223 = _Values[2][0] * _Values[3][2] - _Values[2][2] * _Values[3][0];
+    float A0123 = _Values[2][0] * _Values[3][1] - _Values[2][1] * _Values[3][0];
+    float A2313 = _Values[1][2] * _Values[3][3] - _Values[1][3] * _Values[3][2];
+    float A1313 = _Values[1][1] * _Values[3][3] - _Values[1][3] * _Values[3][1];
+    float A1213 = _Values[1][1] * _Values[3][2] - _Values[1][2] * _Values[3][1];
+    float A2312 = _Values[1][2] * _Values[2][3] - _Values[1][3] * _Values[2][2];
+    float A1312 = _Values[1][1] * _Values[2][3] - _Values[1][3] * _Values[2][1];
+    float A1212 = _Values[1][1] * _Values[2][2] - _Values[1][2] * _Values[2][1];
+    float A0313 = _Values[1][0] * _Values[3][3] - _Values[1][3] * _Values[3][0];
+    float A0213 = _Values[1][0] * _Values[3][2] - _Values[1][2] * _Values[3][0];
+    float A0312 = _Values[1][0] * _Values[2][3] - _Values[1][3] * _Values[2][0];
+    float A0212 = _Values[1][0] * _Values[2][2] - _Values[1][2] * _Values[2][0];
+    float A0113 = _Values[1][0] * _Values[3][1] - _Values[1][1] * _Values[3][0];
+    float A0112 = _Values[1][0] * _Values[2][1] - _Values[1][1] * _Values[2][0];
+
+    float det = this->det();
+    det = 1.f / det;
+
+    Matrix4x4 tmp{};
+    tmp[0][0] = det *   ( _Values[1][1] * A2323 - _Values[1][2] * A1323 + _Values[1][3] * A1223 );
+    tmp[0][1] = det * - ( _Values[0][1] * A2323 - _Values[0][2] * A1323 + _Values[0][3] * A1223 );
+    tmp[0][2] = det *   ( _Values[0][1] * A2313 - _Values[0][2] * A1313 + _Values[0][3] * A1213 );
+    tmp[0][3] = det * - ( _Values[0][1] * A2312 - _Values[0][2] * A1312 + _Values[0][3] * A1212 );
+    tmp[1][0] = det * - ( _Values[1][0] * A2323 - _Values[1][2] * A0323 + _Values[1][3] * A0223 );
+    tmp[1][1] = det *   ( _Values[0][0] * A2323 - _Values[0][2] * A0323 + _Values[0][3] * A0223 );
+    tmp[1][2] = det * - ( _Values[0][0] * A2313 - _Values[0][2] * A0313 + _Values[0][3] * A0213 );
+    tmp[1][3] = det *   ( _Values[0][0] * A2312 - _Values[0][2] * A0312 + _Values[0][3] * A0212 );
+    tmp[2][0] = det *   ( _Values[1][0] * A1323 - _Values[1][1] * A0323 + _Values[1][3] * A0123 );
+    tmp[2][1] = det * - ( _Values[0][0] * A1323 - _Values[0][1] * A0323 + _Values[0][3] * A0123 );
+    tmp[2][2] = det *   ( _Values[0][0] * A1313 - _Values[0][1] * A0313 + _Values[0][3] * A0113 );
+    tmp[2][3] = det * - ( _Values[0][0] * A1312 - _Values[0][1] * A0312 + _Values[0][3] * A0112 );
+    tmp[3][0] = det * - ( _Values[1][0] * A1223 - _Values[1][1] * A0223 + _Values[1][2] * A0123 );
+    tmp[3][1] = det *   ( _Values[0][0] * A1223 - _Values[0][1] * A0223 + _Values[0][2] * A0123 );
+    tmp[3][2] = det * - ( _Values[0][0] * A1213 - _Values[0][1] * A0213 + _Values[0][2] * A0113 );
+    tmp[3][3] = det *   ( _Values[0][0] * A1212 - _Values[0][1] * A0212 + _Values[0][2] * A0112 );
+
+    copy(tmp);
+}
+
+/**
+ * Inverse the given matrix
+ * @param matrix The matrix to vinert
+ * @return The inverted matrix
+*/
+Matrix4x4 Matrix4x4::inverse(const Matrix4x4& matrix){
+    Matrix4x4 newMat(matrix);
+    newMat.inverse();
+    return newMat; 
+}
+
 }

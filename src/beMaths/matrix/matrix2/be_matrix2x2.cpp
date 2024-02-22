@@ -313,4 +313,22 @@ Matrix2x4 Matrix2x2::operator*(const Matrix2x4& matrix) const{
     return newMat;
 }
 
+/**
+ * Get the determinant of the current matrix
+ * @return The determinant as a float
+*/
+float Matrix2x2::det() const {
+    return _Values[0][0] * _Values[1][1]
+        - _Values[0][1] * _Values[1][0];
+}
+
+/**
+ * Get the determinant of the given matrix
+ * @param matrix The given matrix
+ * @return The determinant as a float
+*/
+float Matrix2x2::det(const Matrix2x2& matrix){
+    return matrix.det();
+}
+
 }

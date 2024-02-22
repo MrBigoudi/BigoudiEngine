@@ -168,6 +168,19 @@ class Matrix2x2{
          * @return The resulting matrix
         */
         Matrix2x4 operator*(const Matrix2x4& matrix) const;
+
+        /**
+         * Get the determinant of the current matrix
+         * @return The determinant as a float
+        */
+        float det() const;
+
+        /**
+         * Get the determinant of the given matrix
+         * @param matrix The given matrix
+         * @return The determinant as a float
+        */
+        static float det(const Matrix2x2& matrix);
 };
 
 }

@@ -177,11 +177,36 @@ class Matrix4x4{
         void transpose(void);
 
         /**
-         * Transpose the current matrix
+         * Transpose the given matrix
          * @param matrix The matrix to transpose
          * @return The transposed matrix
         */
         static Matrix4x4 transpose(const Matrix4x4& matrix);
+
+        /**
+         * Get the determinant of the current matrix
+         * @return The determinant as a float
+        */
+        float det() const;
+
+        /**
+         * Get the determinant of the given matrix
+         * @param matrix The given matrix
+         * @return The determinant as a float
+        */
+        static float det(const Matrix4x4& matrix);
+
+        /**
+         * Inverse a the current matrix
+        */
+        void inverse();
+
+        /**
+         * Inverse the given matrix
+         * @param matrix The matrix to vinert
+         * @return The inverted matrix
+        */
+        static Matrix4x4 inverse(const Matrix4x4& matrix);
 };
 
 }

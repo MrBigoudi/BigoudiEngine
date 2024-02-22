@@ -169,6 +169,19 @@ class Matrix3x3{
          * @return The resulting matrix
         */
         Matrix3x4 operator*(const Matrix3x4& matrix) const;
+
+        /**
+         * Get the determinant of the current matrix
+         * @return The determinant as a float
+        */
+        float det() const;
+
+        /**
+         * Get the determinant of the given matrix
+         * @param matrix The given matrix
+         * @return The determinant as a float
+        */
+        static float det(const Matrix3x3& matrix);
 };
 
 }
