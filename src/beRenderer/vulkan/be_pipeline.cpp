@@ -341,6 +341,17 @@ void Pipeline::initBlinnPhongShaders(){
     );
 }
 
+void Pipeline::initDisneyShaders(){
+    initVertexShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("ggxBRDF.vert.spv")
+    );
+    initFragmentShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("ggxBRDF.frag.spv")
+    );
+}
+
 void Pipeline::initVertexShader(const std::string& vert){
     _VertexShader = GraphicsShaderPtr(
                         new GraphicsShader(VERTEX_STAGE, vert)

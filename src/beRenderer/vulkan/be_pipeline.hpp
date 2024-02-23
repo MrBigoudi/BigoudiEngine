@@ -304,6 +304,13 @@ class Pipeline{
          * @see shaders/blinnPhongBRDF.frag
         */
         void initBlinnPhongShaders();
+
+        /**
+         * Initiate shaders for the Disney GGX BRDF
+         * @see shaders/ggxBRDF.vert
+         * @see shaders/ggxBRDF.frag
+        */
+        void initDisneyShaders();
         
         /**
          * Init the vertex shader given the path to its file implementation

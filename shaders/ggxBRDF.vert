@@ -1,3 +1,3 @@
 #version 450
 
-#include "utils/includeBrdfVert.inc"
+#include "utils/includeBRDF.vert.inc.glsl"
