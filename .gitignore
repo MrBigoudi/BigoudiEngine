@@ -42,3 +42,5 @@ build
 
 compiled/
 preprocessed/
+imgui.ini
+*.spv

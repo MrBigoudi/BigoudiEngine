@@ -49,6 +49,8 @@ class Renderer{
             return _IsFrameStarted;
         }
 
+        SwapChainPtr getSwapChain() const {return _SwapChain;}
+
         VkCommandBuffer getCurrentCommandBuffer() const {
             if(!_IsFrameStarted){
                 ErrorHandler::handle(

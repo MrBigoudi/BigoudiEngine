@@ -62,6 +62,16 @@ class SwapChain{
 
         void cleanUp();
 
+        VkFormat getImageFormat() const {
+            return _SwapChainImageFormat;
+        }
+
+        std::vector<VkImage> getImages() const {
+            return _SwapChainImages;
+        }
+
+        std::vector<VkImageView> getImageViews() const { return _SwapChainImageViews;}
+
         VkFramebuffer getFrameBuffer(int index) const { 
             return _SwapChainFramebuffers[index]; 
         }

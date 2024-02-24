@@ -11,3 +11,4 @@ target_include_directories(BigoudiEngine
 # add the subdirectories
 add_subdirectory(stbImage)
 add_subdirectory(tinyObjectLoader)
+add_subdirectory(imgui)

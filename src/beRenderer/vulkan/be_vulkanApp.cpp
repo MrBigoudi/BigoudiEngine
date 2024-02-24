@@ -188,12 +188,12 @@ void VulkanApp::createSurface(){
 }
 
 void VulkanApp::createCommandPool(){
-    VulkanQueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
+    _QueueFamilyIndices = findPhysicalQueueFamilies();
 
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+    poolInfo.queueFamilyIndex = _QueueFamilyIndices.graphicsFamily.value();
 
     VkResult result = vkCreateCommandPool(
         _VulkanLogicalDevice, 
