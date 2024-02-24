@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <string>
 
 namespace be{
 
@@ -30,19 +31,19 @@ struct ComponentMaterial{
 
     /**
      * The specular value
-     * @note default to 0.5
+     * @note default to 0
      * @note minimum 0
      * @note maximum 1
     */
-    float _Specular = .5f;
+    float _Specular = 0.f;
 
     /**
      * The roughness value
-     * @note default to 0.5
+     * @note default to 0
      * @note minimum 0
      * @note maximum 1
     */
-    float _Roughness = .5f;
+    float _Roughness = 0.f;
 
     /**
      * The specular tint
@@ -70,11 +71,11 @@ struct ComponentMaterial{
 
     /**
      * The sheen tint
-     * @note default to 0.5
+     * @note default to 0
      * @note minimum 0
      * @note maximum 1
     */
-    float _SheenTint = .5f;
+    float _SheenTint = 0.f;
 
     /**
      * The clearcoat value
@@ -86,11 +87,11 @@ struct ComponentMaterial{
 
     /**
      * The clearcoat gloss
-     * @note default to 1
+     * @note default to 0
      * @note minimum 0
      * @note maximum 1
     */
-    float _ClearcoatGloss = 1.f;
+    float _ClearcoatGloss = 0.f;
 
 
     // EXTREMUM VALUES
@@ -98,6 +99,11 @@ struct ComponentMaterial{
      * The number of material elements
     */
     static const uint32_t COMPONENT_MATERIAL_NB_ELEMENTS = 10;
+
+    /**
+     * The name of each element of the material
+    */
+    static const std::array<std::string, COMPONENT_MATERIAL_NB_ELEMENTS> COMPONENT_MATERIAL_NAMES;
 
     /**
      * The minimum value for each element of the material
@@ -113,6 +119,13 @@ struct ComponentMaterial{
      * Check if all values are correct
     */
     void check() const;
+
+    /**
+     * Get a reference to the wanted value
+     * @param id The index of the wanted value
+     * @return A reference to this value
+    */
+    float& get(uint32_t id);
 };
 
 }

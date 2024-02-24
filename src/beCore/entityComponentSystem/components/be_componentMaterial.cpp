@@ -3,6 +3,20 @@
 
 namespace be{
 
+const std::array<std::string, ComponentMaterial::COMPONENT_MATERIAL_NB_ELEMENTS> 
+    ComponentMaterial::COMPONENT_MATERIAL_NAMES{
+        "Metallic",
+        "Subsurface",
+        "Specular",
+        "Roughness",
+        "SpecularTint",
+        "Anisotropic",
+        "Sheen",
+        "SheenTint",
+        "Clearcoat",
+        "ClearcoatGloss",
+};
+
 const std::array<float, ComponentMaterial::COMPONENT_MATERIAL_NB_ELEMENTS> 
     ComponentMaterial::COMPONENT_MATERIAL_MIN_VALUES{
         0.f, // metallic
@@ -154,6 +168,42 @@ void ComponentMaterial::check() const {
     }
     i++;
 
+}
+
+float& ComponentMaterial::get(uint32_t id){
+    if(id > COMPONENT_MATERIAL_NB_ELEMENTS){
+        ErrorHandler::handle(
+            ErrorCode::BAD_VALUE_ERROR,
+            "Index " + std::to_string(id) 
+            + "is too high, material indices can't be greater than " 
+            + std::to_string(COMPONENT_MATERIAL_NB_ELEMENTS)
+            + " !\n"
+        );
+    }
+    switch(id){
+        case 0:
+            return _Metallic;
+        case 1:
+            return _Subsurface;
+        case 2:
+            return _Specular;
+        case 3:
+            return _Roughness;
+        case 4:
+            return _SpecularTint;
+        case 5:
+            return _Anisotropic;
+        case 6:
+            return _Sheen;
+        case 7:
+            return _SheenTint;
+        case 8:
+            return _Clearcoat;
+        case 9:
+            return _ClearcoatGloss;
+        default:
+            return _Metallic;
+    }
 }
 
 };

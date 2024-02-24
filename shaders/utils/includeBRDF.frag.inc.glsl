@@ -1,22 +1,29 @@
+// input world space position
+layout(location = 0) in vec3 fWorldPos;
 // input view space position
-layout(location = 0) in vec3 fPos;
+layout(location = 1) in vec3 fViewPos;
 // input color
-layout(location = 1) in vec4 fCol;
-// input normal
-layout(location = 2) in vec3 fNorm;
+layout(location = 2) in vec4 fCol;
+// input normal in the world space
+layout(location = 3) in vec3 fWorldNorm;
+// input normal in the view space
+layout(location = 4) in vec3 fViewNorm;
 // input texture coords
-layout(location = 3) in vec2 fTex;
+layout(location = 5) in vec2 fTex;
 
 // output fragment color
 layout(location = 0) out vec4 outColor;
 
 // maximum number of point lights
-const int MAX_NB_POINT_LIGHTS = 10;
+const int MAX_NB_POINT_LIGHTS = 1024;
 // maximum number of directional lights
-const int MAX_NB_DIRECTIONAL_LIGHTS = 10;
+const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
 
 // pi constant
 const float PI = 3.14159265358979323846;
+
+// epsilon to avoid zero division
+const float EPSILON = 1e-5;
 
 /**
  * A structure representing a material
@@ -102,8 +109,7 @@ vec4 getDiffusePointLight(PointLight light, vec3 objViewPos, vec3 objNorm, vec4 
  * @return The color value of the response
 */
 vec4 getDiffuseDirectionalLight(DirectionalLight light, vec3 objNorm, vec4 objColor){
-    vec3 lightDir = vec3(cameraUbo._View * vec4(light._Direction, 1.f));
-    float weight = light._Intensity * dot(-lightDir, objNorm) / PI;
+    float weight = light._Intensity * dot(normalize(-light._Direction), objNorm) / PI;
     return max(weight, 0.f) * vec4(light._Color, 1.f) * objColor;
 }
 
@@ -124,7 +130,7 @@ vec3 getWi(PointLight light, vec3 objViewPos){
  * @return The wi vector
 */
 vec3 getWi(DirectionalLight light){
-    return normalize(vec3(cameraUbo._View * vec4(light._Direction, 1.f)));
+    return normalize(-light._Direction);
 }
 
 /**
@@ -156,19 +162,6 @@ float sqr(float a){
 }
 
 /**
- * Get the ggx normal distribution
- * @param wh The half vector
- * @param alpha The roughness
- * @param objNorm The normal of the current fragment
- * @return The normal distribution
-*/
-float getGGXDistribution(vec3 wh, float alpha, vec3 objNorm){
-    float alphaSqr = sqr(alpha);
-    float den = PI * sqr(1+(alphaSqr-1)*sqr(dot(objNorm, wh)));
-    return alphaSqr / den;
-}
-
-/**
  * Get the Beckmann normal distribution
  * @param wh The half vector
  * @param alpha The roughness
@@ -176,10 +169,23 @@ float getGGXDistribution(vec3 wh, float alpha, vec3 objNorm){
  * @return The normal distribution
 */
 float getBeckmannDistribution(vec3 wh, float alpha, vec3 objNorm){
-    float dotSqr = sqr(dot(objNorm, wh));
-    float alphaSqr = sqr(alpha);
-    float e = exp((dotSqr - 1) / (alphaSqr*dotSqr));
-    return e / (PI * alphaSqr * sqr(dotSqr));
+    float dotSqr = sqr(clamp(dot(objNorm, wh), 0.f, 1.f));
+    float a2 = sqr(alpha);
+    float e = exp((dotSqr - 1) / (a2*dotSqr));
+    return e / (PI * a2 * sqr(dotSqr));
+}
+
+/**
+ * Get the ggx normal distribution
+ * @param wh The half vector
+ * @param alpha The roughness
+ * @param objNorm The normal of the current fragment
+ * @return The normal distribution
+*/
+float getGGXDistribution(vec3 wh, float alpha, vec3 objNorm){
+    float a2 = sqr(alpha);
+    float den = PI * sqr(1+(a2-1)*sqr(clamp(dot(objNorm, wh), 0.f, 1.f))) + EPSILON;
+    return a2 / den;
 }
 
 /**
@@ -189,8 +195,9 @@ float getBeckmannDistribution(vec3 wh, float alpha, vec3 objNorm){
  * @param wh The half vector
  * @return The Fresnel term
 */
-float getSchlickFresnel(float f0, vec3 wi, vec3 wh){
-    return f0 + (1-f0)*pow((1-max(0, dot(wi, wh))), 5);
+vec3 getSchlickFresnel(vec3 f0, vec3 wi, vec3 wh){
+    float LoH = clamp(dot(wi, wh), 0.f, 1.f);
+    return f0 + (vec3(1.f) - f0) * pow(1.f - LoH, 5.f);
 }
 
 /**
@@ -202,12 +209,13 @@ float getSchlickFresnel(float f0, vec3 wi, vec3 wh){
  * @return The geometric term
 */
 float getCookTorranceGeometric(vec3 wi, vec3 wo, vec3 wh, vec3 objNorm){
-    float dotWhN = dot(objNorm, wh);
-    float dotWoN = dot(objNorm, wo);
-    float dotWiN = dot(objNorm, wi);
-    float dotWoWh = dot(wh, wo);
+    float dotWhN = clamp(dot(objNorm, wh), 0.f, 1.f);
+    float dotWoN = clamp(dot(objNorm, wo), 0.f, 1.f);
+    float dotWiN = clamp(dot(objNorm, wi), 0.f, 1.f);
+    float dotWoWh = clamp(dot(wh, wo), 0.f, 1.f);
     float minW = min((2.f*dotWhN*dotWiN), (2.f*dotWhN*dotWoN));
-    return min(1.f, minW/dotWoWh);
+    float den = dotWoWh + EPSILON;
+    return min(1.f, minW/den);
 }
 
 /**
@@ -218,9 +226,10 @@ float getCookTorranceGeometric(vec3 wi, vec3 wo, vec3 wh, vec3 objNorm){
  * @return The G1 value
 */
 float getG1Smith(vec3 w, vec3 objNorm, float alpha){
-    float dotNW = dot(objNorm, w);
-    float alphaSqr = sqr(alpha);
-    return (2.f*dotNW) / (dotNW + (sqrt(alphaSqr + (1-alphaSqr) * sqr(dotNW))));
+    float dotNW = clamp(dot(objNorm, w), 0.f, 1.f);
+    float a2 = sqr(alpha);
+    float den = (dotNW + (sqrt(a2 + (1-a2) * sqr(dotNW)))) + EPSILON;
+    return (2.f*dotNW) / den;
 }
 
 /**
@@ -232,8 +241,9 @@ float getG1Smith(vec3 w, vec3 objNorm, float alpha){
 */
 float getG1Schlick(vec3 w, vec3 objNorm, float alpha){
     float k = alpha * sqrt(2/PI);
-    float dotNW = dot(objNorm, w);
-    return dotNW / (dotNW*(1-k)+k);
+    float dotNW = clamp(dot(objNorm, w), 0.f, 1.f);
+    float den = (dotNW*(1-k)+k) + EPSILON;
+    return dotNW / den;
 }
 
 /**
@@ -260,24 +270,45 @@ float getGGXSchlickGeometric(vec3 wi, vec3 wo, vec3 objNorm, float alpha){
     return getG1Schlick(wi, objNorm, alpha) * getG1Schlick(wo, objNorm, alpha);
 }
 
-
-
-/// from https://github.com/wdas/brdf/blob/main/src/brdfs/disney.brdf
-float getAnisoGTR2(float NdotH, float HdotX, float HdotY, float ax, float ay){
-    return 1.f / (PI * ax*ay * sqr(sqr(HdotX/ax) + sqr(HdotY/ay) + NdotH*NdotH));
+/**
+ * Get the diffuse component of a BRDF
+ * @param m The material
+ * @param color The object color
+ * @return The diffuse component
+*/
+vec3 diffuseBRDF(Material m, vec3 color){
+    return (1.f - m._Metallic) * color / PI;
 }
 
-float getAnisoGGXSmithGeometric(float NdotV, float VdotX, float VdotY, float ax, float ay){
-    return 1.f / (NdotV + sqrt( sqr(VdotX*ax) + sqr(VdotY*ay) + sqr(NdotV)));
+vec3 getAttenuation(PointLight l, vec3 lightViewPos, vec3 fragViewPos) {
+	float d = distance(lightViewPos, fragViewPos);
+    float den = sqr(d) + EPSILON;
+	return l._Intensity * l._Color / den;
 }
 
-vec3 mon2lin(vec3 x){
-    return vec3(pow(x[0], 2.2), pow(x[1], 2.2), pow(x[2], 2.2));
+vec3 getAttenuation(DirectionalLight l) {
+	return l._Intensity * l._Color;
 }
 
-float getGTR1(float NdotH, float a){
-    if (a >= 1) return 1/PI;
-    float a2 = a*a;
-    float t = 1 + (a2-1)*NdotH*NdotH;
-    return (a2-1) / (PI*log(a2)*t);
+vec3 getToneMap (vec3 radiance, float exposure, float gamma) {
+	vec3 rgb = exposure * radiance;
+	return vec3 (pow (rgb.r, gamma), 
+				 pow (rgb.g, gamma),
+				 pow (rgb.b, gamma));
+}
+
+float D_GGX(vec3 n, vec3 wh, float a) {
+    float NoH = clamp(dot(n, wh), 0.f, 1.f);
+    float a2 = sqr(a);
+    float f = (NoH * a2 - NoH) * NoH + 1.0;
+    return a2 / (PI * f * f);
+}
+
+float V_SmithGGXCorrelated(vec3 wi, vec3 wo, vec3 n, float a) {
+    float NoV = abs(dot(n, wo)) + EPSILON;
+    float NoL = clamp(dot(n, wi), 0.f, 1.f);
+    float a2 = a * a;
+    float GGXL = NoV * sqrt((-NoL * a2 + NoL) * NoL + a2);
+    float GGXV = NoL * sqrt((-NoV * a2 + NoV) * NoV + a2);
+    return 0.5 / (GGXV + GGXL);
 }
