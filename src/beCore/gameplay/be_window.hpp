@@ -73,6 +73,7 @@ class Window{
             glfwSetWindowUserPointer(_Window, this);
             glfwSetWindowSizeCallback(_Window, frameBufferResizeCallback);
             glfwSetInputMode(_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            // glfwSetInputMode(_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
             glfwMakeContextCurrent(_Window);
         }
