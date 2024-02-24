@@ -50,27 +50,36 @@ void BeImgui::init(WindowPtr window, VulkanAppPtr vulkanApp, RendererPtr rendere
 	ErrorHandler::vulkanError(result, "Failed to create imgui descriptor pool!\n");
 
     // 2: initialize imgui library
-    // Setup Dear ImGui context
+     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    // io.WantCaptureMouse = true;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForVulkan(window->getWindow(), false);
-    
-    // ImGui_ImplGlfw_InitForVulkan(window->getWindow(), true);
+    ImGui_ImplGlfw_InitForVulkan(window->getWindow(), true);
+    // ImGui_ImplGlfw_InitForVulkan(window->getWindow(), false);
     ImGui_ImplVulkan_InitInfo init_info = {};
     init_info.Instance = vulkanApp->getInstance()->getInstance();
     init_info.PhysicalDevice = vulkanApp->getPhysicalDevice();
     init_info.Device = vulkanApp->getDevice();
-    init_info.QueueFamily = 0;
+    init_info.QueueFamily = vulkanApp->getQueueFamilyIndices().graphicsFamily.value();
     init_info.Queue = vulkanApp->getGraphicsQueue();
     init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.DescriptorPool = _ImguiPool;
-    init_info.Allocator = nullptr;
     init_info.RenderPass = renderer->getSwapChainRenderPass();
+    init_info.Subpass = 0;
     init_info.MinImageCount = SwapChain::VULKAN_MAX_FRAMES_IN_FLIGHT;
     init_info.ImageCount = SwapChain::VULKAN_MAX_FRAMES_IN_FLIGHT;
+    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+    init_info.Allocator = nullptr;
+    init_info.CheckVkResultFn = nullptr;
     ImGui_ImplVulkan_Init(&init_info);
 
     _IsInit = true;
