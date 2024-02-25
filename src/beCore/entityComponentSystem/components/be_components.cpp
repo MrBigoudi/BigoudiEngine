@@ -9,6 +9,8 @@ void Components::registerComponents(){
     GameCoordinator::registerComponent<ComponentTransform>();
     GameCoordinator::registerComponent<ComponentRenderSubSystem>();
     GameCoordinator::registerComponent<ComponentMaterial>();
+    GameCoordinator::registerComponent<ComponentCollider>();
+    GameCoordinator::registerComponent<ComponentRigidBody>();
 }
 
 };

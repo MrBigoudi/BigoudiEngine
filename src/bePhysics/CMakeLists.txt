@@ -9,3 +9,4 @@ target_include_directories(BigoudiEngine
 
 #include subdirectories
 add_subdirectory(collider)
+add_subdirectory(bodies)

@@ -88,7 +88,7 @@ class GameComponentArray : public IGameComponentArray{
                     "Retrieving unexisting element!\n"
                 );
             }
-            return _GameComponentArray[object];
+            return _GameComponentArray[_ObjectToIndexMap[object]];
         }
 
         void gameObjectDestroyed(GameObject object) override {

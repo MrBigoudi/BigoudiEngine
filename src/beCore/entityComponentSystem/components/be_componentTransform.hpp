@@ -33,7 +33,7 @@ struct ComponentTransform{
      * Getter to the object's model matrix
      * @return The 4x4 model matrix
     */
-    Matrix4x4 getModel(){
+    Matrix4x4 getModel() const {
         const float c3 = cos(_Rotation.z());
         const float s3 = sin(_Rotation.z());
         const float c2 = cos(_Rotation.x());

@@ -23,7 +23,7 @@ void RenderSystem::renderGameObjects(FrameInfo frameInfo, IRenderSubSystem* rend
     auto instance = get();
 
     for(auto const& object : instance->_Objects){
-        auto rss = be::GameCoordinator::getComponent<be::ComponentRenderSubSystem>(object);
+        auto rss = GameCoordinator::getComponent<ComponentRenderSubSystem>(object);
         if(rss._RenderSubSystem.get() == renderSubSystem){
             if(renderSubSystem->needPerObjectBind()){
                 renderSubSystem->updateDescriptorSets(object, frameInfo);
@@ -44,7 +44,7 @@ void RenderSystem::init(){
         );
         return;
     }
-    _System = GameCoordinator::registerSystem<be::RenderSystem>();
+    _System = GameCoordinator::registerSystem<RenderSystem>();
     if(_System == nullptr){
         ErrorHandler::handle(
             ErrorCode::NOT_INITIALIZED_ERROR,
@@ -52,11 +52,11 @@ void RenderSystem::init(){
         );
     }
     GameObjectSignature signature;
-    signature.set(be::GameCoordinator::getComponentType<ComponentModel>());
-    signature.set(be::GameCoordinator::getComponentType<ComponentTransform>());
-    signature.set(be::GameCoordinator::getComponentType<ComponentRenderSubSystem>());
-    signature.set(be::GameCoordinator::getComponentType<ComponentMaterial>());
-    GameCoordinator::setSystemSignature<be::RenderSystem>(signature);
+    signature.set(GameCoordinator::getComponentType<ComponentModel>());
+    signature.set(GameCoordinator::getComponentType<ComponentTransform>());
+    signature.set(GameCoordinator::getComponentType<ComponentRenderSubSystem>());
+    signature.set(GameCoordinator::getComponentType<ComponentMaterial>());
+    GameCoordinator::setSystemSignature<RenderSystem>(signature);
 }
 
 GameObject RenderSystem::createRenderableObject(
