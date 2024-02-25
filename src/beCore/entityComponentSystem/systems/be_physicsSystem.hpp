@@ -21,7 +21,10 @@ class PhysicsSystem : public GameSystem{
 
     public:
         static void init();
+        static void semiImplicitEuler(float dt, GameObject object);
+        static void handleCollisions(float dt, GameObject object);
         static void update(float dt);
+
 
 };
 

@@ -16,28 +16,75 @@ std::array<std::array<bool, Collider::NB_COLLIDER_LAYERS>, Collider::NB_COLLIDER
 }();
 
 bool Collider::collidingBoxVsBox(const BoxCollider* box1, const BoxCollider* box2){
-    Vector4 min{-0.5f, -0.5f, -0.5f, 1.f};
-    Vector4 max{0.5f, 0.5f, 0.5f, 1.f};
+    // Define the eight corners of each box in local space
+    std::vector<Vector4> box1Corners{
+        Vector4(-0.5f, -0.5f, -0.5f, 1.f),
+        Vector4(0.5f, -0.5f, -0.5f, 1.f),
+        Vector4(-0.5f, 0.5f, -0.5f, 1.f),
+        Vector4(0.5f, 0.5f, -0.5f, 1.f),
+        Vector4(-0.5f, -0.5f, 0.5f, 1.f),
+        Vector4(0.5f, -0.5f, 0.5f, 1.f),
+        Vector4(-0.5f, 0.5f, 0.5f, 1.f),
+        Vector4(0.5f, 0.5f, 0.5f, 1.f)
+    };
 
+    std::vector<Vector4> box2Corners{
+        Vector4(-0.5f, -0.5f, -0.5f, 1.f),
+        Vector4(0.5f, -0.5f, -0.5f, 1.f),
+        Vector4(-0.5f, 0.5f, -0.5f, 1.f),
+        Vector4(0.5f, 0.5f, -0.5f, 1.f),
+        Vector4(-0.5f, -0.5f, 0.5f, 1.f),
+        Vector4(0.5f, -0.5f, 0.5f, 1.f),
+        Vector4(-0.5f, 0.5f, 0.5f, 1.f),
+        Vector4(0.5f, 0.5f, 0.5f, 1.f)
+    };
+
+    // Apply the model matrix to each corner of box1
     Matrix4x4 box1Model = box1->_Transform.getModel();
-    Vector4 box1Min = box1Model * min;
-    Vector4 box1Max = box1Model * max;
-    float b1Xmin = box1Min.x();
-    float b1Xmax = box1Max.x();
-    float b1Ymin = box1Min.y();
-    float b1Ymax = box1Max.y();
-    float b1Zmin = box1Min.z();
-    float b1Zmax = box1Max.z();
+    box1Model.transpose();
+    for (size_t i = 0; i < box1Corners.size(); i++) {
+        box1Corners[i] = box1Model * box1Corners[i];
+    }
 
+    // Apply the model matrix to each corner of box2
     Matrix4x4 box2Model = box2->_Transform.getModel();
-    Vector4 box2Min = box2Model * min;
-    Vector4 box2Max = box2Model * max;
-    float b2Xmin = box2Min.x();
-    float b2Xmax = box2Max.x();
-    float b2Ymin = box2Min.y();
-    float b2Ymax = box2Max.y();
-    float b2Zmin = box2Min.z();
-    float b2Zmax = box2Max.z();
+    box2Model.transpose();
+    for (size_t i = 0; i < box2Corners.size(); i++) {
+        box2Corners[i] = box2Model * box2Corners[i];
+    }
+
+    // Calculate the actual minimum and maximum values in all directions
+    float b1Xmin = box1Corners[0].x();
+    float b1Xmax = box1Corners[0].x();
+    float b1Ymin = box1Corners[0].y();
+    float b1Ymax = box1Corners[0].y();
+    float b1Zmin = box1Corners[0].z();
+    float b1Zmax = box1Corners[0].z();
+
+    float b2Xmin = box2Corners[0].x();
+    float b2Xmax = box2Corners[0].x();
+    float b2Ymin = box2Corners[0].y();
+    float b2Ymax = box2Corners[0].y();
+    float b2Zmin = box2Corners[0].z();
+    float b2Zmax = box2Corners[0].z();
+
+    for (size_t i = 1; i < box1Corners.size(); i++) {
+        b1Xmin = std::min(b1Xmin, box1Corners[i].x());
+        b1Xmax = std::max(b1Xmax, box1Corners[i].x());
+        b1Ymin = std::min(b1Ymin, box1Corners[i].y());
+        b1Ymax = std::max(b1Ymax, box1Corners[i].y());
+        b1Zmin = std::min(b1Zmin, box1Corners[i].z());
+        b1Zmax = std::max(b1Zmax, box1Corners[i].z());
+    }
+
+    for (size_t i = 1; i < box2Corners.size(); i++) {
+        b2Xmin = std::min(b2Xmin, box2Corners[i].x());
+        b2Xmax = std::max(b2Xmax, box2Corners[i].x());
+        b2Ymin = std::min(b2Ymin, box2Corners[i].y());
+        b2Ymax = std::max(b2Ymax, box2Corners[i].y());
+        b2Zmin = std::min(b2Zmin, box2Corners[i].z());
+        b2Zmax = std::max(b2Zmax, box2Corners[i].z());
+    }
 
     return b1Xmin <= b2Xmax
         && b1Xmax >= b2Xmin

@@ -121,7 +121,7 @@ class Camera{
             float aspectRatio = 1.f,
             float fov = 50.f,
             float near = 0.1f,
-            float far = 10.f,
+            float far = 100.f,
             const Vector3& worldUp = {0.f, -1.f, 0.f});
 
         /**

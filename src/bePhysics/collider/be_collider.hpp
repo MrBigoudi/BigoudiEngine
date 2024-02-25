@@ -110,7 +110,7 @@ class Collider{
          * Tells if two collider can collide
         */
         bool canCollide(ColliderPtr collider){
-            return _ColliderLayerMatrix[_Layer][collider->_Layer];
+            return collider && _ColliderLayerMatrix[_Layer][collider->_Layer];
         }
 
         /**

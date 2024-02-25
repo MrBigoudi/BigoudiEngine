@@ -37,20 +37,60 @@ void PhysicsSystem::init(){
     GameCoordinator::setSystemSignature<be::PhysicsSystem>(signature);
 }
 
+void PhysicsSystem::semiImplicitEuler(float dt, GameObject object){
+    auto& transform = GameCoordinator::getComponent<ComponentTransform>(object);    
+    auto rigidBody = GameCoordinator::getComponent<ComponentRigidBody>(object)._RigidBody;    
+    auto collider = GameCoordinator::getComponent<ComponentCollider>(object)._Collider;
+
+    rigidBody->update(dt);
+    transform._Position += rigidBody->vel() * dt;
+    if(collider){
+        collider->_Transform._Position += rigidBody->vel() * dt;
+    }
+}
+
+void PhysicsSystem::handleCollisions(float dt, GameObject object){  
+    auto collider = GameCoordinator::getComponent<ComponentCollider>(object)._Collider;
+    if(!collider) return;
+    auto& transform = GameCoordinator::getComponent<ComponentTransform>(object);    
+    auto rigidBody = GameCoordinator::getComponent<ComponentRigidBody>(object)._RigidBody;
+
+    auto instance = get();
+    for(auto const& curObject : instance->_Objects){
+        if(object == curObject){
+            // self collision
+            continue;
+        }        
+        if(collider->isColliding(curObject)){
+            auto curObjectRigidBody = GameCoordinator::getComponent<ComponentRigidBody>(curObject)._RigidBody;
+            // TODO: change that
+            float K = 1.f / rigidBody->mass()
+                        + 1.f / curObjectRigidBody->mass();
+
+            // get normal of separating planes
+            Vector3 n = {0.f, 1.f, 0.f};
+
+            float j = Vector3::dot(
+                (rigidBody->vel() - curObjectRigidBody->vel()),
+                n /  K
+            );
+
+            Vector3 J = n*j;
+
+            // transform._Position += J;
+            transform._Position -= rigidBody->vel() * dt;
+            collider->_Transform._Position -= rigidBody->vel() * dt;
+        }
+    }
+}
+
+
 void PhysicsSystem::update(float dt){
     auto instance = get();
 
     for(auto const& object : instance->_Objects){
-        auto& transform = GameCoordinator::getComponent<ComponentTransform>(object);    
-        auto rigidBody = GameCoordinator::getComponent<ComponentRigidBody>(object)._RigidBody;    
-        auto collider = GameCoordinator::getComponent<ComponentCollider>(object)._Collider;
-
-        // semi implicit euler
-        rigidBody->update(dt);
-        transform._Position += rigidBody->vel() * dt;
-        if(collider){
-            collider->_Transform._Position += rigidBody->vel() * dt;
-        }
+        semiImplicitEuler(dt, object);
+        handleCollisions(dt, object);
     }
 }
 
