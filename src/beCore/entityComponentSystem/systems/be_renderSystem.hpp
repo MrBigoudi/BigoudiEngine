@@ -65,18 +65,18 @@ class RenderSystem : public GameSystem{
 
         /**
          * Create a renderable object
+         * @param renderSubSystem The render sub system of the new object
          * @param model The model of the new object
          * @param transform The transform component of the new object
          * @param material The material component of the new object
-         * @param renderSubSystem The render sub system of the new object
          * @return The id representing the newly created object
          * @see GameObject
         */
         static GameObject createRenderableObject(
+            ComponentRenderSubSystem renderSubSystem,
             ComponentModel model,
-            ComponentTransform transform,
-            ComponentMaterial material,
-            ComponentRenderSubSystem renderSubSystem
+            ComponentTransform transform = {._Transform = TransformPtr(new Transform())},
+            ComponentMaterial material = {._Material = MaterialPtr(new Material())}
         );
 };
 };

@@ -60,10 +60,10 @@ void RenderSystem::init(){
 }
 
 GameObject RenderSystem::createRenderableObject(
+        ComponentRenderSubSystem renderSubSystem,
         ComponentModel model,
         ComponentTransform transform,
-        ComponentMaterial material,
-        ComponentRenderSubSystem renderSubSystem
+        ComponentMaterial material
     ){
 
     auto newGameObject = GameCoordinator::createObject();

@@ -10,7 +10,7 @@ namespace be{
  * @see Transform
 */
 struct ComponentTransform{
-    TransformPtr _Transform = TransformPtr(new Transform());
+    TransformPtr _Transform = nullptr;
 };
 
 };
