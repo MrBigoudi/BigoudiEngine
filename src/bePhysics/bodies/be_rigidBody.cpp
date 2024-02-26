@@ -6,6 +6,8 @@ Vector3 RigidBody::vel() const {return _Velocity;}
 
 Vector3 RigidBody::acc() const {return _Acceleration;}
 
+float RigidBody::mass() const {return _Mass;}
+
 Vector3 RigidBody::getGravityForce(){
     return {0.f, -9.81f, 0.f};
 }

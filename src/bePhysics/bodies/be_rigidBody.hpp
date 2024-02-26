@@ -23,6 +23,7 @@ class RigidBody{
     public:
         Vector3 vel() const;
         Vector3 acc() const;
+        float mass() const;
         void update(float dt);
 
     private:

@@ -299,16 +299,37 @@ VertexDataBuilder VertexDataBuilder::primitiveCube(
     float hl = length / 2.f;
     VertexDataBuilder builder{};
     builder._Vertices = {
-        {._Pos = {-hl, -hl, hl}, ._Col = c},
-        {._Pos = {hl, -hl, hl}, ._Col = c},
-        {._Pos = {-hl, hl, hl}, ._Col = c},
-        {._Pos = {hl, hl, hl}, ._Col = c},
+        {._Pos = {-hl, -hl, hl}, ._Col = c, ._Norm = {0, 0, 1}},
+        {._Pos = {hl, -hl, hl}, ._Col = c, ._Norm = {0, 0, 1}},
+        {._Pos = {-hl, hl, hl}, ._Col = c, ._Norm = {0, 0, 1}},
+        {._Pos = {hl, hl, hl}, ._Col = c, ._Norm = {0, 0, 1}},
 
-        {._Pos = {-hl, -hl, -hl}, ._Col = c},
-        {._Pos = {hl, -hl, -hl}, ._Col = c},
-        {._Pos = {-hl, hl, -hl}, ._Col = c},
-        {._Pos = {hl, hl, -hl}, ._Col = c},
+        {._Pos = {-hl, -hl, -hl}, ._Col = c, ._Norm = {0, 0, -1}},
+        {._Pos = {hl, -hl, -hl}, ._Col = c, ._Norm = {0, 0, -1}},
+        {._Pos = {-hl, hl, -hl}, ._Col = c, ._Norm = {0, 0, -1}},
+        {._Pos = {hl, hl, -hl}, ._Col = c, ._Norm = {0, 0, -1}},
+        
+        {._Pos = {-hl, -hl, hl}, ._Col = c, ._Norm = {-1, 0, 0}},
+        {._Pos = {-hl, hl, hl}, ._Col = c, ._Norm = {-1, 0, 0}},
+        {._Pos = {-hl, -hl, -hl}, ._Col = c, ._Norm = {-1, 0, 0}},
+        {._Pos = {-hl, hl, -hl}, ._Col = c, ._Norm = {-1, 0, 0}},
+        
+        {._Pos = {hl, -hl, hl}, ._Col = c, ._Norm = {1, 0, 0}},
+        {._Pos = {hl, hl, hl}, ._Col = c, ._Norm = {1, 0, 0}},
+        {._Pos = {hl, -hl, -hl}, ._Col = c, ._Norm = {1, 0, 0}},
+        {._Pos = {hl, hl, -hl}, ._Col = c, ._Norm = {1, 0, 0}},
+        
+        {._Pos = {-hl, hl, hl}, ._Col = c, ._Norm = {0, 1, 0}},
+        {._Pos = {hl, hl, hl}, ._Col = c, ._Norm = {0, 1, 0}},
+        {._Pos = {-hl, hl, -hl}, ._Col = c, ._Norm = {0, 1, 0}},
+        {._Pos = {hl, hl, -hl}, ._Col = c, ._Norm = {0, 1, 0}},
+        
+        {._Pos = {-hl, -hl, hl}, ._Col = c, ._Norm = {0, -1, 0}},
+        {._Pos = {hl, -hl, hl}, ._Col = c, ._Norm = {0, -1, 0}},
+        {._Pos = {-hl, -hl, -hl}, ._Col = c, ._Norm = {0, -1, 0}},
+        {._Pos = {hl, -hl, -hl}, ._Col = c, ._Norm = {0, -1, 0}}
     };
+    
     builder._Indices = {
         // front face
         0, 1, 2,
@@ -317,18 +338,19 @@ VertexDataBuilder VertexDataBuilder::primitiveCube(
         4, 5, 6,
         6, 5, 7,
         // left face
-        4, 0, 6,
-        6, 0, 2,
+        8, 9, 10,
+        10, 9, 11,
         // right face
-        1, 5, 3,
-        3, 5, 7,
+        12, 13, 14,
+        14, 13, 15,
         // top face
-        2, 3, 6,
-        6, 3, 7,
+        16, 17, 18,
+        18, 17, 19,
         // bottom face
-        0, 4, 1,
-        1, 4, 5
+        20, 21, 22,
+        22, 21, 23
     };
+    
     return builder;
 }
 
