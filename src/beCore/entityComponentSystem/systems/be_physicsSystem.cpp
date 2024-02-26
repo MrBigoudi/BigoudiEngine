@@ -43,7 +43,7 @@ void PhysicsSystem::semiImplicitEuler(float dt, GameObject object){
     auto collider = GameCoordinator::getComponent<ComponentCollider>(object)._Collider;
 
     rigidBody->update(dt);
-    transform._Position += rigidBody->vel() * dt;
+    transform._Transform->_Position += rigidBody->vel() * dt;
     if(collider){
         collider->_Transform._Position += rigidBody->vel() * dt;
     }
@@ -78,7 +78,7 @@ void PhysicsSystem::handleCollisions(float dt, GameObject object){
             Vector3 J = n*j;
 
             // transform._Position += J;
-            transform._Position -= rigidBody->vel() * dt;
+            transform._Transform->_Position -= rigidBody->vel() * dt;
             collider->_Transform._Position -= rigidBody->vel() * dt;
         }
     }

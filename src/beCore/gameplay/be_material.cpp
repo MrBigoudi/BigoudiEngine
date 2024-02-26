@@ -1,10 +1,10 @@
-#include "be_componentMaterial.hpp"
+#include "be_material.hpp"
 #include "be_errorHandler.hpp"
 
 namespace be{
 
-const std::array<std::string, ComponentMaterial::COMPONENT_MATERIAL_NB_ELEMENTS> 
-    ComponentMaterial::COMPONENT_MATERIAL_NAMES{
+const std::array<std::string, Material::COMPONENT_MATERIAL_NB_ELEMENTS> 
+    Material::COMPONENT_MATERIAL_NAMES{
         "Metallic",
         "Subsurface",
         "Specular",
@@ -17,8 +17,8 @@ const std::array<std::string, ComponentMaterial::COMPONENT_MATERIAL_NB_ELEMENTS>
         "ClearcoatGloss",
 };
 
-const std::array<float, ComponentMaterial::COMPONENT_MATERIAL_NB_ELEMENTS> 
-    ComponentMaterial::COMPONENT_MATERIAL_MIN_VALUES{
+const std::array<float, Material::COMPONENT_MATERIAL_NB_ELEMENTS> 
+    Material::COMPONENT_MATERIAL_MIN_VALUES{
         0.f, // metallic
         0.f, // subsurface
         0.f, // specular
@@ -31,8 +31,8 @@ const std::array<float, ComponentMaterial::COMPONENT_MATERIAL_NB_ELEMENTS>
         0.f, // clearcoatGloss
 };
 
-const std::array<float, ComponentMaterial::COMPONENT_MATERIAL_NB_ELEMENTS> 
-    ComponentMaterial::COMPONENT_MATERIAL_MAX_VALUES{
+const std::array<float, Material::COMPONENT_MATERIAL_NB_ELEMENTS> 
+    Material::COMPONENT_MATERIAL_MAX_VALUES{
         1.f, // metallic
         1.f, // subsurface
         1.f, // specular
@@ -45,7 +45,7 @@ const std::array<float, ComponentMaterial::COMPONENT_MATERIAL_NB_ELEMENTS>
         1.f, // clearcoatGloss
 };
 
-void ComponentMaterial::check() const {
+void Material::check() const {
     uint32_t i = 0;
 
     if(_Metallic < COMPONENT_MATERIAL_MIN_VALUES[i]
@@ -170,7 +170,7 @@ void ComponentMaterial::check() const {
 
 }
 
-float& ComponentMaterial::get(uint32_t id){
+float& Material::get(uint32_t id){
     if(id > COMPONENT_MATERIAL_NB_ELEMENTS){
         ErrorHandler::handle(
             ErrorCode::BAD_VALUE_ERROR,

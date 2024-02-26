@@ -1,7 +1,7 @@
 #pragma once
 
 #include "be_gameObject.hpp"
-#include "be_componentTransform.hpp"
+#include "be_transform.hpp"
 #include "be_errorHandler.hpp"
 
 #include <cstdint>
@@ -48,7 +48,7 @@ class Collider{
         /**
         * The collider transform
         */
-        ComponentTransform _Transform{};
+        Transform _Transform{};
 
     protected:
         ColliderType _Type = NONE;
@@ -78,7 +78,7 @@ class Collider{
          * @param layer The layer id
          * @param transform The transform
         */
-        Collider(ColliderLayer layer, ComponentTransform transform)
+        Collider(ColliderLayer layer, Transform transform)
             : _Layer(layer), _Transform(transform){
             isLayerCorrect(layer);
         };
@@ -130,7 +130,7 @@ class BoxCollider: public Collider{
          * @param layer The layer id
          * @param transform The transform
         */
-        BoxCollider(ColliderLayer layer, ComponentTransform transform)
+        BoxCollider(ColliderLayer layer, Transform transform)
             : Collider(layer, transform){
             _Type = BOX_COLLIDER;
         };
