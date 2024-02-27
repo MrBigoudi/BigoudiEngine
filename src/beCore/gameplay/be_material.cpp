@@ -206,4 +206,41 @@ float& Material::get(uint32_t id){
     }
 }
 
+void MaterialUboContainer::update(uint32_t frameIndex){
+    checkFrameIndex(frameIndex);
+    _UboData.check();
+    _Ubos[frameIndex]->writeToBuffer(&_UboData);
+}
+
+void MaterialUboContainer::init(uint32_t size, VulkanAppPtr vulkanApp){
+    UboContainer::init(size, vulkanApp);
+    _UboData = Material{};
+    for(uint32_t i = 0; i<_Size; i++){
+        _Ubos[i] = be::BufferPtr(new be::Buffer(
+            vulkanApp, 
+            sizeof(Material),
+            1,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            vulkanApp->getProperties().limits.minUniformBufferOffsetAlignment
+        ));
+        _Ubos[i]->map();
+    }
+}
+
+void MaterialUboContainer::setMaterial(MaterialPtr material){
+    material->check();
+    _UboData = Material{};
+    _UboData._Metallic = material->_Metallic;
+    _UboData._Subsurface = material->_Subsurface;
+    _UboData._Specular = material->_Specular;
+    _UboData._Roughness = material->_Roughness;
+    _UboData._SpecularTint = material->_SpecularTint;
+    _UboData._Anisotropic = material->_Anisotropic;
+    _UboData._Sheen = material->_Sheen;
+    _UboData._SheenTint = material->_SheenTint;
+    _UboData._Clearcoat = material->_Clearcoat;
+    _UboData._ClearcoatGloss = material->_ClearcoatGloss;
+}
+
 };

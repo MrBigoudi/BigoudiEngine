@@ -101,4 +101,33 @@ void Camera::updateCameraVectors(){
     _Up    = Vector3::normalize(Vector3::cross(-_At, _Right));
 }
 
+void CameraUboContainer::setView(const Matrix4x4& view){
+    _UboData._View = view;
+}
+
+void CameraUboContainer::setProj(const Matrix4x4& proj){
+    _UboData._Proj = proj;
+}
+
+void CameraUboContainer::update(uint32_t frameIndex){
+    checkFrameIndex(frameIndex);
+    _Ubos[frameIndex]->writeToBuffer(&_UboData);
+}
+
+void CameraUboContainer::init(uint32_t size, VulkanAppPtr vulkanApp){
+    UboContainer::init(size, vulkanApp);
+    _UboData = CameraUboData{};
+    for(uint32_t i = 0; i<_Size; i++){
+        _Ubos[i] = be::BufferPtr(new be::Buffer(
+            vulkanApp, 
+            sizeof(CameraUboData),
+            1,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            vulkanApp->getProperties().limits.minUniformBufferOffsetAlignment
+        ));
+        _Ubos[i]->map();
+    }
+}
+
 };

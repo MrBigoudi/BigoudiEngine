@@ -2,6 +2,7 @@
 
 
 #include "be_matrix4x4.hpp"
+#include "be_ubo.hpp"
 #include "be_vector3.hpp"
 #include <memory>
 
@@ -179,6 +180,23 @@ class Camera{
          * Update camera's frame
         */
         void updateCameraVectors();
+};
+
+struct CameraUboData: UboData{
+    alignas(16) be::Matrix4x4 _View{1.f};
+    alignas(16) be::Matrix4x4 _Proj{1.f};
+};
+
+class CameraUboContainer: public UboContainer{
+    private:
+        CameraUboData _UboData{};
+
+    public:
+        virtual void init(uint32_t size, VulkanAppPtr vulkanApp) override;
+        virtual void update(uint32_t frameIndex) override;
+
+        void setView(const Matrix4x4& view);
+        void setProj(const Matrix4x4& proj);
 };
 
 };

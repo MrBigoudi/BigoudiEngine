@@ -17,3 +17,5 @@
 - Add initializers for the components (addTransform..., ...)
 - Fixed update and modify dt
 - Limit fps
+
+- Put the ubos structures in the engine

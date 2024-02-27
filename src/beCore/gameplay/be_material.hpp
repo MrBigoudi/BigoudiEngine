@@ -1,5 +1,6 @@
 #pragma once
 
+#include "be_ubo.hpp"
 #include <array>
 #include <cstdint>
 #include <string>
@@ -15,7 +16,7 @@ using MaterialPtr = std::shared_ptr<Material>;
  * @note This class is based on disney's brdfs implementation
  * @see https://github.com/wdas/brdf/blob/main/src/brdfs/disney.brdf
 */
-class Material{
+class Material: public UboData{
     public:
         /**
         * The metallicness value
@@ -131,6 +132,17 @@ class Material{
         * @return A reference to this value
         */
         float& get(uint32_t id);
+};
+
+class MaterialUboContainer: public UboContainer{
+    private:
+        Material _UboData{};
+
+    public:
+        virtual void init(uint32_t size, VulkanAppPtr vulkanApp) override;
+        virtual void update(uint32_t frameIndex) override;
+
+        void setMaterial(MaterialPtr material);
 };
 
 }
