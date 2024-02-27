@@ -31,6 +31,7 @@ void PhysicsSystem::init(){
         );
     }
     GameObjectSignature signature;
+    signature.set(be::GameCoordinator::getComponentType<ComponentModel>());
     signature.set(be::GameCoordinator::getComponentType<ComponentCollider>());
     signature.set(be::GameCoordinator::getComponentType<ComponentTransform>());
     signature.set(be::GameCoordinator::getComponentType<ComponentRigidBody>());
@@ -42,8 +43,9 @@ void PhysicsSystem::semiImplicitEuler(float dt, GameObject object){
     auto rigidBody = GameCoordinator::getComponent<ComponentRigidBody>(object)._RigidBody;    
     auto collider = GameCoordinator::getComponent<ComponentCollider>(object)._Collider;
 
-    rigidBody->update(dt);
-    transform._Transform->_Position += rigidBody->vel() * dt;
+    rigidBody->computeForces();
+    rigidBody->updateLinearMomentum(dt);
+    rigidBody->updatePosition(transform._Transform->_Position, dt);
     if(collider){
         collider->_Transform._Position += rigidBody->vel() * dt;
     }
@@ -92,6 +94,8 @@ void PhysicsSystem::update(float dt){
         semiImplicitEuler(dt, object);
         handleCollisions(dt, object);
     }
+
+    RigidBody::updateStepCounter();
 }
 
 };
