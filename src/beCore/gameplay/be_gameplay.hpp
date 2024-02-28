@@ -6,3 +6,4 @@
 #include "be_window.hpp" // IWYU pragma: keep
 #include "be_pushConstants.hpp" // IWYU pragma: keep
 #include "be_lights.hpp" // IWYU pragma: keep
+#include "be_scene.hpp" // IWYU pragma: keep
