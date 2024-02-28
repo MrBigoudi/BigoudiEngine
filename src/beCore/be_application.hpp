@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "be_renderer.hpp"
+#include "be_renderer.hpp" // IWYU pragma: keep
 #include "be_window.hpp"
 #include "be_vulkanApp.hpp"
 
