@@ -61,7 +61,6 @@ void PhysicsSystem::handleCollisions(float dt, GameObject object){
     if(!collider) return;
     auto rigidBody = GameCoordinator::getComponent<ComponentRigidBody>(object)._RigidBody;
     if(!rigidBody->isMovable()) return;
-    fprintf(stdout, "cur obj: %d\n", object);
 
     auto instance = get();
     for(auto const& curObject : instance->_Objects){

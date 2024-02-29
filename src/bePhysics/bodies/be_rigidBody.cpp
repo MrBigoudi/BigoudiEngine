@@ -83,9 +83,9 @@ Vector3 RigidBody::getImpulse(const RigidBodyPtr r, const Vector3& n, const Vect
 }
 
 void RigidBody::updateForceImpulse(const Vector3& J){
-    fprintf(stdout, "linear momentum before: %s\n", _LinearMomentum.toString().c_str());
+    // fprintf(stdout, "linear momentum before: %s\n", _LinearMomentum.toString().c_str());
     _LinearMomentum += J;
-    fprintf(stdout, "linear momentum after: %s\n", _LinearMomentum.toString().c_str());
+    // fprintf(stdout, "linear momentum after: %s\n", _LinearMomentum.toString().c_str());
 }
 
 void RigidBody::updateTorqueImpulse(const Vector3& J, const Vector3& contactPoint){
