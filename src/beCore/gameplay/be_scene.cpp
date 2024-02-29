@@ -199,6 +199,7 @@ tinygltf::Model Scene::loadModelGLTF(const std::string& filepath){
     bool res = gltfLoader.LoadASCIIFromFile(&gltfModel, &err, &warn, filepath);
     if (!warn.empty()) {
         ErrorHandler::handle(
+            __FILE__, __LINE__, 
             ErrorCode::TINYGLTF_ERROR,
             "Warning loading gltf file `" + filepath + "':\n\t"+warn+"\n",
             ErrorLevel::WARNING
@@ -207,6 +208,7 @@ tinygltf::Model Scene::loadModelGLTF(const std::string& filepath){
 
     if (!err.empty()) {
         ErrorHandler::handle(
+            __FILE__, __LINE__, 
             ErrorCode::TINYGLTF_ERROR,
             "Error loading gltf file `" + filepath + "':\n\t"+err+"\n"
         );
@@ -214,6 +216,7 @@ tinygltf::Model Scene::loadModelGLTF(const std::string& filepath){
 
     if (!res){
         ErrorHandler::handle(
+            __FILE__, __LINE__, 
             ErrorCode::TINYGLTF_ERROR,
             "Failed to load gltf file `" + filepath + "'\n"
         );
