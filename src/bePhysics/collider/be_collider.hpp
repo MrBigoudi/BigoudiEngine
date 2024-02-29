@@ -61,7 +61,7 @@ class Collider{
         */
         static void isLayerCorrect(ColliderLayer layer){
             if(layer >= NB_COLLIDER_LAYERS){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::BAD_VALUE_ERROR,
                     "Can't initiate a collider with a layer greater than "
                     + std::to_string(NB_COLLIDER_LAYERS)

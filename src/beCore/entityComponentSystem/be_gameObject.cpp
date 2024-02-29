@@ -9,7 +9,7 @@ GameObjectManagerPtr GameObjectManager::_GameObjectManager = nullptr;
 GameObject GameObjectManager::createObject(){
     GameObjectManagerPtr instance = GameObjectManager::manager();
     if(instance->_LivingObjects >= MAX_NB_GAME_OBJECTS){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::OUT_OF_RANGE_ERROR, 
             "Too many objects, can't create a new one!\n"
         );
@@ -25,7 +25,7 @@ GameObject GameObjectManager::createObject(){
 void GameObjectManager::destroyObject(GameObject object){
     GameObjectManagerPtr instance = GameObjectManager::manager();
     if(object >= MAX_NB_GAME_OBJECTS){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::OUT_OF_RANGE_ERROR, 
             "Can't destroy object " + std::to_string(object) + " max id is " + std::to_string(MAX_NB_GAME_OBJECTS) + "!\n",
             ErrorLevel::WARNING
@@ -40,7 +40,7 @@ void GameObjectManager::destroyObject(GameObject object){
 void GameObjectManager::setSignature(GameObject object, GameObjectSignature signature){
     GameObjectManagerPtr instance = GameObjectManager::manager();
     if(object >= MAX_NB_GAME_OBJECTS){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::OUT_OF_RANGE_ERROR, 
             "Can't create signature for object " + std::to_string(object) + " max id is " + std::to_string(MAX_NB_GAME_OBJECTS) + "!\n",
             ErrorLevel::WARNING
@@ -53,7 +53,7 @@ void GameObjectManager::setSignature(GameObject object, GameObjectSignature sign
 GameObjectSignature GameObjectManager::getSignature(GameObject object){
     GameObjectManagerPtr instance = GameObjectManager::manager();
     if(object >= MAX_NB_GAME_OBJECTS){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::OUT_OF_RANGE_ERROR, 
             "Can't get signature from object " + std::to_string(object) + " max id is " + std::to_string(MAX_NB_GAME_OBJECTS) + "!\n"
         );

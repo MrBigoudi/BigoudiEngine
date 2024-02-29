@@ -57,21 +57,21 @@ Matrix4x4 perspective(
     float far
 ){
     if(aspectRatio == 0.f){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have a 0 aspect ratio when building a perspective matrix!\n"
         );
     }
 
     if(fovy == 0.f){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have a 0 fov when building a perspective matrix!\n"
         );
     }
 
     if(near == far){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have equal near and far planes when building a perspective matrix!\n"
         );
@@ -106,21 +106,21 @@ Matrix4x4 perspective(
     float far
 ){
     if(left == right){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have equal left and right planes when building a perspective matrix!\n"
         );
     }
 
     if(bottom == top){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have equal bottom and top planes when building a perspective matrix!\n"
         );
     }
 
     if(near == far){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have equal near and far planes when building a perspective matrix!\n"
         );
@@ -152,21 +152,21 @@ Matrix4x4 ortho(
     float far
 ){
     if(left == right){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have equal left and right planes when building an ortho matrix!\n"
         );
     }
 
     if(bottom == top){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have equal bottom and top planes when building an ortho matrix!\n"
         );
     }
 
     if(near == far){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't have equal near and far planes when building an ortho matrix!\n"
         );

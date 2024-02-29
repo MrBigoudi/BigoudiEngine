@@ -40,7 +40,7 @@ class GameComponentArray : public IGameComponentArray{
     private:
         void insert(GameObject object, const T& component){
             if(_ObjectToIndexMap.find(object) != _ObjectToIndexMap.end()){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::BAD_VALUE_ERROR,
                     "Component added to same object more than once!\n",
                     ErrorLevel::WARNING
@@ -57,7 +57,7 @@ class GameComponentArray : public IGameComponentArray{
 
         void remove(GameObject object){
             if(_ObjectToIndexMap.find(object) == _ObjectToIndexMap.end()){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::BAD_VALUE_ERROR,
                     "Removing unexisting component!\n",
                     ErrorLevel::WARNING
@@ -83,7 +83,7 @@ class GameComponentArray : public IGameComponentArray{
 
         T& get(GameObject object){
             if(_ObjectToIndexMap.find(object) == _ObjectToIndexMap.end()){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::BAD_VALUE_ERROR,
                     "Retrieving unexisting element!\n"
                 );
@@ -118,7 +118,7 @@ class GameComponentManager{
         std::shared_ptr<GameComponentArray<T>> getComponentArray(){
             const char* typeName = typeid(T).name();
             if(_GameComponentTypes.find(typeName) == _GameComponentTypes.end()){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::NOT_INITIALIZED_ERROR,
                     "Component " + std::string(typeName) + " not registered before use!\n"
                 );
@@ -143,7 +143,7 @@ class GameComponentManager{
             auto instance = manager();
             const char* typeName = typeid(T).name();
             if(instance->_GameComponentTypes.find(typeName) != instance->_GameComponentTypes.end()){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::BAD_VALUE_ERROR,
                     "Component " + std::string(typeName) + " is already registered!\n",
                     ErrorLevel::WARNING
@@ -166,7 +166,7 @@ class GameComponentManager{
             auto instance = manager();
             const char* typeName = typeid(T).name();
             if(instance->_GameComponentTypes.find(typeName) == instance->_GameComponentTypes.end()){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::NOT_INITIALIZED_ERROR,
                     "Component " + std::string(typeName) + " not registered before use!\n"
                 );

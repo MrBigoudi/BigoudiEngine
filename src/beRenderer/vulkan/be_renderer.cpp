@@ -48,7 +48,7 @@ void Renderer::initSwapChain(){
         );
 
         if(!oldSwapChain->compareSwapFormat(_SwapChain)){
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::UNEXPECTED_VALUE_ERROR,
                 "Swap chain image or depth format has changed!\n"
             );
@@ -66,7 +66,7 @@ void Renderer::initCommandBuffers(){
     allocateInfo.commandBufferCount = static_cast<uint32_t>(_CommandBuffers.size());
 
     VkResult result = vkAllocateCommandBuffers(_VulkanApp->getDevice(), &allocateInfo, _CommandBuffers.data());
-    ErrorHandler::vulkanError(result, "Failed to allocate the command buffers!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to allocate the command buffers!\n");
 }
 
 void Renderer::recreateSwapChain(){
@@ -83,7 +83,7 @@ void Renderer::recreateSwapChain(){
 
 VkCommandBuffer Renderer::beginFrame(){
     if(_IsFrameStarted){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't call begin frame while already in progress!\n"
         );
@@ -97,7 +97,7 @@ VkCommandBuffer Renderer::beginFrame(){
     }
 
     if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::VULKAN_ERROR, 
             "Failed to acquire next swap chain image!\n"
         );
@@ -110,14 +110,14 @@ VkCommandBuffer Renderer::beginFrame(){
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     
     result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
-    ErrorHandler::vulkanError(result, "Failed to begin recording command buffer!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to begin recording command buffer!\n");
 
     return commandBuffer;
 }
 
 void Renderer::endFrame(){
     if(!_IsFrameStarted){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't call end frame if frame is not in progress"
         );
@@ -125,7 +125,7 @@ void Renderer::endFrame(){
     
     auto commandBuffer = getCurrentCommandBuffer();
     VkResult result = vkEndCommandBuffer(commandBuffer);
-    ErrorHandler::vulkanError(result, "Failed to record command buffer!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to record command buffer!\n");
 
     result = _SwapChain->submitCommandBuffers(&commandBuffer, &_CurrentImageIndex);
     if(result == VK_ERROR_OUT_OF_DATE_KHR 
@@ -135,7 +135,7 @@ void Renderer::endFrame(){
         _Window->resetWindowResizedFlag();
         recreateSwapChain();
     } else {
-        ErrorHandler::vulkanError(result, "Failed to present swap chain image!\n");
+        ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to present swap chain image!\n");
     }
 
     _IsFrameStarted = false;
@@ -144,14 +144,14 @@ void Renderer::endFrame(){
 
 void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer){
     if(!_IsFrameStarted){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't begin render pass if frame is not in progress!\n"
         );
     }
 
     if(commandBuffer != getCurrentCommandBuffer()){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't begin render pass on command buffer from a different frame!\n"
         );
@@ -191,14 +191,14 @@ void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer){
 
 void Renderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer){
     if(!_IsFrameStarted){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't end render pass if frame is not in progress!\n"
         );
     }
 
     if(commandBuffer != getCurrentCommandBuffer()){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Can't end render pass on command buffer from a different frame!\n"
         );

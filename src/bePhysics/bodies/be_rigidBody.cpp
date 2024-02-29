@@ -18,7 +18,7 @@ bool RigidBody::isMovable() const { return _Movable;}
 
 RigidBody::RigidBody(bool movable, float mass) : _Movable(movable), _Mass(mass){
     if(mass < EPSILON){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "A mass for a rigid body can't be too low!\n"
         );
@@ -28,7 +28,7 @@ RigidBody::RigidBody(bool movable, float mass) : _Movable(movable), _Mass(mass){
 RigidBody::RigidBody(bool movable, float mass, const Vector3& initialForce, const Vector3& initialTorque)
     : _Movable(movable), _Mass(mass), _Force(initialForce), _Torque(initialTorque){
     if(mass < EPSILON){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "A mass for a rigid body can't be too low!\n"
         );

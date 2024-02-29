@@ -53,7 +53,7 @@ class Renderer{
 
         VkCommandBuffer getCurrentCommandBuffer() const {
             if(!_IsFrameStarted){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::NOT_INITIALIZED_ERROR, 
                     "Can't get command buffer when frame not in progress!\n"
                 );
@@ -71,7 +71,7 @@ class Renderer{
 
         uint32_t getFrameIndex() const {
             if(!_IsFrameStarted){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::NOT_INITIALIZED_ERROR, 
                     "Can't get current frame index when frame not in progress!\n"
                 );

@@ -14,7 +14,7 @@ class UboContainer{
     protected:
         void checkFrameIndex(uint32_t frameIndex){
             if(frameIndex >= _Size){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::OUT_OF_RANGE_ERROR,
                     "Can't access frame index " 
                     + std::to_string(frameIndex)

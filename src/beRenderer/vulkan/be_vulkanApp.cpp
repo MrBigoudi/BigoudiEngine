@@ -42,7 +42,7 @@ void VulkanApp::pickPhysicalDevice(){
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(_Instance->getInstance(), &deviceCount, nullptr);
     if(deviceCount == 0){
-        ErrorHandler::handle(ErrorCode::VULKAN_ERROR, "Failed to find GPUs with Vulkan support!\n");
+        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::VULKAN_ERROR, "Failed to find GPUs with Vulkan support!\n");
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -59,7 +59,7 @@ void VulkanApp::pickPhysicalDevice(){
     if (candidates.rbegin()->first > 0) {
         _VulkanPhysicalDevice = candidates.rbegin()->second;
     } else {
-        ErrorHandler::handle(ErrorCode::VULKAN_ERROR, "Failed to find a suitable GPU!\n");
+        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::VULKAN_ERROR, "Failed to find a suitable GPU!\n");
     }
 }
 
@@ -184,7 +184,7 @@ void VulkanApp::createLogicalDevice(){
 
 void VulkanApp::createSurface(){
     VkResult result = _Window->createWindowSurface(_Instance->getInstance(), _VulkanSurface);
-    ErrorHandler::vulkanError(result, "Failed to create a window surface!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create a window surface!\n");
 }
 
 void VulkanApp::createCommandPool(){
@@ -202,7 +202,7 @@ void VulkanApp::createCommandPool(){
         &_VulkanCommandPool
     );
     
-    ErrorHandler::vulkanError(result, "Failed to create command pool!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create command pool!\n");
 }
 
 bool VulkanApp::checkDeviceExtensionsSupport(VkPhysicalDevice device){
@@ -280,7 +280,7 @@ VkFormat VulkanApp::findSupportedFormat(
         }
     }
 
-    ErrorHandler::handle(ErrorCode::VULKAN_ERROR, "Failed to find supported format!\n");
+    ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::VULKAN_ERROR, "Failed to find supported format!\n");
     return candidates[0];
 }
 
@@ -294,7 +294,7 @@ uint32_t VulkanApp::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pr
         }
     }
 
-    ErrorHandler::handle(ErrorCode::VULKAN_ERROR, "Failed to find suitable memory type!\n");
+    ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::VULKAN_ERROR, "Failed to find suitable memory type!\n");
     return 0;
 }
 
@@ -314,7 +314,7 @@ void VulkanApp::createBuffer(
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
     VkResult result = vkCreateBuffer(_VulkanLogicalDevice, &bufferInfo, nullptr, &buffer);
-    ErrorHandler::vulkanError(result, "Failed to create vertex buffer!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create vertex buffer!\n");
 
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(_VulkanLogicalDevice, buffer, &memRequirements);
@@ -325,7 +325,7 @@ void VulkanApp::createBuffer(
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
     result = vkAllocateMemory(_VulkanLogicalDevice, &allocInfo, nullptr, &bufferMemory); 
-    ErrorHandler::vulkanError(result, "Failed to allocate vertex buffer memory!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to allocate vertex buffer memory!\n");
 
     vkBindBufferMemory(_VulkanLogicalDevice, buffer, bufferMemory, 0);
 }
@@ -412,7 +412,7 @@ void VulkanApp::createImageWithInfo(
     VkDeviceMemory &imageMemory) {
 
     VkResult result = vkCreateImage(_VulkanLogicalDevice, &imageInfo, nullptr, &image);
-    ErrorHandler::vulkanError(result, "Failed to create image!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create image!\n");
 
     VkMemoryRequirements memRequirements;
     vkGetImageMemoryRequirements(_VulkanLogicalDevice, image, &memRequirements);
@@ -423,10 +423,10 @@ void VulkanApp::createImageWithInfo(
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
     result = vkAllocateMemory(_VulkanLogicalDevice, &allocInfo, nullptr, &imageMemory);
-    ErrorHandler::vulkanError(result, "Failed to allocate image memory!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to allocate image memory!\n");
 
     result = vkBindImageMemory(_VulkanLogicalDevice, image, imageMemory, 0);
-    ErrorHandler::vulkanError(result, "Failed to bind image memory!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to bind image memory!\n");
 }
 
 };

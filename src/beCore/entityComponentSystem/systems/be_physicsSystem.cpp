@@ -18,7 +18,7 @@ PhysicsSystemPtr PhysicsSystem::get(){
 
 void PhysicsSystem::init(){
     if(_System != nullptr){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "The physics system has already been initialized!\n",
             ErrorLevel::WARNING
@@ -27,7 +27,7 @@ void PhysicsSystem::init(){
     }
     _System = GameCoordinator::registerSystem<be::PhysicsSystem>();
     if(_System == nullptr){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::NOT_INITIALIZED_ERROR,
             "Failed to initialize the ECS physics system!\n"
         );

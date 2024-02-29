@@ -6,7 +6,7 @@ namespace be{
 
 void LightUboContainer::addPointLight(const Vector3& position, const Vector3& color, float intensity){
     if(_UboData._NbPointLights >= MAX_NB_POINT_LIGHTS){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::OUT_OF_RANGE_ERROR,
             "Can't add more point light in the UBO!\n",
             ErrorLevel::WARNING
@@ -23,7 +23,7 @@ void LightUboContainer::addPointLight(const Vector3& position, const Vector3& co
 
 void LightUboContainer::addDirectionalLight(const Vector3& direction, const Vector3& color, float intensity){
     if(_UboData._NbDirectionalLights >= MAX_NB_DIRECTIONAL_LIGHTS){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::OUT_OF_RANGE_ERROR,
             "Can't add more directional light in the UBO!\n",
             ErrorLevel::WARNING

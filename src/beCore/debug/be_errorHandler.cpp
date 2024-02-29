@@ -9,14 +9,16 @@ namespace be{
  * @param msg The error message to display
  * @param level The error level
 */
-void ErrorHandler::defaultCase(const std::string& msg, ErrorLevel level){
+void ErrorHandler::defaultCase(const std::string& fileName, int lineNumber, const std::string& msg, ErrorLevel level){
     switch(level){
         case FATAL:
+            fprintf(stderr, "Error triggered in %s:%d\n\t", fileName.c_str(), lineNumber);
             fprintf(stderr, "%s", msg.c_str());
             fprintf(stderr, "Exiting the program!\n");
             exit(EXIT_FAILURE);
             break;
         case WARNING:
+            fprintf(stderr, "Warning triggered in %s:%d\n\t", fileName.c_str(), lineNumber);
             fprintf(stderr, "%s", msg.c_str());
             fprintf(stderr, "Warning, continue the program!\n");
             break;
@@ -31,12 +33,12 @@ void ErrorHandler::defaultCase(const std::string& msg, ErrorLevel level){
  * @param msg The error message to display
  * @param level The error level
 */
-void ErrorHandler::handle(ErrorCode error, const std::string& msg, ErrorLevel level){
+void ErrorHandler::handle(const std::string& fileName, int lineNumber, ErrorCode error, const std::string& msg, ErrorLevel level){
     switch(error){
         case NO_ERROR:
             break;
         default:
-            defaultCase(msg, level);
+            defaultCase(fileName, lineNumber, msg, level);
             break;
     }
 }
@@ -47,11 +49,11 @@ void ErrorHandler::handle(ErrorCode error, const std::string& msg, ErrorLevel le
  * @param msg Th error message to display
  * @param level The error level
 */
-void ErrorHandler::vulkanError(VkResult result, const std::string& msg, ErrorLevel level){
+void ErrorHandler::vulkanError(const std::string& fileName, int lineNumber, VkResult result, const std::string& msg, ErrorLevel level){
     if(result == VK_SUCCESS){
         return;
     }
-    handle(VULKAN_ERROR, msg, level);
+    handle(fileName, lineNumber, VULKAN_ERROR, "Vulkan error, code: " + std::to_string(result) + "\n\t" + msg, level);
 }
 
 /**
@@ -59,8 +61,8 @@ void ErrorHandler::vulkanError(VkResult result, const std::string& msg, ErrorLev
  * @param msg Th error message to display
  * @param level The error level
 */
-void ErrorHandler::glfwError(const std::string& msg, ErrorLevel level){
-    handle(GLFW_ERROR, msg, level);
+void ErrorHandler::glfwError(const std::string& fileName, int lineNumber, const std::string& msg, ErrorLevel level){
+    handle(fileName, lineNumber, GLFW_ERROR, msg, level);
 }
 
 };

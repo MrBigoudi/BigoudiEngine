@@ -51,7 +51,7 @@ class ErrorHandler{
          * @param msg The error message to display
          * @param level The error level
         */
-        static void handle(ErrorCode error, const std::string& msg = "", ErrorLevel level = FATAL);
+        static void handle(const std::string& fileName, int lineNumber, ErrorCode error, const std::string& msg = "", ErrorLevel level = FATAL);
 
         /**
          * Handle a vulkan error
@@ -59,14 +59,14 @@ class ErrorHandler{
          * @param msg Th error message to display
          * @param level The error level
         */
-        static void vulkanError(VkResult result, const std::string& msg = "", ErrorLevel level = FATAL);
+        static void vulkanError(const std::string& fileName, int lineNumber, VkResult result, const std::string& msg = "", ErrorLevel level = FATAL);
 
         /**
          * Handle a glfw error
          * @param msg Th error message to display
          * @param level The error level
         */
-        static void glfwError(const std::string& msg, ErrorLevel level = FATAL);
+        static void glfwError(const std::string& fileName, int lineNumber, const std::string& msg, ErrorLevel level = FATAL);
 
     private:
         /**
@@ -76,7 +76,7 @@ class ErrorHandler{
          * @param msg The error message to display
          * @param level The error level
         */
-        static void defaultCase(const std::string& msg = "", ErrorLevel level = FATAL);
+        static void defaultCase(const std::string& fileName, int lineNumber, const std::string& msg = "", ErrorLevel level = FATAL);
 
 };
 

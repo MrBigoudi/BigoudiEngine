@@ -161,7 +161,7 @@ void Vector2::v(float v){
 float Vector2::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
         fprintf(stderr, "Index %d out of range for Vector2!\n", index);
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR, 
             "Index " + std::to_string(index) + " out of range for Vector2!\n",
             ErrorLevel::WARNING
@@ -178,7 +178,7 @@ float Vector2::operator[](int index) const{
 float& Vector2::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
         fprintf(stderr, "Index %d out of range for Vector2!\n", index);
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR, 
             "Index " + std::to_string(index) + " out of range for Vector2!\n",
             ErrorLevel::WARNING
@@ -268,7 +268,7 @@ void Vector2::operator*=(float scalar){
 */
 void Vector2::operator/=(float scalar){
     if(scalar == 0.f){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::ZERO_DIVIDE_ERROR, 
             "Cannot divide by 0!\n",
             ErrorLevel::WARNING
@@ -356,7 +356,7 @@ float Vector2::getNorm() const{
 Vector2 Vector2::normalize(const Vector2& vector){
     float norm = vector.getNorm();
     if(norm == 0.f){
-        ErrorHandler::handle(ErrorCode::ZERO_DIVIDE_ERROR);
+        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::ZERO_DIVIDE_ERROR);
         return Vector2();
     }
     return Vector2(vector.x() / norm, vector.y() / norm);
@@ -368,7 +368,7 @@ Vector2 Vector2::normalize(const Vector2& vector){
 void Vector2::normalize(){
     float norm = getNorm();
     if(norm == 0.f){
-        ErrorHandler::handle(ErrorCode::ZERO_DIVIDE_ERROR);
+        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::ZERO_DIVIDE_ERROR);
         return;
     }
     x(x() / norm);

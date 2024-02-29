@@ -24,14 +24,14 @@ TimerState Timer::getState() const {
 void Timer::start(){
     switch(_State){
         case ON_GOING:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::BAD_VALUE_ERROR, 
                 "The timer is already running!\n", 
                 ErrorLevel::WARNING
             );
             break;
         case PAUSED:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::BAD_VALUE_ERROR, 
                 "The timer is on pause!\n", 
                 ErrorLevel::WARNING
@@ -56,14 +56,14 @@ void Timer::pause(){
             _StartTicks = 0;
             break;
         case PAUSED:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::BAD_VALUE_ERROR,
                 "The timer is already on pause!\n",
                 ErrorLevel::WARNING
             );
             break;
         case STOPPED:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::BAD_VALUE_ERROR,
                 "The timer is stopped!\n",
                 ErrorLevel::WARNING
@@ -78,7 +78,7 @@ void Timer::pause(){
 void Timer::unpause(){
     switch(_State){                
         case ON_GOING:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::BAD_VALUE_ERROR,
                 "The timer is running!\n",
                 ErrorLevel::WARNING
@@ -90,7 +90,7 @@ void Timer::unpause(){
             _StartTicks = 0;
             break;
         case STOPPED:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::BAD_VALUE_ERROR, 
                 "The timer is stopped!\n",
                 ErrorLevel::WARNING
@@ -121,7 +121,7 @@ unsigned int Timer::getTicks() const {
         case PAUSED:
             return _PauseTicks;
         case STOPPED:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::BAD_VALUE_ERROR,
                 "The timer is stopped!\n",
                 ErrorLevel::WARNING
