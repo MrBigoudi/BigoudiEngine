@@ -165,14 +165,14 @@ class Vector3{
          * @param val The scalar
          * @return A new vector which is the results of the multiplication
         */
-        Vector3 operator*(float scalar);
+        Vector3 operator*(float scalar) const;
 
         /**
          * Division with a scalar
          * @param val The scalar
          * @return A new vector which is the results of the division
         */
-        Vector3 operator/(float scalar);
+        Vector3 operator/(float scalar) const;
 
         /**
          * Addition between two vectors

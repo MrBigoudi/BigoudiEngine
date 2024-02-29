@@ -2,6 +2,7 @@
 #include "be_errorHandler.hpp"
 #include <cstdio>
 #include <chrono>
+#include <thread>
 
 namespace be{
 
@@ -139,6 +140,14 @@ unsigned int Timer::getCurrentTime() const {
     auto timeSinceEpoch = high_resolution_clock::now().time_since_epoch();
     auto timeSinceEpochMilliseconds = duration_cast<milliseconds>(timeSinceEpoch).count();
     return static_cast<unsigned int>(timeSinceEpochMilliseconds);
+}
+
+/**
+ * Pause the current thread for a given amount of time
+ * @param timeToSleep The time the thread needs to sleep (in milliseconds)
+*/
+void Timer::sleep(uint32_t timeToSleep){
+    std::this_thread::sleep_for(std::chrono::milliseconds(timeToSleep));
 }
 
 }

@@ -228,7 +228,7 @@ Vector3 Vector3::operator-(const Vector3& vector) const{
  * @param val The scalar
  * @return A new vector which is the results of the multiplication
 */
-Vector3 Vector3::operator*(float scalar){
+Vector3 Vector3::operator*(float scalar) const {
     Vector3 newVec(*this);
     newVec *= scalar;
     return newVec;
@@ -239,7 +239,7 @@ Vector3 Vector3::operator*(float scalar){
  * @param val The scalar
  * @return A new vector which is the results of the division
 */
-Vector3 Vector3::operator/(float scalar){
+Vector3 Vector3::operator/(float scalar) const {
     Vector3 newVec(*this);
     newVec /= scalar;
     return newVec;

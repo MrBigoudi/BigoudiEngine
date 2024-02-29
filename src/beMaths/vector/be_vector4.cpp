@@ -275,7 +275,7 @@ Vector4 Vector4::operator-(const Vector4& vector) const{
  * @param val The scalar
  * @return A new vector which is the results of the multiplication
 */
-Vector4 Vector4::operator*(float scalar){
+Vector4 Vector4::operator*(float scalar) const {
     Vector4 newVec(*this);
     newVec *= scalar;
     return newVec;
@@ -286,7 +286,7 @@ Vector4 Vector4::operator*(float scalar){
  * @param val The scalar
  * @return A new vector which is the results of the division
 */
-Vector4 Vector4::operator/(float scalar){
+Vector4 Vector4::operator/(float scalar) const {
     Vector4 newVec(*this);
     newVec /= scalar;
     return newVec;

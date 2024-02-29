@@ -87,6 +87,12 @@ class Timer{
         */
         unsigned int getTicks() const;
 
+        /**
+         * Pause the current thread for a given amount of time
+         * @param timeToSleep The time the thread needs to sleep (in milliseconds)
+        */
+        static void sleep(uint32_t timeToSleep);
+
 };
 
 }
