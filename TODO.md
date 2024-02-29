@@ -3,7 +3,10 @@
 - Insert light creation in the engine
 - Add physics system
 - Correct lighting shaders
-- Create a scene class
+
+- Correct the scene class
+- Implement textures
+
 - Implement disney ggx
 - Better handling of ui
 - Create constants for rigid bodies (min float, positive mass, ...)
@@ -17,5 +20,3 @@
 - Add initializers for the components (addTransform..., ...)
 - Fixed update and modify dt
 - Limit fps
-
-- Put the ubos structures in the engine
