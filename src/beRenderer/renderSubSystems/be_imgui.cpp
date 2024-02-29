@@ -47,7 +47,7 @@ void BeImgui::init(WindowPtr window, VulkanAppPtr vulkanApp, RendererPtr rendere
 	pool_info.pPoolSizes = pool_sizes;
 
     VkResult result = vkCreateDescriptorPool(vulkanApp->getDevice(), &pool_info, nullptr, &_ImguiPool);
-	ErrorHandler::vulkanError(result, "Failed to create imgui descriptor pool!\n");
+	ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create imgui descriptor pool!\n");
 
     // 2: initialize imgui library
      // Setup Dear ImGui context

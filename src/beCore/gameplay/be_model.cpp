@@ -32,7 +32,7 @@ namespace be{
 void Model::createVertexBuffer(const std::vector<VertexData>& vertices){
     _VertexCount = static_cast<uint32_t>(vertices.size());
     if(_VertexCount < MIN_VERTEX_COUNT){
-        ErrorHandler::handle(ErrorCode::BAD_VALUE_ERROR, "Vertex count must be at least 3!\n");
+        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::BAD_VALUE_ERROR, "Vertex count must be at least 3!\n");
     }
 
     uint32_t vertexSize = sizeof(vertices[0]);
@@ -125,7 +125,7 @@ void VertexDataBuilder::loadObjModel(const std::string& filePath){
 
     auto result = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &error, filePath.c_str());
     if(!result){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::TINYOBJ_ERROR,
             "Failed to load .obj model: " + filePath + "!\n"
         );
@@ -183,7 +183,7 @@ void VertexDataBuilder::loadObjModel(const std::string& filePath){
 void VertexDataBuilder::loadOffModel(const std::string& filePath){
 	std::ifstream file(filePath.c_str());
     if(!file){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::IO_ERROR,
             "Failed to load off model: " + filePath + "!\n"
         );
@@ -192,7 +192,7 @@ void VertexDataBuilder::loadOffModel(const std::string& filePath){
     std::string line = "";
     std::getline(file, line);
     if(line.find("OFF") == std::string::npos){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Trying to load a non .off file: " + filePath + "!\n"
         );
@@ -550,7 +550,7 @@ Model::Model(VulkanAppPtr vulkanApp, const std::string& filePath)
         extension = filePath.substr(dotPosition + 1);
     }
     if(extension.empty()){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Trying to load a model from a file without extension: " + filePath +"!\n"
         );
@@ -558,7 +558,7 @@ Model::Model(VulkanAppPtr vulkanApp, const std::string& filePath)
     
     auto it = MODEL_EXTENSIONS_MAP.find(extension);
     if(it == MODEL_EXTENSIONS_MAP.end()){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Trying to load a model from a file with an unkown extension: " + filePath +"!\n"
         );
@@ -573,7 +573,7 @@ Model::Model(VulkanAppPtr vulkanApp, const std::string& filePath)
             builder.loadObjModel(filePath);
             break;
         default:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::SYSTEM_ERROR,
                 "Error creating a model from a file, this error shouldn't have occured!\n"
             );

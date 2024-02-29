@@ -58,7 +58,7 @@ void Buffer::cleanUp(){
  */
 VkResult Buffer::map(VkDeviceSize size, VkDeviceSize offset){
     if(!_Buffer || !_Memory){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::NOT_INITIALIZED_ERROR,
             "Can't map a buffer before creation!\n"
         );
@@ -85,7 +85,7 @@ void Buffer::unmap() {
  */
 void Buffer::writeToBuffer(void *data, VkDeviceSize size, VkDeviceSize offset){
     if(!_Mapped){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::NOT_INITIALIZED_ERROR,
             "Can't copy to an unmapped buffer!\n"
         );

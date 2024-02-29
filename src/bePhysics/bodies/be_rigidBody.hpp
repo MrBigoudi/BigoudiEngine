@@ -4,6 +4,8 @@
 #include "be_matrix3x3.hpp"
 #include "be_vector3.hpp"
 
+#include "be_physicsConstants.hpp"
+
 namespace be{
 
 class RigidBody;
@@ -16,7 +18,7 @@ class RigidBody{
     private:
         bool _Movable = false;
 
-        float _Mass = 0.f; // 0.f == unmovable objects
+        float _Mass = INFINITY; // infinity == unmovable objects
         
         Vector3 _LinearVelocity{};
         Vector3 _AngularVelocity{};
@@ -31,6 +33,8 @@ class RigidBody{
         Matrix3x3 _InertiaInverseBodySpace{};
         Matrix3x3 _InertiaInverseWorldSpace{};
 
+        Vector3 _CenterOfMass{};
+
     public:
         RigidBody();
         RigidBody(bool movable, float mass);
@@ -38,6 +42,7 @@ class RigidBody{
 
     public:
         static void updateStepCounter();
+        bool isMovable() const;
 
     public:
         Vector3 vel() const;
@@ -49,6 +54,9 @@ class RigidBody{
 
         void computeForces();
         void computeTorques();
+        Vector3 getImpulse(const RigidBodyPtr r, const Vector3& n, const Vector3& contactPoint) const;
+        void updateForceImpulse(const Vector3& J);
+        void updateTorqueImpulse(const Vector3& J, const Vector3& contactPoint);
 
     private:
         static Vector3 getGravityForce();

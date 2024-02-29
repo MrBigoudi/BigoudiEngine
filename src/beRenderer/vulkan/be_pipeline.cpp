@@ -47,7 +47,7 @@ VkPipelineShaderStageCreateInfo GraphicsShader::getShaderStageCreateInfo() const
             shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
             break;
         default:
-            ErrorHandler::handle(ErrorCode::UNKNOWN_VALUE_ERROR, "Unkown shader stage!\n");
+            ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::UNKNOWN_VALUE_ERROR, "Unkown shader stage!\n");
             break;
     }
     return shaderStageInfo;
@@ -60,21 +60,21 @@ void GraphicsShader::init(const std::string& path){
 
 void Pipeline::createGraphicsPipeline(PipelineConfigInfo configInfo){
     if(!_VertexShader->exists() || !_FragmentShader->exists()){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::NOT_INITIALIZED_ERROR,
             "Can't create a graphics pipeline without a vertex and a fragment shader!\n"
         );
     }
 
     if(configInfo._PipelineLayout == VK_NULL_HANDLE){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::NOT_INITIALIZED_ERROR,
             "Can't create a graphics pipeline without a pipeline layout!\n"
         );
     }
 
     if(configInfo._RenderPass == VK_NULL_HANDLE){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::NOT_INITIALIZED_ERROR,
             "Can't create a graphics pipeline without a render pass!\n"
         );
@@ -125,7 +125,7 @@ void Pipeline::createGraphicsPipeline(PipelineConfigInfo configInfo){
         nullptr, 
         &_GraphicsPipeline
     );
-    ErrorHandler::vulkanError(result, "Failed to create graphics pipeline!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create graphics pipeline!\n");
 
 }
 
@@ -246,7 +246,7 @@ PipelineConfigInfo Pipeline::defaultWireFramePipelineConfigInfo(){
 std::vector<char> GraphicsShader::readShaderFile(const std::string& filepath){
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
     if(!file.is_open()){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::IO_ERROR, 
             "Failed to open the file " + filepath + "!\n"
         );
@@ -269,7 +269,7 @@ void GraphicsShader::createModule(const VulkanAppPtr vulkanApp){
 
     VkShaderModule shaderModule;
     VkResult result = vkCreateShaderModule(vulkanApp->getDevice(), &createInfo, nullptr, &shaderModule);
-    ErrorHandler::vulkanError(result, "Failed to create shader module!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create shader module!\n");
 
     _Module = shaderModule;
 }

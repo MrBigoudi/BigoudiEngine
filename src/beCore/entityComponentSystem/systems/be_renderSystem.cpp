@@ -37,7 +37,7 @@ void RenderSystem::renderGameObjects(FrameInfo frameInfo, IRenderSubSystem* rend
 
 void RenderSystem::init(){
     if(_System != nullptr){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "The render system has already been initialized!\n",
             ErrorLevel::WARNING
@@ -46,7 +46,7 @@ void RenderSystem::init(){
     }
     _System = GameCoordinator::registerSystem<RenderSystem>();
     if(_System == nullptr){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::NOT_INITIALIZED_ERROR,
             "Failed to initialize the ECS render system!\n"
         );

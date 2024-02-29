@@ -51,7 +51,7 @@ void Material::check() const {
     if(_Metallic < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _Metallic > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material mettalicness: " 
             + std::to_string(_Metallic) 
@@ -63,7 +63,7 @@ void Material::check() const {
     if(_Subsurface < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _Subsurface > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material subsurface: " 
             + std::to_string(_Subsurface) 
@@ -75,7 +75,7 @@ void Material::check() const {
     if(_Specular < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _Specular > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material specular: " 
             + std::to_string(_Specular) 
@@ -87,7 +87,7 @@ void Material::check() const {
     if(_Roughness < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _Roughness > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material roughness: " 
             + std::to_string(_Roughness) 
@@ -99,7 +99,7 @@ void Material::check() const {
     if(_SpecularTint < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _SpecularTint > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material specular tint: " 
             + std::to_string(_SpecularTint) 
@@ -111,7 +111,7 @@ void Material::check() const {
     if(_Anisotropic < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _Anisotropic > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material anisotropy: " 
             + std::to_string(_Anisotropic) 
@@ -123,7 +123,7 @@ void Material::check() const {
     if(_Sheen < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _Sheen > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material sheen: " 
             + std::to_string(_Sheen) 
@@ -135,7 +135,7 @@ void Material::check() const {
     if(_SheenTint < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _SheenTint > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material sheen tint: " 
             + std::to_string(_SheenTint) 
@@ -147,7 +147,7 @@ void Material::check() const {
     if(_Clearcoat < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _Clearcoat > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material clearcoat: " 
             + std::to_string(_Clearcoat) 
@@ -159,7 +159,7 @@ void Material::check() const {
     if(_ClearcoatGloss < COMPONENT_MATERIAL_MIN_VALUES[i]
         && _ClearcoatGloss > COMPONENT_MATERIAL_MAX_VALUES[i]
     ){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Wrong material clearcoat gloss: " 
             + std::to_string(_ClearcoatGloss) 
@@ -172,7 +172,7 @@ void Material::check() const {
 
 float& Material::get(uint32_t id){
     if(id > COMPONENT_MATERIAL_NB_ELEMENTS){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Index " + std::to_string(id) 
             + "is too high, material indices can't be greater than " 

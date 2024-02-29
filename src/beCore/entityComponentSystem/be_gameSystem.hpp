@@ -50,7 +50,7 @@ class GameSystemManager{
             const char* typeName = typeid(T).name();
 
             if(instance->_Systems.find(typeName) != instance->_Systems.end()){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::BAD_VALUE_ERROR,
                     "The system " + std::string(typeName) + " is already registered!\n"
                 );
@@ -68,7 +68,7 @@ class GameSystemManager{
             const char* typeName = typeid(T).name();
 
             if(instance->_Systems.find(typeName) == instance->_Systems.end()){
-                ErrorHandler::handle(
+                ErrorHandler::handle(__FILE__, __LINE__, 
                     ErrorCode::BAD_VALUE_ERROR,
                     "The system " + std::string(typeName) + " has not been registered!\n"
                 );

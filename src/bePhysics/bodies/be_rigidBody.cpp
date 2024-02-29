@@ -1,5 +1,6 @@
 #include "be_rigidBody.hpp"
 #include "be_errorHandler.hpp"
+#include "be_physicsConstants.hpp"
 
 namespace be{
 
@@ -13,21 +14,23 @@ RigidBody::RigidBody(){
 
 }
 
+bool RigidBody::isMovable() const { return _Movable;}
+
 RigidBody::RigidBody(bool movable, float mass) : _Movable(movable), _Mass(mass){
-    if(mass < 0.f){
-        ErrorHandler::handle(
+    if(mass < EPSILON){
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
-            "A mass for a rigid body can't be negative!\n"
+            "A mass for a rigid body can't be too low!\n"
         );
     }
 };
 
 RigidBody::RigidBody(bool movable, float mass, const Vector3& initialForce, const Vector3& initialTorque)
     : _Movable(movable), _Mass(mass), _Force(initialForce), _Torque(initialTorque){
-    if(mass < 0.f){
-        ErrorHandler::handle(
+    if(mass < EPSILON){
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
-            "A mass for a rigid body can't be negative!\n"
+            "A mass for a rigid body can't be too low!\n"
         );
     }
 };
@@ -37,7 +40,7 @@ void RigidBody::updateStepCounter(){
 }
 
 Vector3 RigidBody::getGravityForce(){
-    return {0.f, -9.81f, 0.f};
+    return {0.f, -GRAVITY, 0.f};
 }
 
 void RigidBody::computeForces(){
@@ -46,10 +49,12 @@ void RigidBody::computeForces(){
     } else {
         _Force = getGravityForce();
     }
+    // fprintf(stdout, "step %d, force = %s\n", _SimulationSteps, _Force.toString().c_str());
 }
 
 void RigidBody::updateLinearMomentum(float dt){
     _LinearMomentum += _Force*dt;
+    // fprintf(stdout, "step %d, linear momentum = %s\n", _SimulationSteps, _LinearMomentum.toString().c_str());
 }
 
 void RigidBody::updateAngularMomentum(float dt){
@@ -58,18 +63,34 @@ void RigidBody::updateAngularMomentum(float dt){
 
 void RigidBody::updatePosition(Vector3& position, float dt){
     if(!_Movable) return;
-    if(_Mass < 1e-9){
-        ErrorHandler::handle(
-            ErrorCode::BAD_VALUE_ERROR,
-            "The mass of the rigid body is too low!\n"
-        );
-    }
     _LinearVelocity = _LinearMomentum / _Mass;
     position += _LinearMomentum / _Mass * dt;
 }
 
 void RigidBody::updateRotation(Vector3& rotation, float dt){
     // do quaternion stuff
+}
+
+Vector3 RigidBody::getImpulse(const RigidBodyPtr r, const Vector3& n, const Vector3& contactPoint[[maybe_unused]]) const {
+    float K = 1.f / _Mass + 1.f / r->_Mass;
+
+    // TODO: velocity at a point
+    float j = Vector3::dot((r->_LinearVelocity - _LinearVelocity), n / K);
+
+    Vector3 J = n * j;
+
+    return J;
+}
+
+void RigidBody::updateForceImpulse(const Vector3& J){
+    fprintf(stdout, "linear momentum before: %s\n", _LinearMomentum.toString().c_str());
+    _LinearMomentum += J;
+    fprintf(stdout, "linear momentum after: %s\n", _LinearMomentum.toString().c_str());
+}
+
+void RigidBody::updateTorqueImpulse(const Vector3& J, const Vector3& contactPoint){
+    Vector3 diff = contactPoint - _CenterOfMass;
+    _AngularMomentum += Vector3::cross(diff, J);
 }
 
 

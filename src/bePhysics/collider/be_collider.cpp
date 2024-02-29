@@ -105,7 +105,7 @@ bool BoxCollider::isColliding(GameObject object){
         case BOX_COLLIDER:
             return collidingBoxVsBox(this, dynamic_cast<BoxCollider*>(objectCollider._Collider.get()));
         default:
-            ErrorHandler::handle(
+            ErrorHandler::handle(__FILE__, __LINE__, 
                 ErrorCode::UNKNOWN_VALUE_ERROR,
                 "The collider type "
                 + std::to_string(objectCollider._Collider->getType())

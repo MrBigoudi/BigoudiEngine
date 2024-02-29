@@ -18,7 +18,7 @@ DescriptorSetLayout::Builder &DescriptorSetLayout::Builder::addBinding(
     {
     
     if(_Bindings.count(binding) != 0){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Binding is already in use!\n"
         );
@@ -60,7 +60,7 @@ DescriptorSetLayout::DescriptorSetLayout(
             &_DescriptorSetLayout
     );
     
-    ErrorHandler::vulkanError(result, "Failed to create descriptor set layout!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create descriptor set layout!\n");
 }
 
 
@@ -106,7 +106,7 @@ DescriptorPool::DescriptorPool(
     descriptorPoolInfo.flags = poolFlags;
 
     VkResult result = vkCreateDescriptorPool(_VulkanApp->getDevice(), &descriptorPoolInfo, nullptr, &_DescriptorPool);
-    ErrorHandler::vulkanError(result, "Failed to create descriptor pool!\n");
+    ErrorHandler::vulkanError(__FILE__, __LINE__, result, "Failed to create descriptor pool!\n");
 }
 
 
@@ -152,7 +152,7 @@ DescriptorWriter& DescriptorWriter::writeBuffer(
     uint32_t binding, VkDescriptorBufferInfo *bufferInfo) {
     
     if(_SetLayout._Bindings.count(binding) != 1){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Layout does not contain specified binding!\n"
         );
@@ -160,7 +160,7 @@ DescriptorWriter& DescriptorWriter::writeBuffer(
 
     auto& bindingDescription = _SetLayout._Bindings[binding];
     if(bindingDescription.descriptorCount != 1){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Binding single descriptor info, but binding expects multiple!\n"
         );
@@ -181,7 +181,7 @@ DescriptorWriter& DescriptorWriter::writeImage(
     uint32_t binding, VkDescriptorImageInfo *imageInfo) {
 
     if(_SetLayout._Bindings.count(binding) != 1){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Layout does not contain specified binding!\n"
         );
@@ -189,7 +189,7 @@ DescriptorWriter& DescriptorWriter::writeImage(
 
     auto& bindingDescription = _SetLayout._Bindings[binding];
     if(bindingDescription.descriptorCount != 1){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "Binding single descriptor info, but binding expects multiple!\n"
         );

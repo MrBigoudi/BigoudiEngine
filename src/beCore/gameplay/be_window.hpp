@@ -45,7 +45,7 @@ class Window{
 
         void init(){
             if(!glfwInit()){
-                ErrorHandler::glfwError("Failed to init GLFW!\n");
+                ErrorHandler::glfwError(__FILE__, __LINE__, "Failed to init GLFW!\n");
             }
 
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -59,7 +59,7 @@ class Window{
             );
 
             if(_Window == nullptr){
-                ErrorHandler::glfwError("Failed to init GLFW window!\n");
+                ErrorHandler::glfwError(__FILE__, __LINE__, "Failed to init GLFW window!\n");
             }
 
             // center the window

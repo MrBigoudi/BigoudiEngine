@@ -91,7 +91,7 @@ const std::string Matrix1x3::toString() const{
 */
 float Matrix1x3::operator[](int index) const{
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR, 
             "Index " + std::to_string(index) + " out of range for Matrix1x3!\n",
             ErrorLevel::WARNING
@@ -107,7 +107,7 @@ float Matrix1x3::operator[](int index) const{
 */
 float& Matrix1x3::operator[](int index){
     if(index < 0 || index >= static_cast<int>(_Values.size())){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR, 
             "Index " + std::to_string(index) + " out of range for Matrix1x3!\n",
             ErrorLevel::WARNING
@@ -180,7 +180,7 @@ void Matrix1x3::operator*=(float scalar){
 */
 void Matrix1x3::operator/=(float scalar){
     if(scalar == 0.f){
-        ErrorHandler::handle(
+        ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::ZERO_DIVIDE_ERROR, 
             "Cannot divide by 0!\n",
             ErrorLevel::WARNING
