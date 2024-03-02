@@ -2,6 +2,7 @@
 
 #include "be_projections.hpp"
 #include "be_trigonometry.hpp"
+#include "be_vector4.hpp"
 
 #include <cmath>
 
@@ -128,6 +129,36 @@ void CameraUboContainer::init(uint32_t size, VulkanAppPtr vulkanApp){
         ));
         _Ubos[i]->map();
     }
+}
+
+Matrix4x4 Camera::getProjection(CameraProjection projectionType) const {
+    switch (projectionType) {
+        case PERSPECTIVE:
+            return getPerspective();
+        case ORTHOGRAPHIC:
+            ErrorHandler::handle(
+                __FILE__, __LINE__,
+                ErrorCode::UNIMPLEMENTED_ERROR,
+                "The orthographic projection is not yet implemented!\n"
+            );
+    }
+}
+
+
+Ray Camera::rayAt(float x, float y, CameraProjection projectionType[[maybe_unused]]) const{
+    Matrix4x4 view = getView();
+    // Matrix4x4 proj = getProjection(projectionType);
+
+    Vector4 viewSpaceDirection = {x,y,-1.f, 0.f}; // not in NDC !
+
+    Matrix4x4 invView = Matrix4x4::inverse(view);
+    Vector4 worldSpaceDirection = invView * viewSpaceDirection;
+    worldSpaceDirection.normalize();
+
+    Vector3 origin = _Eye;
+    Vector3 direction = {worldSpaceDirection.x(), worldSpaceDirection.y(), worldSpaceDirection.z()};
+
+    return Ray(origin, direction);
 }
 
 };

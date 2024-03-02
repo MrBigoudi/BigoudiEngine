@@ -5,9 +5,9 @@ target_include_directories(BigoudiEngine
         $<INSTALL_INTERFACE:include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/vulkan
-        ${CMAKE_CURRENT_SOURCE_DIR}/renderSubSystems
+        ${CMAKE_CURRENT_SOURCE_DIR}/renderingSubSystems
 )
 
 # add the subdirectories
 add_subdirectory(vulkan)
-add_subdirectory(renderSubSystems)
+add_subdirectory(renderingSubSystems)

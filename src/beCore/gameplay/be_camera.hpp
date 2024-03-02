@@ -2,6 +2,7 @@
 
 
 #include "be_matrix4x4.hpp"
+#include "be_ray.hpp"
 #include "be_ubo.hpp"
 #include "be_vector3.hpp"
 #include <memory>
@@ -28,6 +29,14 @@ enum CameraMovement {
     RIGHT,
     UP,
     DOWN
+};
+
+/**
+ * @enum The possible camera's projections
+*/
+enum CameraProjection{
+    PERSPECTIVE,
+    ORTHOGRAPHIC,
 };
 
 /**
@@ -156,6 +165,13 @@ class Camera{
         Matrix4x4 getPerspective() const;
 
         /**
+         * Return the projection matrix
+         * @param projectionType The type of projection default to perspective
+         * @see CameraProjection
+        */
+        Matrix4x4 getProjection(CameraProjection projectionType = PERSPECTIVE) const;
+
+        /**
          * Handle camera's movement
          * @param direction The direction where to move the camera
         */
@@ -174,6 +190,16 @@ class Camera{
          * @param aspectRatio The new aspect ratio
         */
         void setAspectRatio(float aspectRatio);
+
+        /**
+         * Create a ray from the camera
+         * @param x The x as a float for sub-pixel sampling
+         * @param y The y as a float for sub-pixel sampling
+         * @return A ray in world space for raytracing
+         * @see Ray
+         * @see RayTracing
+        */
+        Ray rayAt(float x, float y, CameraProjection projectionType = PERSPECTIVE) const;
 
     private:
         /**
