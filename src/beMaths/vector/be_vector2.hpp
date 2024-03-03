@@ -155,14 +155,24 @@ class Vector2{
 
         /**
          * Multiplication with a scalar
-         * @param val The scalar
+         * @param scalar The scalar
          * @return A new vector which is the results of the multiplication
         */
         Vector2 operator*(float scalar) const;
 
         /**
+         * Multiplication with a scalar
+         * @param scalar The scalar
+         * @param vector The vector
+         * @return A new vector which is the results of the multiplication
+        */
+        friend Vector2 operator*(float scalar, const Vector2& vector){
+            return vector * scalar;
+        }
+
+        /**
          * Division with a scalar
-         * @param val The scalar
+         * @param scalar The scalar
          * @return A new vector which is the results of the division
         */
         Vector2 operator/(float scalar) const;
@@ -187,13 +197,13 @@ class Vector2{
 
         /**
          * Multiplication with a scalar
-         * @param val The scalar
+         * @param scalar The scalar
         */
         void operator*=(float scalar);
 
         /**
          * Division with a scalar
-         * @param val The scalar
+         * @param scalar The scalar
         */
         void operator/=(float scalar);
 

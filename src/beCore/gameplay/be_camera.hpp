@@ -79,6 +79,8 @@ class Camera{
          * The camera's aspect ratio
         */
         float _AspectRatio = 0.f;
+        float _Width = 0.f;
+        float _Height = 0.f;
 
         /**
          * The camera's near plane
@@ -120,7 +122,8 @@ class Camera{
         /**
          * A basic constructor
          * @param position The camera's position
-         * @param aspectRatio The camera's aspect ratio
+         * @param width The camera's width
+         * @param height The camera's height
          * @param fov The camera's field of view
          * @param near The camera's near plane
          * @param far The camera's far plane
@@ -128,7 +131,8 @@ class Camera{
         */
         Camera(
             const Vector3& position,
-            float aspectRatio = 1.f,
+            float width = 1.f,
+            float height = 1.f,
             float fov = 50.f,
             float near = 0.1f,
             float far = 100.f,
@@ -187,9 +191,10 @@ class Camera{
 
         /**
          * A setter for the aspect ratio
-         * @param aspectRatio The new aspect ratio
+         * @param width The width
+         * @param height The height
         */
-        void setAspectRatio(float aspectRatio);
+        void setAspectRatio(float width, float height);
 
         /**
          * Create a ray from the camera

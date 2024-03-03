@@ -17,7 +17,13 @@ class Ray{
     public:
         Ray(const Vector3& origin, const Vector3& direction):
             _Origin(origin), _Direction(direction){}
-    
+
+        Vector3 getOrigin() const {return _Origin;}
+        Vector3 getDirection() const {return _Direction;}
+
+        Vector3 at(float t) const {
+            return _Origin + t*_Direction;
+        } 
 };
 
 }

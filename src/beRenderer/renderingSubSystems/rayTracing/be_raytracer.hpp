@@ -2,6 +2,8 @@
 
 #include <memory>
 #include "be_image.hpp"
+#include "be_model.hpp"
+#include "be_rayHit.hpp"
 #include "be_scene.hpp"
 
 namespace be{
@@ -15,10 +17,11 @@ class RayTracer{
         ImagePtr _Image = nullptr;
         ScenePtr _Scene = nullptr;
         bool _IsRunning = false;
+        CameraPtr _Camera = nullptr;
 
     public:
-        RayTracer(ScenePtr scene, uint32_t width, uint32_t height)
-            : _Scene(scene){
+        RayTracer(ScenePtr scene, CameraPtr camera, uint32_t width, uint32_t height)
+            : _Scene(scene), _Camera(camera){
             setResolution(width, height);
         }
         
@@ -36,6 +39,13 @@ class RayTracer{
         void setResolution(uint32_t width, uint32_t height){
             _Image = std::make_shared<Image>(width, height);
         }
+
+        static RayHitOpt rayTriangleIntersection(const Ray& ray, const Vector3& p0, const Vector3& p1, const Vector3& p2);
+        static RayHitOpt rayTriangleIntersection(const Ray& ray, const Triangle& trianglePrimitive);
+
+    
+    private:
+        std::vector<Triangle> getTriangles() const;
 
 };
 

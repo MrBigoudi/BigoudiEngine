@@ -10,12 +10,15 @@ namespace be{
 
 Camera::Camera(
     const Vector3& position,
-    float aspectRatio,
+    float width,
+    float height,
     float fov,
     float near,
     float far,
     const Vector3& worldUp){
-    _AspectRatio = aspectRatio;
+    _Width = width;
+    _Height = height;
+    _AspectRatio = width / height;
     _Fov = fov;
     _Near = near;
     _Far = far;
@@ -86,8 +89,17 @@ void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPi
     updateCameraVectors();
 }
 
-void Camera::setAspectRatio(float aspectRatio){
-    _AspectRatio = aspectRatio;
+void Camera::setAspectRatio(float width, float height){
+    _Width = width;
+    _Height = height;
+    if(height == 0.f){
+        ErrorHandler::handle(
+            __FILE__, __LINE__, 
+            ErrorCode::BAD_VALUE_ERROR,
+            "Can't have a null height for the camera!\n"   
+        );
+    }
+    _AspectRatio = width / height;
 }
 
 void Camera::updateCameraVectors(){
@@ -146,19 +158,24 @@ Matrix4x4 Camera::getProjection(CameraProjection projectionType) const {
 
 
 Ray Camera::rayAt(float x, float y, CameraProjection projectionType[[maybe_unused]]) const{
-    Matrix4x4 view = getView();
-    // Matrix4x4 proj = getProjection(projectionType);
+    // convert x and y from viewport to ndc
+    float ndc_x = (2.0f * x) / _Width - 1.0f;
+    float ndc_y = 1.0f - (2.0f * y) / _Height;
 
-    Vector4 viewSpaceDirection = {x,y,-1.f, 0.f}; // not in NDC !
+    // convert x and y from ndc to view space
 
-    Matrix4x4 invView = Matrix4x4::inverse(view);
-    Vector4 worldSpaceDirection = invView * viewSpaceDirection;
-    worldSpaceDirection.normalize();
+    // convert x and y from view space to world space
+    // direction = (x,y) - eye
 
-    Vector3 origin = _Eye;
-    Vector3 direction = {worldSpaceDirection.x(), worldSpaceDirection.y(), worldSpaceDirection.z()};
+    Vector4 ray_view(ndc_x, ndc_y, -1.0f, 1.0f); // Z value should be -1 for a ray pointing into the screen
+    Matrix4x4 inv_proj = Matrix4x4::inverse(getProjection(projectionType));
+    Vector4 ray_eye = inv_proj * ray_view;
+    ray_eye = Vector4(ray_eye.x(), ray_eye.y(), -1.0f, 0.0f); // Set Z value to -1 for a direction vector
+    Vector4 ray_world = Vector4::normalize(Matrix4x4::inverse(getView()) * ray_eye); // Convert to world space and normalize
 
-    return Ray(origin, direction);
+    // Create the ray starting from the camera position
+    Ray ray(_Eye, Vector3(ray_world.x(), ray_world.y(), ray_world.z()));
+    return ray;
 }
 
 };

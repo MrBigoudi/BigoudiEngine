@@ -15,4 +15,9 @@ inline void hashCombine(std::size_t& seed, const T& v, const Rest&... rest) {
     hashCombine(seed, rest...);
 }
 
+inline bool isZero(float f){
+    const float epsilon = 1e-9;
+    return (f>-epsilon) && (f<epsilon);
+}
+
 };

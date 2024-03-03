@@ -193,6 +193,12 @@ struct VertexDataBuilder{
 };
 
 
+struct Triangle{
+    Vector3 p0{};
+    Vector3 p1{};
+    Vector3 p2{};
+};
+
 /**
  * A class to represent a 3D model
 */
@@ -253,6 +259,11 @@ class Model{
         */
         uint32_t _IndexCount = 0;
 
+        /**
+         * The vertex builder
+        */
+        VertexDataBuilder _VertexDataBuilder{};
+
     public:
         /**
          * Build a model from a vulkan application and a vertex data builder
@@ -288,6 +299,12 @@ class Model{
          * Cleanup the model
         */
         void cleanUp();
+
+        /**
+         * Get the list of triangles in the model
+         * @return A vector of triangle
+        */
+        std::vector<Triangle> getTrianglePrimitives() const;
 
     private:
         /**
