@@ -2,7 +2,6 @@
 
 #include "be_projections.hpp"
 #include "be_trigonometry.hpp"
-#include "be_vector4.hpp"
 
 #include <cmath>
 
@@ -144,37 +143,43 @@ void CameraUboContainer::init(uint32_t size, VulkanAppPtr vulkanApp){
 }
 
 Matrix4x4 Camera::getProjection(CameraProjection projectionType) const {
+    Matrix4x4 proj{};
     switch (projectionType) {
         case PERSPECTIVE:
-            return getPerspective();
+            proj = getPerspective();
+            break;
         case ORTHOGRAPHIC:
             ErrorHandler::handle(
                 __FILE__, __LINE__,
                 ErrorCode::UNIMPLEMENTED_ERROR,
                 "The orthographic projection is not yet implemented!\n"
             );
+            break;
     }
+    return proj;
 }
 
 
 Ray Camera::rayAt(float x, float y, CameraProjection projectionType[[maybe_unused]]) const{
-    // convert x and y from viewport to ndc
-    float ndc_x = (2.0f * x) / _Width - 1.0f;
-    float ndc_y = 1.0f - (2.0f * y) / _Height;
+    Vector3 direction{0.f,0.f,-1.f};
+    switch(projectionType) {
+        case PERSPECTIVE:{
+            float w = 2.f * radians(_Fov / 2.f);
+            direction = _At + ((x - 0.5f) * _AspectRatio * w) * _Right + ((1.f-y) - 0.5f) * w * _Up;
+            break;
+        }
+        case ORTHOGRAPHIC:{
+            ErrorHandler::handle(
+                __FILE__, __LINE__, 
+                ErrorCode::UNIMPLEMENTED_ERROR,
+                "The orthographic ray at function is not implemented yet!\n"
+                );
+            break;
+        }
+    }
 
-    // convert x and y from ndc to view space
-
-    // convert x and y from view space to world space
-    // direction = (x,y) - eye
-
-    Vector4 ray_view(ndc_x, ndc_y, -1.0f, 1.0f); // Z value should be -1 for a ray pointing into the screen
-    Matrix4x4 inv_proj = Matrix4x4::inverse(getProjection(projectionType));
-    Vector4 ray_eye = inv_proj * ray_view;
-    ray_eye = Vector4(ray_eye.x(), ray_eye.y(), -1.0f, 0.0f); // Set Z value to -1 for a direction vector
-    Vector4 ray_world = Vector4::normalize(Matrix4x4::inverse(getView()) * ray_eye); // Convert to world space and normalize
-
-    // Create the ray starting from the camera position
-    Ray ray(_Eye, Vector3(ray_world.x(), ray_world.y(), ray_world.z()));
+    direction.normalize();
+    Ray ray(_Eye, direction);
     return ray;
 }
 

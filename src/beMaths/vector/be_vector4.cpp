@@ -469,4 +469,20 @@ void Vector4::normalize(){
     w(w() / norm);
 }
 
+Vector3 Vector4::xyz() const{
+    return Vector3(x(), y(), z());
+}
+
+Vector2 Vector4::xy() const{
+    return Vector2(x(), y());
+}
+
+Vector2 Vector4::yz() const{
+    return Vector2(y(), z());
+}
+
+Vector2 Vector4::xz() const{
+    return Vector2(x(), z());
+}
+
 }

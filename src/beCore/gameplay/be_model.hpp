@@ -137,16 +137,10 @@ struct VertexDataBuilder{
 
     /**
      * A function to create a triangle model
-     * @param v0 The first vertex position
-     * @param v1 The second vertex position
-     * @param v2 The third vertex position
      * @param c The uniform color of the triangle
      * @return A builder
     */
     static VertexDataBuilder primitiveTriangle(
-        const Vector3& v0,
-        const Vector3& v1,
-        const Vector3& v2,
         const Vector4& c = Vector4{1.f,1.f,1.f,1.f}
     );
 
@@ -158,8 +152,8 @@ struct VertexDataBuilder{
      * @return A builder
     */
     static VertexDataBuilder primitiveRectangle(
-        float height,
-        float width,
+        float height = 1.f,
+        float width = 1.f,
         const Vector4& c = Vector4{1.f,1.f,1.f,1.f}
     );
 
@@ -170,7 +164,7 @@ struct VertexDataBuilder{
      * @return A builder
     */
     static VertexDataBuilder primitiveCube(
-        float length,
+        float length = 1.f,
         const Vector4& c = Vector4{1.f,1.f,1.f,1.f}
     );
 

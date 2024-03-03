@@ -163,7 +163,12 @@ class Vector4{
          * Set the a value
          * @param a The new value
         */
-        void a(float a);        
+        void a(float a);       
+
+        Vector3 xyz() const;
+        Vector2 xy() const; 
+        Vector2 yz() const; 
+        Vector2 xz() const; 
 
         /**
          * Getter for the vectors elements

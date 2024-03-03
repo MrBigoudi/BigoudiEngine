@@ -256,17 +256,17 @@ void VertexDataBuilder::loadOffModel(const std::string& filePath){
 
 
 VertexDataBuilder VertexDataBuilder::primitiveTriangle(
-    const Vector3& v0,
-    const Vector3& v1,
-    const Vector3& v2,
     const Vector4& c){
     VertexDataBuilder builder{};
+    Vector3 v0 = {-1.f, 0.f, 0.f};
+    Vector3 v1 = {0.f, 1.f, 0.f};
+    Vector3 v2 = {1.f, 0.f, 0.f};
     builder._Vertices = {
         {._Pos = v0, ._Col = c},
         {._Pos = v1, ._Col = c},
         {._Pos = v2, ._Col = c},
     };
-    builder._Indices = {0,1,2};
+    builder._Indices = {0,2,1};
     return builder;
 }
 

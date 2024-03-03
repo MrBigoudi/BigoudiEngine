@@ -169,7 +169,7 @@ PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(){
     // configInfo._RasterizationInfo.polygonMode = VK_POLYGON_MODE_LINE;
     configInfo._RasterizationInfo.lineWidth = 1.0f;
     configInfo._RasterizationInfo.cullMode = VK_CULL_MODE_NONE;
-    // configInfo._RasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+    configInfo._RasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
     configInfo._RasterizationInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     configInfo._RasterizationInfo.depthBiasEnable = VK_FALSE;
     configInfo._RasterizationInfo.depthBiasConstantFactor = 0.f; // optional
