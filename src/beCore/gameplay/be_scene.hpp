@@ -20,7 +20,8 @@ class Scene{
         std::vector<CameraPtr> _Cameras = {};
         uint32_t _MainCamera = 0; // id of main camera
 
-        std::vector<Light> _Lights = {};
+        std::vector<PointLight> _PointLights = {};
+        std::vector<DirectionalLight> _DirectionalLights = {};
 
         /**
          * A smart pointer to the vulkan application
@@ -32,6 +33,10 @@ class Scene{
         Scene(VulkanAppPtr vulkanApp): _VulkanApp(vulkanApp){};
         void initFromGLTF(const std::string& filepath);
         std::vector<GameObject> getObjects() const {return _GameObjects;}
+
+        void addGameObject(GameObject obj);
+        void addGamePointLight(PointLight light);
+        void addGameDirectionalLight(DirectionalLight light);
 
     private:
         tinygltf::Model loadModelGLTF(const std::string& filepath);

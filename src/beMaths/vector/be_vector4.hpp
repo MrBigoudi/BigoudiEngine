@@ -163,7 +163,12 @@ class Vector4{
          * Set the a value
          * @param a The new value
         */
-        void a(float a);        
+        void a(float a);       
+
+        Vector3 xyz() const;
+        Vector2 xy() const; 
+        Vector2 yz() const; 
+        Vector2 xz() const; 
 
         /**
          * Getter for the vectors elements
@@ -195,14 +200,24 @@ class Vector4{
 
         /**
          * Multiplication with a scalar
-         * @param val The scalar
+         * @param scalar The scalar
          * @return A new vector which is the results of the multiplication
         */
         Vector4 operator*(float scalar) const;
 
         /**
+         * Multiplication with a scalar
+         * @param scalar The scalar
+         * @param vector The vector
+         * @return A new vector which is the results of the multiplication
+        */
+        friend Vector4 operator*(float scalar, const Vector4& vector){
+            return vector * scalar;
+        }
+
+        /**
          * Division with a scalar
-         * @param val The scalar
+         * @param scalar The scalar
          * @return A new vector which is the results of the division
         */
         Vector4 operator/(float scalar) const;
@@ -227,13 +242,13 @@ class Vector4{
 
         /**
          * Multiplication with a scalar
-         * @param val The scalar
+         * @param scalar The scalar
         */
         void operator*=(float scalar);
 
         /**
          * Division with a scalar
-         * @param val The scalar
+         * @param scalar The scalar
         */
         void operator/=(float scalar);
 

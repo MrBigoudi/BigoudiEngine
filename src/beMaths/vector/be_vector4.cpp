@@ -438,7 +438,12 @@ float Vector4::getNorm() const{
 Vector4 Vector4::normalize(const Vector4& vector){
     float norm = vector.getNorm();
     if(norm == 0.f){
-        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::ZERO_DIVIDE_ERROR);
+        ErrorHandler::handle(
+            __FILE__, 
+            __LINE__, 
+            ErrorCode::ZERO_DIVIDE_ERROR,
+            "Can't normalize a vector with 0 norm!\n"
+        );
         return Vector4();
     }
     return Vector4(vector.x() / norm, vector.y() / norm, vector.z() / norm, vector.w() / norm);
@@ -450,13 +455,34 @@ Vector4 Vector4::normalize(const Vector4& vector){
 void Vector4::normalize(){
     float norm = getNorm();
     if(norm == 0.f){
-        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::ZERO_DIVIDE_ERROR);
+        ErrorHandler::handle(
+            __FILE__, 
+            __LINE__, 
+            ErrorCode::ZERO_DIVIDE_ERROR,
+            "Can't normalize a vector with 0 norm!\n"
+        );
         return;
     }
     x(x() / norm);
     y(y() / norm);
     z(z() / norm);
     w(w() / norm);
+}
+
+Vector3 Vector4::xyz() const{
+    return Vector3(x(), y(), z());
+}
+
+Vector2 Vector4::xy() const{
+    return Vector2(x(), y());
+}
+
+Vector2 Vector4::yz() const{
+    return Vector2(y(), z());
+}
+
+Vector2 Vector4::xz() const{
+    return Vector2(x(), z());
 }
 
 }

@@ -66,6 +66,13 @@ class Buffer{
         VkMemoryPropertyFlags getMemoryPropertyFlags() const { return _MemoryPropertyFlags; }
         VkDeviceSize getBufferSize() const { return _BufferSize; }
 
+    public: 
+        // TODO: change all of below
+        static VkCommandBuffer beginSingleTimeCommands(VulkanAppPtr vulkanApp);
+        static void endSingleTimeCommands(VulkanAppPtr vulkanApp, VkCommandBuffer commandBuffer);
+        static void copyBuffer(VulkanAppPtr vulkanApp, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+        static void copyBufferToImage(VulkanAppPtr vulkanApp, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+
 };
 
 };

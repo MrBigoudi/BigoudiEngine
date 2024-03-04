@@ -256,17 +256,17 @@ void VertexDataBuilder::loadOffModel(const std::string& filePath){
 
 
 VertexDataBuilder VertexDataBuilder::primitiveTriangle(
-    const Vector3& v0,
-    const Vector3& v1,
-    const Vector3& v2,
     const Vector4& c){
     VertexDataBuilder builder{};
+    Vector3 v0 = {-1.f, 0.f, 0.f};
+    Vector3 v1 = {0.f, 1.f, 0.f};
+    Vector3 v2 = {1.f, 0.f, 0.f};
     builder._Vertices = {
         {._Pos = v0, ._Col = c},
         {._Pos = v1, ._Col = c},
         {._Pos = v2, ._Col = c},
     };
-    builder._Indices = {0,1,2};
+    builder._Indices = {0,2,1};
     return builder;
 }
 
@@ -280,10 +280,10 @@ VertexDataBuilder VertexDataBuilder::primitiveRectangle(
     Vector3 v3{width/2.f, height/2.f, 0.f};
     VertexDataBuilder builder{};
     builder._Vertices = {
-        {._Pos = v0, ._Col = c},
-        {._Pos = v1, ._Col = c},
-        {._Pos = v2, ._Col = c},
-        {._Pos = v3, ._Col = c},
+        {._Pos = v0, ._Col = c, ._Tex = {0,0}},
+        {._Pos = v1, ._Col = c, ._Tex = {1,0}},
+        {._Pos = v2, ._Col = c, ._Tex = {0,1}},
+        {._Pos = v3, ._Col = c, ._Tex = {1,1}},
     };
     builder._Indices = {
         0,1,2,
@@ -535,7 +535,7 @@ void Model::cleanUp(){
 }
 
 Model::Model(VulkanAppPtr vulkanApp, const VertexDataBuilder& dataBuilder) 
-    : _VulkanApp(vulkanApp){
+    : _VulkanApp(vulkanApp), _VertexDataBuilder(dataBuilder){
     createVertexBuffer(dataBuilder._Vertices);
     createIndexBuffer(dataBuilder._Indices);
 }
@@ -564,13 +564,13 @@ Model::Model(VulkanAppPtr vulkanApp, const std::string& filePath)
         );
     }
     ModelExtension extensionFormat = it->second; 
-    VertexDataBuilder builder{};
+    _VertexDataBuilder = {};
     switch(extensionFormat) {
         case OFF:
-            builder.loadOffModel(filePath);
+            _VertexDataBuilder.loadOffModel(filePath);
             break;
         case OBJ:
-            builder.loadObjModel(filePath);
+            _VertexDataBuilder.loadObjModel(filePath);
             break;
         default:
             ErrorHandler::handle(__FILE__, __LINE__, 
@@ -578,8 +578,21 @@ Model::Model(VulkanAppPtr vulkanApp, const std::string& filePath)
                 "Error creating a model from a file, this error shouldn't have occured!\n"
             );
     }
-    createVertexBuffer(builder._Vertices);
-    createIndexBuffer(builder._Indices);
+    createVertexBuffer(_VertexDataBuilder._Vertices);
+    createIndexBuffer(_VertexDataBuilder._Indices);
 }
+
+std::vector<Triangle> Model::getTrianglePrimitives() const{
+    std::vector<Triangle> triangles{};
+    for(uint32_t i=0; i<uint32_t(_VertexDataBuilder._Indices.size()); i+=3){
+        Triangle triTmp{};
+        triTmp.p0 = _VertexDataBuilder._Vertices[i]._Pos;
+        triTmp.p1 = _VertexDataBuilder._Vertices[i+1]._Pos;
+        triTmp.p2 = _VertexDataBuilder._Vertices[i+2]._Pos;
+        triangles.push_back(triTmp);
+    }
+    return triangles;
+}
+
 
 };

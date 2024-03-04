@@ -4,6 +4,22 @@
 
 namespace be{
 
+// TODO: temporary, then will need to only accept new objects through these functions
+void Scene::addGameObject(GameObject obj){
+    _GameObjects.push_back(obj);
+}
+
+void Scene::addGamePointLight(PointLight light){
+    _PointLights.push_back(light);
+}
+
+void Scene::addGameDirectionalLight(DirectionalLight light){
+    _DirectionalLights.push_back(light);
+}
+//
+
+
+
 void Scene::initFromGLTF(const std::string& filepath){
     tinygltf::Model gltfModel = loadModelGLTF(filepath);
     initGameObjects(gltfModel);

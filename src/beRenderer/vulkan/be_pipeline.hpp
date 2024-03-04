@@ -291,6 +291,8 @@ class Pipeline{
         */
         void initNormalPassThroughShaders();
 
+        void initRayTracingShaders();
+
         /**
          * Initiate shaders for the Lambert BRDF
          * @see shaders/lambertBRDF.vert

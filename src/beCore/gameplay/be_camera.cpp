@@ -9,12 +9,15 @@ namespace be{
 
 Camera::Camera(
     const Vector3& position,
-    float aspectRatio,
+    float width,
+    float height,
     float fov,
     float near,
     float far,
     const Vector3& worldUp){
-    _AspectRatio = aspectRatio;
+    _Width = width;
+    _Height = height;
+    _AspectRatio = width / height;
     _Fov = fov;
     _Near = near;
     _Far = far;
@@ -85,8 +88,17 @@ void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPi
     updateCameraVectors();
 }
 
-void Camera::setAspectRatio(float aspectRatio){
-    _AspectRatio = aspectRatio;
+void Camera::setAspectRatio(float width, float height){
+    _Width = width;
+    _Height = height;
+    if(height == 0.f){
+        ErrorHandler::handle(
+            __FILE__, __LINE__, 
+            ErrorCode::BAD_VALUE_ERROR,
+            "Can't have a null height for the camera!\n"   
+        );
+    }
+    _AspectRatio = width / height;
 }
 
 void Camera::updateCameraVectors(){
@@ -128,6 +140,47 @@ void CameraUboContainer::init(uint32_t size, VulkanAppPtr vulkanApp){
         ));
         _Ubos[i]->map();
     }
+}
+
+Matrix4x4 Camera::getProjection(CameraProjection projectionType) const {
+    Matrix4x4 proj{};
+    switch (projectionType) {
+        case PERSPECTIVE:
+            proj = getPerspective();
+            break;
+        case ORTHOGRAPHIC:
+            ErrorHandler::handle(
+                __FILE__, __LINE__,
+                ErrorCode::UNIMPLEMENTED_ERROR,
+                "The orthographic projection is not yet implemented!\n"
+            );
+            break;
+    }
+    return proj;
+}
+
+
+Ray Camera::rayAt(float x, float y, CameraProjection projectionType[[maybe_unused]]) const{
+    Vector3 direction{0.f,0.f,-1.f};
+    switch(projectionType) {
+        case PERSPECTIVE:{
+            float w = 2.f * radians(_Fov / 2.f);
+            direction = _At + ((x - 0.5f) * _AspectRatio * w) * _Right + ((1.f-y) - 0.5f) * w * _Up;
+            break;
+        }
+        case ORTHOGRAPHIC:{
+            ErrorHandler::handle(
+                __FILE__, __LINE__, 
+                ErrorCode::UNIMPLEMENTED_ERROR,
+                "The orthographic ray at function is not implemented yet!\n"
+                );
+            break;
+        }
+    }
+
+    direction.normalize();
+    Ray ray(_Eye, direction);
+    return ray;
 }
 
 };

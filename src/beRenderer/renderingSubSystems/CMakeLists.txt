@@ -8,3 +8,6 @@ target_include_directories(BigoudiEngine
         $<INSTALL_INTERFACE:include>
     PRIVATE
 )
+
+# add the subdirectories
+add_subdirectory(rayTracing)

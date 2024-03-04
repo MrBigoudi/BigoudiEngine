@@ -137,16 +137,10 @@ struct VertexDataBuilder{
 
     /**
      * A function to create a triangle model
-     * @param v0 The first vertex position
-     * @param v1 The second vertex position
-     * @param v2 The third vertex position
      * @param c The uniform color of the triangle
      * @return A builder
     */
     static VertexDataBuilder primitiveTriangle(
-        const Vector3& v0,
-        const Vector3& v1,
-        const Vector3& v2,
         const Vector4& c = Vector4{1.f,1.f,1.f,1.f}
     );
 
@@ -158,8 +152,8 @@ struct VertexDataBuilder{
      * @return A builder
     */
     static VertexDataBuilder primitiveRectangle(
-        float height,
-        float width,
+        float height = 1.f,
+        float width = 1.f,
         const Vector4& c = Vector4{1.f,1.f,1.f,1.f}
     );
 
@@ -170,7 +164,7 @@ struct VertexDataBuilder{
      * @return A builder
     */
     static VertexDataBuilder primitiveCube(
-        float length,
+        float length = 1.f,
         const Vector4& c = Vector4{1.f,1.f,1.f,1.f}
     );
 
@@ -192,6 +186,12 @@ struct VertexDataBuilder{
     static VertexDataBuilder primitiveFrame();
 };
 
+
+struct Triangle{
+    Vector3 p0{};
+    Vector3 p1{};
+    Vector3 p2{};
+};
 
 /**
  * A class to represent a 3D model
@@ -253,6 +253,11 @@ class Model{
         */
         uint32_t _IndexCount = 0;
 
+        /**
+         * The vertex builder
+        */
+        VertexDataBuilder _VertexDataBuilder{};
+
     public:
         /**
          * Build a model from a vulkan application and a vertex data builder
@@ -288,6 +293,12 @@ class Model{
          * Cleanup the model
         */
         void cleanUp();
+
+        /**
+         * Get the list of triangles in the model
+         * @return A vector of triangle
+        */
+        std::vector<Triangle> getTrianglePrimitives() const;
 
     private:
         /**

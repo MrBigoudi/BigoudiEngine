@@ -207,7 +207,7 @@ Vector2 Vector2::operator-(const Vector2& vector) const{
 
 /**
  * Multiplication with a scalar
- * @param val The scalar
+ * @param scalar The scalar
  * @return A new vector which is the results of the multiplication
 */
 Vector2 Vector2::operator*(float scalar) const {
@@ -218,7 +218,7 @@ Vector2 Vector2::operator*(float scalar) const {
 
 /**
  * Division with a scalar
- * @param val The scalar
+ * @param scalar The scalar
  * @return A new vector which is the results of the division
 */
 Vector2 Vector2::operator/(float scalar) const {
@@ -255,7 +255,7 @@ Vector2 Vector2::operator-(void){
 
 /**
  * Multiplication with a scalar
- * @param val The scalar
+ * @param scalar The scalar
 */
 void Vector2::operator*=(float scalar){
     x(x() * scalar);
@@ -264,7 +264,7 @@ void Vector2::operator*=(float scalar){
 
 /**
  * Division with a scalar
- * @param val The scalar
+ * @param scalar The scalar
 */
 void Vector2::operator/=(float scalar){
     if(scalar == 0.f){
@@ -356,7 +356,12 @@ float Vector2::getNorm() const{
 Vector2 Vector2::normalize(const Vector2& vector){
     float norm = vector.getNorm();
     if(norm == 0.f){
-        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::ZERO_DIVIDE_ERROR);
+        ErrorHandler::handle(
+            __FILE__, 
+            __LINE__, 
+            ErrorCode::ZERO_DIVIDE_ERROR,
+            "Can't normalize a vector with 0 norm!\n"
+        );
         return Vector2();
     }
     return Vector2(vector.x() / norm, vector.y() / norm);
@@ -368,7 +373,12 @@ Vector2 Vector2::normalize(const Vector2& vector){
 void Vector2::normalize(){
     float norm = getNorm();
     if(norm == 0.f){
-        ErrorHandler::handle(__FILE__, __LINE__, ErrorCode::ZERO_DIVIDE_ERROR);
+        ErrorHandler::handle(
+            __FILE__, 
+            __LINE__, 
+            ErrorCode::ZERO_DIVIDE_ERROR,
+            "Can't normalize a vector with 0 norm!\n"
+        );
         return;
     }
     x(x() / norm);
