@@ -36,6 +36,8 @@ class Image{
         void clear(const Vector3& color = {});
         void savePPM(const std::string& fileName);
 
+        static std::vector<unsigned char> pixelsToVectorOfBytes(const Pixels& pixels);
+
     private:
         void checkIndices(uint32_t x, uint32_t y) const;
 };

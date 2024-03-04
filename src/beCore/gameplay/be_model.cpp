@@ -280,10 +280,10 @@ VertexDataBuilder VertexDataBuilder::primitiveRectangle(
     Vector3 v3{width/2.f, height/2.f, 0.f};
     VertexDataBuilder builder{};
     builder._Vertices = {
-        {._Pos = v0, ._Col = c},
-        {._Pos = v1, ._Col = c},
-        {._Pos = v2, ._Col = c},
-        {._Pos = v3, ._Col = c},
+        {._Pos = v0, ._Col = c, ._Tex = {0,0}},
+        {._Pos = v1, ._Col = c, ._Tex = {1,0}},
+        {._Pos = v2, ._Col = c, ._Tex = {0,1}},
+        {._Pos = v3, ._Col = c, ._Tex = {1,1}},
     };
     builder._Indices = {
         0,1,2,

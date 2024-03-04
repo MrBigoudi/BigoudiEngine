@@ -11,7 +11,7 @@ namespace be{
  * A class representing a 3d vector of floating points 
 */
 class Vector3{
-    private:
+    protected:
         /**
          * The array containing the values
         */

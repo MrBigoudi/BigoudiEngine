@@ -102,4 +102,20 @@ void Image::savePPM(const std::string& fileName){
 }
 
 
+std::vector<unsigned char> Image::pixelsToVectorOfBytes(const Pixels& pixels){
+    std::vector<unsigned char> res = {};
+    for(const auto& row : pixels){
+        for(const auto& color : row){
+            unsigned char r = static_cast<unsigned char>(color.r() * 255.f);
+            unsigned char g = static_cast<unsigned char>(color.g() * 255.f);
+            unsigned char b = static_cast<unsigned char>(color.b() * 255.f);
+            res.push_back(r);
+            res.push_back(g);
+            res.push_back(b);
+        }
+    }
+    return res;
+}
+
+
 }

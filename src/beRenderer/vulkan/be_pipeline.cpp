@@ -308,6 +308,17 @@ void Pipeline::initColorPassThroughShaders(){
     );
 }
 
+void Pipeline::initRayTracingShaders(){
+    initVertexShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("raytracing.vert.spv")
+    );
+    initFragmentShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("raytracing.frag.spv")
+    );
+}
+
 void Pipeline::initNormalPassThroughShaders(){
     initVertexShader(
         GraphicsShader::SHADER_DIR

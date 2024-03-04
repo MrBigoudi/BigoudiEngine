@@ -41,7 +41,8 @@ RayHitOpt RayTracer::rayTriangleIntersection(const Ray& ray, const Vector3& p0, 
     //     a
     // );
     
-    if(Vector3::dot(n, w) >= 0){
+    // counter clock wise order
+    if(Vector3::dot(n, w) <= 0){
         return RayHit::NO_HIT;
     }
 

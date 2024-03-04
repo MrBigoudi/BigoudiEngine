@@ -88,8 +88,8 @@ int VulkanApp::rateDevice(VkPhysicalDevice device){
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
     }
 
-    // Application can't function without geometry shaders and need
-    if (!deviceFeatures.geometryShader 
+    if (   !deviceFeatures.fillModeNonSolid
+        || !deviceFeatures.samplerAnisotropy
         || !indices.isComplete()
         || !extensionsSupported
         || !swapChainAdequate
@@ -157,6 +157,7 @@ void VulkanApp::createLogicalDevice(){
 
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.fillModeNonSolid = VK_TRUE; // wireframe feature enabled
+    deviceFeatures.samplerAnisotropy = VK_TRUE; // anisotropic filtering feature enabled
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
