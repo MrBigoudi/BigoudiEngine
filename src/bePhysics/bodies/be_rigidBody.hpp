@@ -2,6 +2,8 @@
 
 #include <memory>
 #include "be_matrix3x3.hpp"
+#include "be_model.hpp"
+#include "be_transform.hpp"
 #include "be_vector3.hpp"
 
 #include "be_physicsConstants.hpp"
@@ -35,14 +37,22 @@ class RigidBody{
 
         Vector3 _CenterOfMass{};
 
+        TransformPtr _Transform = nullptr;
+        ModelPtr _Model = nullptr;
+
+        Matrix3x3 _Rotation{};
+
     public:
-        RigidBody();
-        RigidBody(bool movable, float mass);
-        RigidBody(bool movable, float mass, const Vector3& initialForce, const Vector3& initialTorque);
+        RigidBody(TransformPtr transform, ModelPtr model);
+        RigidBody(TransformPtr transform, ModelPtr model, bool movable, float mass);
+        RigidBody(TransformPtr transform, ModelPtr model, bool movable, float mass, const Vector3& initialForce, const Vector3& initialTorque);
 
     public:
         static void updateStepCounter();
         bool isMovable() const;
+
+    private:
+        void initInertiaTensors();
 
     public:
         Vector3 vel() const;

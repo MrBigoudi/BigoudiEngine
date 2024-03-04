@@ -182,6 +182,32 @@ class Matrix3x3{
          * @return The determinant as a float
         */
         static float det(const Matrix3x3& matrix);
+
+        /**
+         * Transpose the current matrix
+        */
+        void transpose(void);
+
+        /**
+         * Transpose the given matrix
+         * @param matrix The matrix to transpose
+         * @return The transposed matrix
+        */
+        static Matrix3x3 transpose(const Matrix3x3& matrix);
+
+        /**
+         * Inverse a the current matrix
+        */
+        void inverse();
+
+        /**
+         * Inverse the given matrix
+         * @param matrix The matrix to vinert
+         * @return The inverted matrix
+        */
+        static Matrix3x3 inverse(const Matrix3x3& matrix);
+
+        static Matrix3x3 getCrossProductMatrix(const Vector3& v);
 };
 
 }
