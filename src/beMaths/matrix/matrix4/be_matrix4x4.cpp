@@ -409,6 +409,13 @@ void Matrix4x4::inverse(){
     float A0112 = _Values[1][0] * _Values[2][1] - _Values[1][1] * _Values[2][0];
 
     float det = this->det();
+    if(det == 0){
+        ErrorHandler::handle(
+            __FILE__, __LINE__,
+            ErrorCode::ZERO_DIVIDE_ERROR,
+            "Matrix is not inversible!\n"
+        );
+    }
     det = 1.f / det;
 
     Matrix4x4 tmp{};

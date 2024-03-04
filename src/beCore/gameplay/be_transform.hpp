@@ -2,6 +2,7 @@
 
 #include "be_vector3.hpp"
 #include "be_matrix4x4.hpp"
+#include "be_matrix3x3.hpp"
 
 #include <cmath>
 #include <memory>
@@ -32,6 +33,29 @@ class Transform{
         * @note Allowing non uniform scaling but in practice this feature is not yet handled by the engine
         */
         Vector3 _Scale{1.f, 1.f, 1.f};
+
+    public:
+        Matrix3x3 getRotationMatrix() const {
+            const float c3 = cos(_Rotation.z());
+            const float s3 = sin(_Rotation.z());
+            const float c2 = cos(_Rotation.x());
+            const float s2 = sin(_Rotation.x());
+            const float c1 = cos(_Rotation.y());
+            const float s1 = sin(_Rotation.y());
+
+            Matrix3x3 out{};
+            out[0][0] = (c1 * c3 + s1 * s2 * s3);
+            out[0][1] = (c2 * s3);
+            out[0][2] = (c1 * s2 * s3 - c3 * s1);
+            out[1][0] = (c3 * s1 * s2 - c1 * s3);
+            out[1][1] = (c2 * c3);
+            out[1][2] = (c1 * c3 * s2 + s1 * s3);
+            out[2][0] = (c2 * s1);
+            out[2][1] = (-s2);
+            out[2][2] = (c1 * c2);
+
+            return out;
+        }
 
     public:
         /**

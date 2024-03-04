@@ -349,4 +349,80 @@ float Matrix3x3::det(const Matrix3x3& matrix){
     return matrix.det();
 }
 
+/**
+ * Transpose the current matrix
+*/
+void Matrix3x3::transpose(void){
+    for(int i=0; i<4; i++){
+        for(int j=0; j<i; j++){
+            float oldValue = _Values[i][j];
+            _Values[i][j] = _Values[j][i];
+            _Values[j][i] = oldValue; 
+        }
+    }
+}
+
+/**
+ * Transpose the current matrix
+ * @param matrix The matrix to transpose
+ * @return The transposed matrix
+*/
+Matrix3x3 Matrix3x3::transpose(const Matrix3x3& matrix){
+    Matrix3x3 newMat(matrix);
+    newMat.transpose();
+    return newMat;
+}
+
+/**
+ * Inverse a the current matrix
+*/
+void Matrix3x3::inverse(){
+
+    float det = this->det();
+    if(det == 0){
+        ErrorHandler::handle(
+            __FILE__, __LINE__,
+            ErrorCode::ZERO_DIVIDE_ERROR,
+            "Matrix is not inversible!\n"
+        );
+    }
+    det = 1.f / det;
+
+    Matrix3x3 tmp{};
+    tmp[0][0] = det * (_Values[1][1] * _Values[2][2] - _Values[2][1] * _Values[1][2]);
+    tmp[0][1] = det * (_Values[0][2] * _Values[2][1] - _Values[0][1] * _Values[2][2]);
+    tmp[0][2] = det * (_Values[0][1] * _Values[1][2] - _Values[0][2] * _Values[1][1]);
+    tmp[1][0] = det * (_Values[1][2] * _Values[2][0] - _Values[1][0] * _Values[2][2]);
+    tmp[1][1] = det * (_Values[0][0] * _Values[2][2] - _Values[0][2] * _Values[2][0]);
+    tmp[1][2] = det * (_Values[1][0] * _Values[0][2] - _Values[0][0] * _Values[1][2]);
+    tmp[2][0] = det * (_Values[1][0] * _Values[2][1] - _Values[2][0] * _Values[1][1]);
+    tmp[2][1] = det * (_Values[2][0] * _Values[0][1] - _Values[0][0] * _Values[2][1]);
+    tmp[2][2] = det * (_Values[0][0] * _Values[1][1] - _Values[1][0] * _Values[0][1]);
+
+    copy(tmp);
+}
+
+/**
+ * Inverse the given matrix
+ * @param matrix The matrix to vinert
+ * @return The inverted matrix
+*/
+Matrix3x3 Matrix3x3::inverse(const Matrix3x3& matrix){
+    Matrix3x3 newMat(matrix);
+    newMat.inverse();
+    return newMat; 
+}
+
+Matrix3x3 Matrix3x3::getCrossProductMatrix(const Vector3& v){
+    Matrix3x3 out{};
+    out[0][1] = -v.z();
+    out[0][2] = v.y();
+    out[1][0] = v.z();
+    out[1][2] = -v.x();
+    out[2][0] = -v.y();
+    out[2][1] = v.x();
+    return out;
+}
+
+
 }

@@ -1,6 +1,7 @@
 #include "be_rigidBody.hpp"
 #include "be_errorHandler.hpp"
 #include "be_physicsConstants.hpp"
+#include "be_transform.hpp"
 
 namespace be{
 
@@ -10,30 +11,51 @@ float RigidBody::mass() const {return _Mass;}
 
 uint32_t RigidBody::_SimulationSteps = 0;
 
-RigidBody::RigidBody(){
-
+RigidBody::RigidBody(TransformPtr transform, ModelPtr model)
+    : _Transform(transform), _Model(model){
+    _Rotation = transform->getRotationMatrix();
+    initInertiaTensors();
 }
 
 bool RigidBody::isMovable() const { return _Movable;}
 
-RigidBody::RigidBody(bool movable, float mass) : _Movable(movable), _Mass(mass){
+RigidBody::RigidBody(TransformPtr transform, ModelPtr model, bool movable, float mass) {
+    _Movable = movable; 
+    _Mass = mass; 
     if(mass < EPSILON){
         ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "A mass for a rigid body can't be too low!\n"
         );
     }
+    RigidBody(transform, model);
 };
 
-RigidBody::RigidBody(bool movable, float mass, const Vector3& initialForce, const Vector3& initialTorque)
-    : _Movable(movable), _Mass(mass), _Force(initialForce), _Torque(initialTorque){
+RigidBody::RigidBody(TransformPtr transform, ModelPtr model, bool movable, float mass, const Vector3& initialForce, const Vector3& initialTorque){
+    _Movable = movable; 
+    _Mass = mass; 
+    _Force = initialForce;
+    _Torque = initialTorque;
     if(mass < EPSILON){
         ErrorHandler::handle(__FILE__, __LINE__, 
             ErrorCode::BAD_VALUE_ERROR,
             "A mass for a rigid body can't be too low!\n"
         );
     }
+    RigidBody(transform, model);
 };
+
+void RigidBody::initInertiaTensors(){
+    // TODO: different for different shapes
+    bool isCube = true;
+    if(isCube){
+        // TODO: need to update models
+        _InertiaBodySpace = getInertiaTensorCuboid(1.f, 1.f, 1.f, _Mass);
+        _InertiaInverseBodySpace = Matrix3x3::inverse(_InertiaBodySpace);
+        _InertiaInverseWorldSpace = _Rotation * _InertiaInverseBodySpace * Matrix3x3::transpose(_Rotation);
+    }
+}
+
 
 void RigidBody::updateStepCounter(){
     _SimulationSteps++;
@@ -41,6 +63,12 @@ void RigidBody::updateStepCounter(){
 
 Vector3 RigidBody::getGravityForce(){
     return {0.f, -GRAVITY, 0.f};
+}
+
+void RigidBody::computeTorques(){
+    if(_SimulationSteps != 0){
+        _Torque = {};
+    }
 }
 
 void RigidBody::computeForces(){
@@ -69,12 +97,15 @@ void RigidBody::updatePosition(Vector3& position, float dt){
 
 void RigidBody::updateRotation(Vector3& rotation, float dt){
     // do quaternion stuff
+    if(!_Movable) return;
+    Vector3 omega = _InertiaInverseWorldSpace * _AngularMomentum;
+    // _Rotation += dt * Matrix3x3::getCrossProductMatrix(omega) * _Rotation; // TODO: implement that
 }
 
 Vector3 RigidBody::getImpulse(const RigidBodyPtr r, const Vector3& n, const Vector3& contactPoint[[maybe_unused]]) const {
     float K = 1.f / _Mass + 1.f / r->_Mass;
 
-    // TODO: velocity at a point
+    // TODO: velocity at the contact point
     float j = Vector3::dot((r->_LinearVelocity - _LinearVelocity), n / K);
 
     Vector3 J = n * j;
