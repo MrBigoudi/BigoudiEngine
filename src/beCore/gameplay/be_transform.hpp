@@ -58,9 +58,13 @@ class Transform{
         }
 
     public:
+        Matrix4x4 getModelTransposed() const {
+            return Matrix4x4::transpose(getModel());
+        }
+
         /**
-        * Getter to the object's model matrix
-        * @return The 4x4 model matrix
+         * Getter to the object's model matrix
+         * @return The 4x4 model matrix
         */
         Matrix4x4 getModel() const {
             const float c3 = cos(_Rotation.z());

@@ -14,9 +14,9 @@ struct ComponentTransform{
     TransformPtr _Transform = nullptr;
 
     static ComponentTransform create(
-        const Vector3& position, 
-        const Vector3& rotation, 
-        const Vector3& scaling
+        const Vector3& position = {}, 
+        const Vector3& rotation = {}, 
+        const Vector3& scaling = {1.f,1.f,1.f}
     ){
         Transform transform = {};
         transform._Position = position;
@@ -26,9 +26,9 @@ struct ComponentTransform{
     }
 
     static void add(GameObject object, 
-        const Vector3& position, 
-        const Vector3& rotation, 
-        const Vector3& scaling
+        const Vector3& position = {}, 
+        const Vector3& rotation = {}, 
+        const Vector3& scaling = {1.f,1.f,1.f}
     ){
         GameCoordinator::addComponent(
             object, 

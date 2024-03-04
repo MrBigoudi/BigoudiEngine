@@ -15,34 +15,20 @@ RayHitOpt RayTracer::rayTriangleIntersection(const Ray& ray, const Vector3& p0, 
     Vector3 e0 = p1 - p0;
     Vector3 e1 = p2 - p0;
 
-    // fprintf(stdout,
-    //     "e0: %s\ne1: %s\n",
-    //     e0.toString().c_str(),
-    //     e1.toString().c_str()
-    // );
-
     Vector3 w = ray.getDirection();
     Vector3 o = ray.getOrigin();
 
-    // fprintf(stdout,
-    //     "w: %s\no: %s\n",
-    //     w.toString().c_str(),
-    //     o.toString().c_str()
-    // );
+    Vector3 tmp = Vector3::cross(e0, e1);
+    if(tmp.getNorm() == 0.f){
+        return RayHit::NO_HIT;
+    }
 
-    Vector3 n = Vector3::normalize(Vector3::cross(e0, e1));
+    Vector3 n = Vector3::normalize(tmp);
     Vector3 q = Vector3::cross(w, e1);
     float a = Vector3::dot(e0, q);
-
-    // fprintf(stdout,
-    //     "n: %s\nq: %s\na: %f\n",
-    //     n.toString().c_str(),
-    //     q.toString().c_str(),
-    //     a
-    // );
     
     // counter clock wise order
-    if(Vector3::dot(n, w) <= 0){
+    if(Vector3::dot(n, w) >= 0){
         return RayHit::NO_HIT;
     }
 
@@ -52,13 +38,6 @@ RayHitOpt RayTracer::rayTriangleIntersection(const Ray& ray, const Vector3& p0, 
 
     Vector3 s = (o-p0) / a;
     Vector3 r = Vector3::cross(s, e0);
-
-    // fprintf(stdout,
-    //     "s: %s\nr: %s\n",
-    //     s.toString().c_str(),
-    //     r.toString().c_str()
-    // );
-
 
     float b0 = Vector3::dot(s, q);
     if(b0 < 0){
@@ -79,10 +58,12 @@ RayHitOpt RayTracer::rayTriangleIntersection(const Ray& ray, const Vector3& p0, 
     }
 
     Vector4 res = {b0,b1,b2,t};
-    // fprintf(stdout, "res: %s\n", res.toString().c_str());
     return RayHit(res);
 }
 
+Color RayTracer::shade(RayHit hit, Triangle triangle) const {
+    
+}
 
 std::vector<Triangle> RayTracer::getTriangles() const{
     std::vector<Triangle> allTriangles = {};
@@ -91,16 +72,30 @@ std::vector<Triangle> RayTracer::getTriangles() const{
     #endif
 
     for(auto obj : _Scene->getObjects()){
+        
         auto model = GameCoordinator::getComponent<ComponentModel>(obj)._Model;
         auto triangles = model->getTrianglePrimitives();
-
         #ifndef NDEBUG
-        fprintf(stdout, "there are %zu triangles in the scene\n", triangles.size());
-        fprintf(stdout, 
-            "po: %s, p1: %s, p2: %s\n",
-            triangles[0].p0.toString().c_str(), triangles[0].p1.toString().c_str(), triangles[0].p2.toString().c_str()
-        );
+        fprintf(stdout, "there are %zu triangles in the object `%d'\n", triangles.size(), obj);
         #endif
+
+        auto material = GameCoordinator::getComponent<ComponentMaterial>(obj)._Material;
+        auto transform = GameCoordinator::getComponent<ComponentTransform>(obj)._Transform;
+        Matrix4x4 modelMatrix = transform->getModelTransposed();
+        for(auto& triangle : triangles){
+            // fprintf(stdout, 
+            //     "before model transform:\n\tpo: %s, p1: %s, p2: %s\n",
+            //     triangle.p0.toString().c_str(), triangle.p1.toString().c_str(), triangle.p2.toString().c_str()
+            // );
+            triangle.p0 = (modelMatrix * Vector4(triangle.p0, 1.f)).xyz();
+            triangle.p1 = (modelMatrix * Vector4(triangle.p1, 1.f)).xyz();
+            triangle.p2 = (modelMatrix * Vector4(triangle.p2, 1.f)).xyz();
+            triangle._Material = material;
+            // fprintf(stdout, 
+            //     "after model transform:\n\tpo: %s, p1: %s, p2: %s\n",
+            //     triangle.p0.toString().c_str(), triangle.p1.toString().c_str(), triangle.p2.toString().c_str()
+            // );
+        }
 
         allTriangles.insert(allTriangles.end(), triangles.begin(), triangles.end());
     }
@@ -108,6 +103,8 @@ std::vector<Triangle> RayTracer::getTriangles() const{
     return allTriangles;
 }
 
+
+// helper progress bar
 
 
 void RayTracer::run(Vector3 backgroundColor, bool verbose){
@@ -124,18 +121,18 @@ void RayTracer::run(Vector3 backgroundColor, bool verbose){
         _Image->clear(backgroundColor);
 
         auto primitives = getTriangles();
+
         
         for(uint j = 0; j<height; j++){
+            #ifndef NDEBUG
+            float progress = j / (height+1.f);
+            displayProgressBar(progress);
+            #endif
+
             for(uint32_t i = 0; i<width; i++){
                 float u = (static_cast<float>(i) + 0.5f) / width;
                 float v = 1.f - (static_cast<float>(j) + 0.5f) / height;
                 Ray curRay = _Camera->rayAt(u,v);
-                // if(j%100 == 0 && i%100 == 0){
-                //     fprintf(stdout, "j: %d, i:%d\n\tray pos: %s\n\tray dir: %s\n", 
-                //             j, i, curRay.getOrigin().toString().c_str(), 
-                //             curRay.getDirection().toString().c_str()
-                //     );
-                // }
 
                 for(auto& triangle : primitives){
                     RayHitOpt hit = rayTriangleIntersection(curRay, triangle);
@@ -144,17 +141,11 @@ void RayTracer::run(Vector3 backgroundColor, bool verbose){
                         break; // for now
                     }
                 }
-
-                // // gradient color for now
-                // float a = 0.5f*(curRay.getDirection().y() + 1.f);
-                // Vector3 color = (1.f-a)*Color::WHITE + a*Vector3(0.5f, 0.7f, 1.0f);
-                // // color = (curRay.getDirection() + Vector3(1.f,1.f,1.f)) * 0.5f;
-                // _Image->set(i, j, color);
             }
         }
 
         if(verbose){
-            fprintf(stdout, "Ray tracing executed in `%d ms'\n", timer.getTicks());
+            fprintf(stdout, "\nRay tracing executed in `%d ms'\n", timer.getTicks());
         }
         _IsRunning = false;
     }
