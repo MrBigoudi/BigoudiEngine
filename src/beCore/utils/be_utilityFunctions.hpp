@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <iostream>
 
 namespace be{
 
@@ -18,6 +19,18 @@ inline void hashCombine(std::size_t& seed, const T& v, const Rest&... rest) {
 inline bool isZero(float f){
     const float epsilon = 1e-9;
     return (f>-epsilon) && (f<epsilon);
+}
+
+inline void displayProgressBar(float progress, int barWidth = 70){
+    fprintf(stdout, "[");
+    int pos = barWidth * progress;
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) fprintf(stdout, "=");
+        else if (i == pos) fprintf(stdout, ">");
+        else fprintf(stdout, " ");
+    }
+    fprintf(stdout, "] %.0f %%\r", progress * 100.0);
+    fflush(stdout);
 }
 
 };

@@ -63,4 +63,46 @@ void LightUboContainer::reset(){
     _UboData={};
 }
 
+void LightUboContainer::addPointLight(const PointLight& pointLight){
+    if(_UboData._NbPointLights >= MAX_NB_POINT_LIGHTS){
+        ErrorHandler::handle(__FILE__, __LINE__, 
+            ErrorCode::OUT_OF_RANGE_ERROR,
+            "Can't add more point light in the UBO!\n",
+            ErrorLevel::WARNING
+        );
+        return;
+    }
+    _UboData._PointLights[_UboData._NbPointLights] = pointLight;
+    _UboData._NbPointLights++;
+}
+
+void LightUboContainer::addDirectionalLight(const DirectionalLight& directionalLight){
+    if(_UboData._NbDirectionalLights >= MAX_NB_DIRECTIONAL_LIGHTS){
+        ErrorHandler::handle(__FILE__, __LINE__, 
+            ErrorCode::OUT_OF_RANGE_ERROR,
+            "Can't add more directional light in the UBO!\n",
+            ErrorLevel::WARNING
+        );
+        return;
+    }
+    _UboData._DirectionalLights[_UboData._NbDirectionalLights] = directionalLight;
+    _UboData._NbDirectionalLights++;
+}
+
+std::vector<PointLight> LightUboContainer::getPointLights() const{
+    std::vector<PointLight> lights{_UboData._NbPointLights};
+    for(size_t i=0; i<_UboData._NbPointLights; i++){
+        lights.push_back(_UboData._PointLights[i]);
+    }
+    return lights;
+}
+
+std::vector<DirectionalLight> LightUboContainer::getDirectionalLights() const{
+    std::vector<DirectionalLight> lights{_UboData._NbDirectionalLights};
+    for(size_t i=0; i<_UboData._NbDirectionalLights; i++){
+        lights.push_back(_UboData._DirectionalLights[i]);
+    }
+    return lights;
+}
+
 }

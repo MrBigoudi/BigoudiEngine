@@ -274,20 +274,20 @@ VertexDataBuilder VertexDataBuilder::primitiveRectangle(
     float height,
     float width,
     const Vector4& c){
-    Vector3 v0{-width/2.f, -height/2.f, 0.f};
-    Vector3 v1{width/2.f, -height/2.f, 0.f};
-    Vector3 v2{-width/2.f, height/2.f, 0.f};
-    Vector3 v3{width/2.f, height/2.f, 0.f};
+    Vector3 v0{-width/2.f, -height/2.f, 0.f}; // top left
+    Vector3 v1{width/2.f, -height/2.f, 0.f}; // top right
+    Vector3 v2{-width/2.f, height/2.f, 0.f}; // bottom left
+    Vector3 v3{width/2.f, height/2.f, 0.f}; // bottom right
     VertexDataBuilder builder{};
     builder._Vertices = {
-        {._Pos = v0, ._Col = c, ._Tex = {0,0}},
-        {._Pos = v1, ._Col = c, ._Tex = {1,0}},
-        {._Pos = v2, ._Col = c, ._Tex = {0,1}},
-        {._Pos = v3, ._Col = c, ._Tex = {1,1}},
+        {._Pos = v0, ._Col = c, ._Tex = {1,0}},
+        {._Pos = v1, ._Col = c, ._Tex = {0,0}},
+        {._Pos = v2, ._Col = c, ._Tex = {1,1}},
+        {._Pos = v3, ._Col = c, ._Tex = {0,1}},
     };
     builder._Indices = {
-        0,1,2,
-        2,1,3
+        0, 1, 2,
+        2, 1, 3,
     };
     return builder;
 }
@@ -335,20 +335,20 @@ VertexDataBuilder VertexDataBuilder::primitiveCube(
         0, 1, 2,
         2, 1, 3,
         // back face
-        4, 5, 6,
-        6, 5, 7,
+        4, 6, 5,
+        6, 7, 5,
         // left face
         8, 9, 10,
         10, 9, 11,
         // right face
-        12, 13, 14,
-        14, 13, 15,
+        12, 14, 13,
+        14, 15, 13,
         // top face
         16, 17, 18,
         18, 17, 19,
         // bottom face
-        20, 21, 22,
-        22, 21, 23
+        20, 22, 21,
+        22, 23, 21
     };
     
     return builder;
@@ -361,14 +361,17 @@ VertexDataBuilder VertexDataBuilder::primitiveSphere(
     VertexDataBuilder builder{};
     // vertices
     std::vector<Vector3> vertices{};
+    std::vector<Vector2> uvs{};
+    std::vector<Vector3> normals;
+
     {
         const float stepPhi = PI / resolution;
         const float stepTheta = 2 * PI / resolution;
         float phi = 0.0f;
-        for (int i = 0; i <= int(resolution); i++) {
+        for (size_t i = 0; i <= resolution; i++) {
             phi += stepPhi;
             float theta = 0.0f;
-            for (int j = 0; j <= int(resolution); j++) {
+            for (size_t j = 0; j <= resolution; j++) {
                 theta += stepTheta;
 
                 float x = sin(theta)*sin(phi);
@@ -376,31 +379,29 @@ VertexDataBuilder VertexDataBuilder::primitiveSphere(
                 float z = cos(theta)*sin(phi);
 
                 vertices.push_back({x,y,z});
+                // Generate textures
+                uvs.push_back(j / (float)resolution);
+                uvs.push_back(i / (float)resolution);
+                // Generate normals
+                normals.push_back(Vector3::normalize({x,y,z}));
             }
         }
     }
 
-    // normals
-    std::vector<Vector3> normals;
-    {
-        for(int i=0; i<int(vertices.size()); i++){
-            normals.push_back(Vector3::normalize(vertices[i]));
-        }
-    }
-
-    for(int i=0; i<int(vertices.size()); i++){
+    for(size_t i=0; i<vertices.size(); i++){
         builder._Vertices.push_back({
             ._Pos = vertices[i],
             ._Col = c,
-            ._Norm = normals[i]
+            ._Norm = normals[i],
+            ._Tex = uvs[i],
             }
         );
     }
 
     // indices
     {
-        for (int i = 0; i < int(resolution); i++) {
-            for (int j = 0; j < int(resolution); j++) {
+        for (size_t i = 0; i < resolution; i++) {
+            for (size_t j = 0; j < resolution; j++) {
                 int first = i * (resolution + 1) + j;
                 int second = first + resolution + 1;
 
@@ -585,10 +586,14 @@ Model::Model(VulkanAppPtr vulkanApp, const std::string& filePath)
 std::vector<Triangle> Model::getTrianglePrimitives() const{
     std::vector<Triangle> triangles{};
     for(uint32_t i=0; i<uint32_t(_VertexDataBuilder._Indices.size()); i+=3){
+        uint32_t idx0 = _VertexDataBuilder._Indices[i];
+        uint32_t idx1 = _VertexDataBuilder._Indices[i+1];
+        uint32_t idx2 = _VertexDataBuilder._Indices[i+2];
+        
         Triangle triTmp{};
-        triTmp.p0 = _VertexDataBuilder._Vertices[i]._Pos;
-        triTmp.p1 = _VertexDataBuilder._Vertices[i+1]._Pos;
-        triTmp.p2 = _VertexDataBuilder._Vertices[i+2]._Pos;
+        triTmp.p0 = _VertexDataBuilder._Vertices[idx0]._Pos;
+        triTmp.p1 = _VertexDataBuilder._Vertices[idx1]._Pos;
+        triTmp.p2 = _VertexDataBuilder._Vertices[idx2]._Pos;
         triangles.push_back(triTmp);
     }
     return triangles;

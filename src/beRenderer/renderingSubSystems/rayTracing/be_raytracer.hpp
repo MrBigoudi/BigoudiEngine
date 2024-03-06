@@ -46,6 +46,7 @@ class RayTracer{
     
     private:
         std::vector<Triangle> getTriangles() const;
+        Vector3 shade(RayHit hit, Triangle triangle) const;
 
 };
 
