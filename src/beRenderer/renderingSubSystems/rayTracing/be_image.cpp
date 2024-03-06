@@ -89,9 +89,10 @@ void Image::savePPM(const std::string& fileName){
         << "255" << std::endl;
     for (size_t y = 0; y < _Height; y++){
         for (size_t x = 0; x < _Width; x++) {
-            float r = get(x,y).r() * 255.f;
-            float g = get(x,y).g() * 255.f;
-            float b = get(x,y).b() * 255.f;
+            Vector3 color = get(x,y);
+            float r = color.r() * 255.f;
+            float g = color.g() * 255.f;
+            float b = color.b() * 255.f;
             out << std::min (255u, static_cast<uint32_t>(r))<< " "
                 << std::min (255u, static_cast<uint32_t>(g))<< " "
                 << std::min (255u, static_cast<uint32_t>(b))<< " ";

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "be_color.hpp"
 #include "be_image.hpp"
 #include "be_model.hpp"
 #include "be_rayHit.hpp"
@@ -47,7 +46,7 @@ class RayTracer{
     
     private:
         std::vector<Triangle> getTriangles() const;
-        Color shade(RayHit hit, Triangle triangle) const;
+        Vector3 shade(RayHit hit, Triangle triangle) const;
 
 };
 

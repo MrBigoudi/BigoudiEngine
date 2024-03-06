@@ -61,8 +61,8 @@ RayHitOpt RayTracer::rayTriangleIntersection(const Ray& ray, const Vector3& p0, 
     return RayHit(res);
 }
 
-Color RayTracer::shade(RayHit hit, Triangle triangle) const {
-    
+Vector3 RayTracer::shade(RayHit hit, Triangle triangle) const {
+    return Color::toSRGB(Color::RED); // red tmp
 }
 
 std::vector<Triangle> RayTracer::getTriangles() const{
@@ -83,18 +83,10 @@ std::vector<Triangle> RayTracer::getTriangles() const{
         auto transform = GameCoordinator::getComponent<ComponentTransform>(obj)._Transform;
         Matrix4x4 modelMatrix = transform->getModelTransposed();
         for(auto& triangle : triangles){
-            // fprintf(stdout, 
-            //     "before model transform:\n\tpo: %s, p1: %s, p2: %s\n",
-            //     triangle.p0.toString().c_str(), triangle.p1.toString().c_str(), triangle.p2.toString().c_str()
-            // );
             triangle.p0 = (modelMatrix * Vector4(triangle.p0, 1.f)).xyz();
             triangle.p1 = (modelMatrix * Vector4(triangle.p1, 1.f)).xyz();
             triangle.p2 = (modelMatrix * Vector4(triangle.p2, 1.f)).xyz();
             triangle._Material = material;
-            // fprintf(stdout, 
-            //     "after model transform:\n\tpo: %s, p1: %s, p2: %s\n",
-            //     triangle.p0.toString().c_str(), triangle.p1.toString().c_str(), triangle.p2.toString().c_str()
-            // );
         }
 
         allTriangles.insert(allTriangles.end(), triangles.begin(), triangles.end());
@@ -137,7 +129,7 @@ void RayTracer::run(Vector3 backgroundColor, bool verbose){
                 for(auto& triangle : primitives){
                     RayHitOpt hit = rayTriangleIntersection(curRay, triangle);
                     if(hit.has_value()){
-                        _Image->set(i, j, Color::RED); // red tmp
+                        _Image->set(i, j, shade(hit.value(), triangle));
                         break; // for now
                     }
                 }

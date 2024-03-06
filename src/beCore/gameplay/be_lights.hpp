@@ -7,7 +7,7 @@
 namespace be{
 
 static const int MAX_NB_POINT_LIGHTS = 1024;
-static const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
+static const int MAX_NB_DIRECTIONAL_LIGHTS = 1024;
 
 struct Light{};
 
@@ -38,9 +38,14 @@ class LightUboContainer: public UboContainer{
         virtual void init(uint32_t size, VulkanAppPtr vulkanApp) override;
         virtual void update(uint32_t frameIndex) override;
 
+        void addPointLight(const PointLight& pointLight);
         void addPointLight(const Vector3& position, const Vector3& color, float intensity);
+        void addDirectionalLight(const DirectionalLight& directionalLight);
         void addDirectionalLight(const Vector3& direction, const Vector3& color, float intensity);
         void reset();
+
+        std::vector<PointLight> getPointLights() const;
+        std::vector<DirectionalLight> getDirectionalLights() const;
 };
 
 };
