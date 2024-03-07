@@ -56,7 +56,7 @@ void PhysicsSystem::semiImplicitEuler(float dt, GameObject object){
     }
 }
 
-void PhysicsSystem::handleCollisions(float dt, GameObject object){  
+void PhysicsSystem::handleCollisions(float dt[[maybe_unused]], GameObject object){  
     auto collider = GameCoordinator::getComponent<ComponentCollider>(object)._Collider;
     if(!collider) return;
     auto rigidBody = GameCoordinator::getComponent<ComponentRigidBody>(object)._RigidBody;

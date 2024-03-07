@@ -118,6 +118,12 @@ class Camera{
         */
         float _Dt = 0.f;
 
+        bool _IsLocked = false;
+    
+    public:
+        void lock(){_IsLocked = true;}
+        void unlock(){_IsLocked = false;}
+
     public:
         /**
          * A basic constructor

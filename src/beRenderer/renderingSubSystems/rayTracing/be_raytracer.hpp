@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "be_frameInfo.hpp"
 #include "be_image.hpp"
 #include "be_model.hpp"
 #include "be_rayHit.hpp"
@@ -17,15 +18,15 @@ class RayTracer{
         ImagePtr _Image = nullptr;
         ScenePtr _Scene = nullptr;
         bool _IsRunning = false;
-        CameraPtr _Camera = nullptr;
+        FrameInfo _Frame;
 
     public:
-        RayTracer(ScenePtr scene, CameraPtr camera, uint32_t width, uint32_t height)
-            : _Scene(scene), _Camera(camera){
+        RayTracer(ScenePtr scene, uint32_t width, uint32_t height)
+            : _Scene(scene){
             setResolution(width, height);
         }
         
-        void run(Vector3 backgroundColor = {}, bool verbose = false);
+        void run(FrameInfo frame, Vector3 backgroundColor = {}, bool verbose = false);
 
     public:
         ImagePtr getImage() const { 
@@ -40,13 +41,14 @@ class RayTracer{
             _Image = std::make_shared<Image>(width, height);
         }
 
-        static RayHitOpt rayTriangleIntersection(const Ray& ray, const Vector3& p0, const Vector3& p1, const Vector3& p2);
-        static RayHitOpt rayTriangleIntersection(const Ray& ray, const Triangle& trianglePrimitive);
+        static RayHitOpt rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive);
+        static Vector3 getHitWorldPosition(const RayHit& hit, const Ray& curRay);
 
     
     private:
         std::vector<Triangle> getTriangles() const;
-        Vector3 shade(RayHit hit, Triangle triangle) const;
+        Vector3 shade(RayHits& hits) const;
+
 
 };
 

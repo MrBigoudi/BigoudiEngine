@@ -75,7 +75,7 @@ void Image::clear(const Vector3& color){
     }
 }
 
-void Image::savePPM(const std::string& fileName){
+void Image::savePPM(const std::string& fileName) const {
     std::ofstream out(fileName.c_str());
     if (!out){
         ErrorHandler::handle(
@@ -93,9 +93,9 @@ void Image::savePPM(const std::string& fileName){
             float r = color.r() * 255.f;
             float g = color.g() * 255.f;
             float b = color.b() * 255.f;
-            out << std::min (255u, static_cast<uint32_t>(r))<< " "
-                << std::min (255u, static_cast<uint32_t>(g))<< " "
-                << std::min (255u, static_cast<uint32_t>(b))<< " ";
+            out << std::min(255u, static_cast<uint32_t>(r))<< " "
+                << std::min(255u, static_cast<uint32_t>(g))<< " "
+                << std::min(255u, static_cast<uint32_t>(b))<< " ";
         }
         out << std::endl;
     }
@@ -107,12 +107,13 @@ std::vector<unsigned char> Image::pixelsToVectorOfBytes(const Pixels& pixels){
     std::vector<unsigned char> res = {};
     for(const auto& row : pixels){
         for(const auto& color : row){
-            unsigned char r = static_cast<unsigned char>(color.r() * 255.f);
-            unsigned char g = static_cast<unsigned char>(color.g() * 255.f);
-            unsigned char b = static_cast<unsigned char>(color.b() * 255.f);
-            res.push_back(r);
-            res.push_back(g);
-            res.push_back(b);
+            float r = color.r() * 255.f;
+            float g = color.g() * 255.f;
+            float b = color.b() * 255.f;
+            res.push_back(static_cast<unsigned char>(std::min(255u, static_cast<uint32_t>(r))));
+            res.push_back(static_cast<unsigned char>(std::min(255u, static_cast<uint32_t>(g))));
+            res.push_back(static_cast<unsigned char>(std::min(255u, static_cast<uint32_t>(b))));
+            res.push_back(0xFF);
         }
     }
     return res;

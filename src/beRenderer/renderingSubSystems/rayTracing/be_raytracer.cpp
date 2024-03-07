@@ -7,16 +7,16 @@
 
 namespace be{
 
-RayHitOpt RayTracer::rayTriangleIntersection(const Ray& ray, const Triangle& trianglePrimitive){
-    return rayTriangleIntersection(ray, trianglePrimitive.p0, trianglePrimitive.p1, trianglePrimitive.p2);
-}
+RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive){
+    Vector3 p0 = trianglePrimitive._WorldPos0;
+    Vector3 p1 = trianglePrimitive._WorldPos1;
+    Vector3 p2 = trianglePrimitive._WorldPos2;
 
-RayHitOpt RayTracer::rayTriangleIntersection(const Ray& ray, const Vector3& p0, const Vector3& p1, const Vector3& p2){
     Vector3 e0 = p1 - p0;
     Vector3 e1 = p2 - p0;
 
-    Vector3 w = ray.getDirection();
-    Vector3 o = ray.getOrigin();
+    Vector3 w = ray->getDirection();
+    Vector3 o = ray->getOrigin();
 
     Vector3 tmp = Vector3::cross(e0, e1);
     if(tmp.getNorm() == 0.f){
@@ -57,12 +57,21 @@ RayHitOpt RayTracer::rayTriangleIntersection(const Ray& ray, const Vector3& p0, 
         return RayHit::NO_HIT;
     }
 
+    assert(b0 >= 0 && b1 >= 0 && b2 >= 0);
+
     Vector4 res = {b0,b1,b2,t};
-    return RayHit(res);
+    return RayHit(res, trianglePrimitive, ray);
 }
 
-Vector3 RayTracer::shade(RayHit hit, Triangle triangle) const {
-    return Color::toSRGB(Color::RED); // red tmp
+Vector3 RayTracer::shade(RayHits& hits) const {
+    // display normals
+    RayHit closestHit = hits.getClosestHit();
+
+    Vector3 color = closestHit.getNorm(_Frame._Camera->getView()); // norm tmp
+    // Vector3 color = Color::RED;
+    // Vector3 color = closestHit.getPos(); // local pos
+
+    return Color::toSRGB(color);
 }
 
 std::vector<Triangle> RayTracer::getTriangles() const{
@@ -83,11 +92,14 @@ std::vector<Triangle> RayTracer::getTriangles() const{
         auto transform = GameCoordinator::getComponent<ComponentTransform>(obj)._Transform;
         Matrix4x4 modelMatrix = transform->getModelTransposed();
         for(auto& triangle : triangles){
-            triangle.p0 = (modelMatrix * Vector4(triangle.p0, 1.f)).xyz();
-            triangle.p1 = (modelMatrix * Vector4(triangle.p1, 1.f)).xyz();
-            triangle.p2 = (modelMatrix * Vector4(triangle.p2, 1.f)).xyz();
+            triangle._WorldPos0 = (modelMatrix * Vector4(triangle._Pos0, 1.f)).xyz();
+            triangle._WorldPos1 = (modelMatrix * Vector4(triangle._Pos1, 1.f)).xyz();
+            triangle._WorldPos2 = (modelMatrix * Vector4(triangle._Pos2, 1.f)).xyz();
+
             triangle._Material = material;
+            triangle._Model = modelMatrix;
         }
+
 
         allTriangles.insert(allTriangles.end(), triangles.begin(), triangles.end());
     }
@@ -96,14 +108,20 @@ std::vector<Triangle> RayTracer::getTriangles() const{
 }
 
 
-// helper progress bar
+Vector3 RayTracer::getHitWorldPosition(const RayHit& hit, const Ray& curRay){
+    float t = hit.getParametricT();
+    return curRay.at(t);
+}
 
 
-void RayTracer::run(Vector3 backgroundColor, bool verbose){
+
+void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
     if(!_IsRunning){
         _IsRunning = true;
         uint32_t width = _Image->getWidth();
         uint32_t height = _Image->getHeight();
+
+        _Frame = frame;
 
         Timer timer{};
         if(verbose){
@@ -114,7 +132,6 @@ void RayTracer::run(Vector3 backgroundColor, bool verbose){
 
         auto primitives = getTriangles();
 
-        
         for(uint j = 0; j<height; j++){
             #ifndef NDEBUG
             float progress = j / (height+1.f);
@@ -124,14 +141,20 @@ void RayTracer::run(Vector3 backgroundColor, bool verbose){
             for(uint32_t i = 0; i<width; i++){
                 float u = (static_cast<float>(i) + 0.5f) / width;
                 float v = 1.f - (static_cast<float>(j) + 0.5f) / height;
-                Ray curRay = _Camera->rayAt(u,v);
+                RayPtr curRay = RayPtr(new Ray(frame._Camera->rayAt(u,v)));
+
+                RayHits hits{};
 
                 for(auto& triangle : primitives){
                     RayHitOpt hit = rayTriangleIntersection(curRay, triangle);
                     if(hit.has_value()){
-                        _Image->set(i, j, shade(hit.value(), triangle));
-                        break; // for now
+                        hit->setDistanceToPov(frame._Camera->getPosition());
+                        hits.addHit(hit.value());
                     }
+                }
+
+                if(hits.getNbHits() > 0){
+                    _Image->set(i, j, shade(hits));
                 }
             }
         }

@@ -130,10 +130,10 @@ void Scene::addGameDirectionalLight(DirectionalLight light){
 //         //     || (normalCount > 0 && nbVertices != normalCount / normalComponentCount)
 //         //     || (uvCount > 0 && nbVertices != uvCount / uvComponentCount)){
             
-//         //     fprintf(stderr, "nbVert:%d\n \\
-//         //             positionCount: %d, positionComponentCount: %d\n \\
-//         //             colorCount: %d, colorComponentCount: %d\n \\
-//         //             normalCount: %d, normalComponentCount: %d\n \\
+//         //     fprintf(stderr, "nbVert:%d\n 
+//         //             positionCount: %d, positionComponentCount: %d\n 
+//         //             colorCount: %d, colorComponentCount: %d\n 
+//         //             normalCount: %d, normalComponentCount: %d\n
 //         //             uvCount: %d, uvComponentCount: %d\n",
 //         //             nbVertices, 
 //         //             positionCount, positionComponentCount, 

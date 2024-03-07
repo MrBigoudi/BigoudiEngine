@@ -95,10 +95,10 @@ void RigidBody::updatePosition(Vector3& position, float dt){
     position += _LinearMomentum / _Mass * dt;
 }
 
-void RigidBody::updateRotation(Vector3& rotation, float dt){
+void RigidBody::updateRotation(Vector3& rotation[[maybe_unused]], float dt[[maybe_unused]]){
     // do quaternion stuff
     if(!_Movable) return;
-    Vector3 omega = _InertiaInverseWorldSpace * _AngularMomentum;
+    // Vector3 omega = _InertiaInverseWorldSpace * _AngularMomentum;
     // _Rotation += dt * Matrix3x3::getCrossProductMatrix(omega) * _Rotation; // TODO: implement that
 }
 

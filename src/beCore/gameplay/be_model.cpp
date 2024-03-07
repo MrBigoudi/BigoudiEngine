@@ -280,10 +280,10 @@ VertexDataBuilder VertexDataBuilder::primitiveRectangle(
     Vector3 v3{width/2.f, height/2.f, 0.f}; // bottom right
     VertexDataBuilder builder{};
     builder._Vertices = {
-        {._Pos = v0, ._Col = c, ._Tex = {1,0}},
-        {._Pos = v1, ._Col = c, ._Tex = {0,0}},
-        {._Pos = v2, ._Col = c, ._Tex = {1,1}},
-        {._Pos = v3, ._Col = c, ._Tex = {0,1}},
+        {._Pos = v0, ._Col = c, ._Tex = {0.f, 0.f}},
+        {._Pos = v1, ._Col = c, ._Tex = {1.f, 0.f}},
+        {._Pos = v2, ._Col = c, ._Tex = {0.f, 1.f}},
+        {._Pos = v3, ._Col = c, ._Tex = {1.f, 1.f}},
     };
     builder._Indices = {
         0, 1, 2,
@@ -362,7 +362,7 @@ VertexDataBuilder VertexDataBuilder::primitiveSphere(
     // vertices
     std::vector<Vector3> vertices{};
     std::vector<Vector2> uvs{};
-    std::vector<Vector3> normals;
+    std::vector<Vector3> normals{};
 
     {
         const float stepPhi = PI / resolution;
@@ -591,9 +591,22 @@ std::vector<Triangle> Model::getTrianglePrimitives() const{
         uint32_t idx2 = _VertexDataBuilder._Indices[i+2];
         
         Triangle triTmp{};
-        triTmp.p0 = _VertexDataBuilder._Vertices[idx0]._Pos;
-        triTmp.p1 = _VertexDataBuilder._Vertices[idx1]._Pos;
-        triTmp.p2 = _VertexDataBuilder._Vertices[idx2]._Pos;
+        triTmp._Pos0 = _VertexDataBuilder._Vertices[idx0]._Pos;
+        triTmp._Pos1 = _VertexDataBuilder._Vertices[idx1]._Pos;
+        triTmp._Pos2 = _VertexDataBuilder._Vertices[idx2]._Pos;
+
+        triTmp._Col0 = _VertexDataBuilder._Vertices[idx0]._Col;
+        triTmp._Col1 = _VertexDataBuilder._Vertices[idx1]._Col;
+        triTmp._Col2 = _VertexDataBuilder._Vertices[idx2]._Col;
+
+        triTmp._Norm0 = _VertexDataBuilder._Vertices[idx0]._Norm;
+        triTmp._Norm1 = _VertexDataBuilder._Vertices[idx1]._Norm;
+        triTmp._Norm2 = _VertexDataBuilder._Vertices[idx2]._Norm;
+
+        triTmp._Tex0 = _VertexDataBuilder._Vertices[idx0]._Tex;
+        triTmp._Tex1 = _VertexDataBuilder._Vertices[idx1]._Tex;
+        triTmp._Tex2 = _VertexDataBuilder._Vertices[idx2]._Tex;
+
         triangles.push_back(triTmp);
     }
     return triangles;

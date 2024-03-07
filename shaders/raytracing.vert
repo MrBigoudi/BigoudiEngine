@@ -6,6 +6,6 @@ layout(location = 3) in vec2 vTex;
 layout(location = 1) out vec2 fTex;
 
 void main() {
-    gl_Position =  vec4 (vPos, 1.0);; // mandatory to fire rasterization properly
+    gl_Position = vec4(vPos, 1.f); // mandatory to fire rasterization properly
     fTex = vTex;
 }

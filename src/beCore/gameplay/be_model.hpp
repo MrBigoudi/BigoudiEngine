@@ -1,6 +1,7 @@
 #pragma once
 
 #include "be_material.hpp"
+#include "be_matrix4x4.hpp"
 #include "be_vector2.hpp"
 #include "be_vector3.hpp"
 #include "be_vector4.hpp"
@@ -190,9 +191,25 @@ struct VertexDataBuilder{
 
 struct Triangle{
     MaterialPtr _Material = nullptr;
-    Vector3 p0{};
-    Vector3 p1{};
-    Vector3 p2{};
+    Matrix4x4 _Model = {};
+
+    Vector3 _Pos0{};    
+    Vector3 _WorldPos0{};
+    Vector4 _Col0{};
+    Vector3 _Norm0{};
+    Vector2 _Tex0{};
+
+    Vector3 _Pos1{};    
+    Vector3 _WorldPos1{};
+    Vector4 _Col1{};
+    Vector3 _Norm1{};
+    Vector2 _Tex1{};
+
+    Vector3 _Pos2{};    
+    Vector3 _WorldPos2{};
+    Vector4 _Col2{};
+    Vector3 _Norm2{};
+    Vector2 _Tex2{};
 };
 
 /**

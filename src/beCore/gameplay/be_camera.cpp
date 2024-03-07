@@ -45,47 +45,51 @@ Matrix4x4 Camera::getPerspective() const {
 }
 
 void Camera::processKeyboard(CameraMovement direction){
-    float velocity = _MovementSpeed * _Dt;
+    if(!_IsLocked){
+        float velocity = _MovementSpeed * _Dt;
 
-    switch(direction){
-        case FORWARD:
-            _Eye += _At * velocity;
-            break;
-        case BACKWARD:
-            _Eye -= _At * velocity;
-            break;
-        case LEFT:
-            _Eye -= _Right * velocity;
-            break;
-        case RIGHT:
-            _Eye += _Right * velocity;
-            break;
-        case UP:
-            _Eye -= _WorldUp * velocity;
-            break;
-        case DOWN:
-            _Eye += _WorldUp * velocity;
-            break;
+        switch(direction){
+            case FORWARD:
+                _Eye += _At * velocity;
+                break;
+            case BACKWARD:
+                _Eye -= _At * velocity;
+                break;
+            case LEFT:
+                _Eye -= _Right * velocity;
+                break;
+            case RIGHT:
+                _Eye += _Right * velocity;
+                break;
+            case UP:
+                _Eye -= _WorldUp * velocity;
+                break;
+            case DOWN:
+                _Eye += _WorldUp * velocity;
+                break;
+        }
     }
 }
 
 void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPitch){
-    xoffset *= _MouseSensitivity;
-    yoffset *= _MouseSensitivity;
+    if(!_IsLocked){
+        xoffset *= _MouseSensitivity;
+        yoffset *= _MouseSensitivity;
 
-    _Yaw   += xoffset;
-    _Pitch += yoffset;
+        _Yaw   += xoffset;
+        _Pitch += yoffset;
 
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
-    if (constrainPitch){
-        if (_Pitch > 89.0f)
-            _Pitch = 89.0f;
-        if (_Pitch < -89.0f)
-            _Pitch = -89.0f;
+        // make sure that when pitch is out of bounds, screen doesn't get flipped
+        if (constrainPitch){
+            if (_Pitch > 89.0f)
+                _Pitch = 89.0f;
+            if (_Pitch < -89.0f)
+                _Pitch = -89.0f;
+        }
+
+        // update Front, Right and Up Vectors using the updated Euler angles
+        updateCameraVectors();
     }
-
-    // update Front, Right and Up Vectors using the updated Euler angles
-    updateCameraVectors();
 }
 
 void Camera::setAspectRatio(float width, float height){
