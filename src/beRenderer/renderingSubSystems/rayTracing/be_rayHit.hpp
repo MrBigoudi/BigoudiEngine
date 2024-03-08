@@ -45,6 +45,8 @@ class RayHit{
         void setDistanceToPov(const Vector3& pov);
         float getDistanceToPov() const { return _DistanceToPov;}
 
+        Triangle getTriangle() const {return _Triangle;}
+
 
     public:
         Vector3 getPos() const;

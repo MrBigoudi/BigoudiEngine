@@ -57,8 +57,6 @@ RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& triangl
         return RayHit::NO_HIT;
     }
 
-    assert(b0 >= 0 && b1 >= 0 && b2 >= 0);
-
     Vector4 res = {b0,b1,b2,t};
     return RayHit(res, trianglePrimitive, ray);
 }
@@ -70,6 +68,12 @@ Vector3 RayTracer::shade(RayHits& hits) const {
     Vector3 color = closestHit.getNorm(_Frame._Camera->getView()); // norm tmp
     // Vector3 color = Color::RED;
     // Vector3 color = closestHit.getPos(); // local pos
+    // Vector3 color = closestHit.getTriangle()._Norm0;
+    // Vector3 color = closestHit.getBarycentricCoords();
+
+    color.r(std::max(color.r(), 0.f));
+    color.g(std::max(color.g(), 0.f));
+    color.b(std::max(color.b(), 0.f));
 
     return Color::toSRGB(color);
 }
@@ -91,13 +95,19 @@ std::vector<Triangle> RayTracer::getTriangles() const{
         auto material = GameCoordinator::getComponent<ComponentMaterial>(obj)._Material;
         auto transform = GameCoordinator::getComponent<ComponentTransform>(obj)._Transform;
         Matrix4x4 modelMatrix = transform->getModelTransposed();
-        for(auto& triangle : triangles){
+        // fprintf(stdout, "model:\n%s\n", modelMatrix.toString().c_str());
+
+        for(size_t k = 0; k<triangles.size(); k++){
+            auto& triangle = triangles[k];
+
             triangle._WorldPos0 = (modelMatrix * Vector4(triangle._Pos0, 1.f)).xyz();
             triangle._WorldPos1 = (modelMatrix * Vector4(triangle._Pos1, 1.f)).xyz();
             triangle._WorldPos2 = (modelMatrix * Vector4(triangle._Pos2, 1.f)).xyz();
 
             triangle._Material = material;
             triangle._Model = modelMatrix;
+
+            // fprintf(stdout, "triangle[%zu]:%s\n", k, triangle.toString().c_str());
         }
 
 
@@ -132,22 +142,32 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
 
         auto primitives = getTriangles();
 
-        for(uint j = 0; j<height; j++){
+        const uint32_t step = 1;
+
+        std::set<size_t> triangleIds{};
+
+        for(uint j = 0; j<height; j+=step){
             #ifndef NDEBUG
             float progress = j / (height+1.f);
             displayProgressBar(progress);
             #endif
 
-            for(uint32_t i = 0; i<width; i++){
-                float u = (static_cast<float>(i) + 0.5f) / width;
-                float v = 1.f - (static_cast<float>(j) + 0.5f) / height;
+            for(uint32_t i = 0; i<width; i+=step){
+                float u = static_cast<float>(i);
+                float v = height - static_cast<float>(j);
+
+                // u = (u + 0.5f) / width;
+                // v = 1.f - (v + 0.5f) / height;
                 RayPtr curRay = RayPtr(new Ray(frame._Camera->rayAt(u,v)));
 
                 RayHits hits{};
 
-                for(auto& triangle : primitives){
+                for(size_t k=0; k<primitives.size(); k++){
+                    auto& triangle = primitives[k];
+                // for(auto& triangle : primitives){
                     RayHitOpt hit = rayTriangleIntersection(curRay, triangle);
                     if(hit.has_value()){
+                        triangleIds.insert(k);
                         hit->setDistanceToPov(frame._Camera->getPosition());
                         hits.addHit(hit.value());
                     }
@@ -158,6 +178,12 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
                 }
             }
         }
+
+        // fprintf(stdout, "%zu triangles hit: ", triangleIds.size());
+        // for(auto k : triangleIds){
+        //     fprintf(stdout, "%zu, ", k);
+        // }
+        // fprintf(stdout, "\n");
 
         if(verbose){
             fprintf(stdout, "\nRay tracing executed in `%d ms'\n", timer.getTicks());

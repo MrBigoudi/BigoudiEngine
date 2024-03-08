@@ -210,6 +210,26 @@ struct Triangle{
     Vector4 _Col2{};
     Vector3 _Norm2{};
     Vector2 _Tex2{};
+
+    std::string toString() const {
+        return
+            "{\np0: " + _Pos0.toString() 
+            + "\np1: " + _Pos1.toString()
+            + "\np2: " + _Pos2.toString()
+            + "\nwp0: " + _WorldPos0.toString()
+            + "\nwp1: " + _WorldPos1.toString()
+            + "\nwp2: " + _WorldPos2.toString()
+            + "\nc0: " + _Col0.toString()
+            + "\nc1: " + _Col1.toString()
+            + "\nc2: " + _Col2.toString()
+            + "\nn0: " + _Norm0.toString()
+            + "\nn1: " + _Norm1.toString()
+            + "\nn2: " + _Norm2.toString()
+            + "\nuv0: " + _Tex0.toString()
+            + "\nuv1: " + _Tex1.toString()
+            + "\nuv2: " + _Tex2.toString()
+            + "\n}";
+    }
 };
 
 /**

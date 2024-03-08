@@ -19,7 +19,7 @@ Vector3 RayHit::getPos() const {
     float b1 = baryCoords[1];
     float b2 = baryCoords[2];
 
-    return b0 * p0 + b1 * p1 + b2 * p2;
+    return (b0 * p0) + (b1 * p1) + (b2 * p2);
 }
 
 Vector4 RayHit::getCol() const {
@@ -36,8 +36,8 @@ Vector4 RayHit::getCol() const {
 }
 
 Vector3 RayHit::getNorm(const Matrix4x4& view) const {
-    auto viewModel = view * _Triangle._Model;
-    auto normalMat = be::Matrix4x4::transpose(be::Matrix4x4::inverse(viewModel));
+    // auto viewModel = view * _Triangle._Model;
+    // auto normalMat = Matrix4x4::transpose(Matrix4x4::inverse(viewModel));
 
     Vector3 n0 = _Triangle._Norm0;
     Vector3 n1 = _Triangle._Norm1;
@@ -48,8 +48,10 @@ Vector3 RayHit::getNorm(const Matrix4x4& view) const {
     float b1 = baryCoords[1];
     float b2 = baryCoords[2];
 
-    Vector4 normal = Vector4(Vector3::normalize(b0 * n0 + b1 * n1 + b2 * n2), 1.f);
-    return Vector3::normalize((normalMat*normal).xyz());
+    return (b0 * n0) + (b1 * n1) + (b2 * n2);
+
+    // Vector4 normal = Vector4(b0 * n0 + b1 * n1 + b2 * n2, 0.f);
+    // return Vector3::normalize((normalMat*normal).xyz());
 }
 
 Vector2 RayHit::getTex() const {

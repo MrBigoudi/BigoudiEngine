@@ -142,7 +142,7 @@ class Camera{
             float fov = 50.f,
             float near = 0.1f,
             float far = 100.f,
-            const Vector3& worldUp = {0.f, -1.f, 0.f});
+            const Vector3& worldUp = {0.f, 1.f, 0.f});
 
         /**
          * Set the camera's delta time

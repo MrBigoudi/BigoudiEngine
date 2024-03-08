@@ -2,6 +2,7 @@
 
 #include "be_projections.hpp"
 #include "be_trigonometry.hpp"
+#include "be_vector4.hpp"
 
 #include <cmath>
 
@@ -37,11 +38,15 @@ Vector3 Camera::getPosition() const {
 }
 
 Matrix4x4 Camera::getView() const {
-    return  lookAt(_Eye, _Eye + _At, _Up);
+    return lookAt(_Eye, _Eye + _At, _Up);
 }
 
 Matrix4x4 Camera::getPerspective() const {
-    return perspective(radians(_Fov), _AspectRatio, _Near, _Far);
+    Matrix4x4 persp = perspective(radians(_Fov), _AspectRatio, _Near, _Far);
+    // Matrix4x4 fixMatrix = Matrix4x4::identity();
+    // fixMatrix[1][1] = -1.f;
+    // return fixMatrix * persp;
+    return persp;
 }
 
 void Camera::processKeyboard(CameraMovement direction){
@@ -62,10 +67,10 @@ void Camera::processKeyboard(CameraMovement direction){
                 _Eye += _Right * velocity;
                 break;
             case UP:
-                _Eye -= _WorldUp * velocity;
+                _Eye += _WorldUp * velocity;
                 break;
             case DOWN:
-                _Eye += _WorldUp * velocity;
+                _Eye -= _WorldUp * velocity;
                 break;
         }
     }
@@ -76,8 +81,8 @@ void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPi
         xoffset *= _MouseSensitivity;
         yoffset *= _MouseSensitivity;
 
-        _Yaw   += xoffset;
-        _Pitch += yoffset;
+        _Yaw   -= xoffset;
+        _Pitch -= yoffset;
 
         // make sure that when pitch is out of bounds, screen doesn't get flipped
         if (constrainPitch){
@@ -109,11 +114,11 @@ void Camera::updateCameraVectors(){
     // calculate the new at vector
     Vector3 front{};
     front.x(cos(radians(_Yaw)) * cos(radians(_Pitch)));
-    front.y(sin(radians(_Pitch)));
+    front.y(-sin(radians(_Pitch)));
     front.z(sin(radians(_Yaw)) * cos(radians(_Pitch)));
     _At = Vector3::normalize(front);
     // also re-calculate the Right and Up vector
-    _Right = Vector3::normalize(Vector3::cross(_WorldUp, -_At));
+    _Right = Vector3::normalize(Vector3::cross(_At, _WorldUp));
     _Up    = Vector3::normalize(Vector3::cross(-_At, _Right));
 }
 
@@ -168,8 +173,20 @@ Ray Camera::rayAt(float x, float y, CameraProjection projectionType[[maybe_unuse
     Vector3 direction{0.f,0.f,-1.f};
     switch(projectionType) {
         case PERSPECTIVE:{
-            float w = 2.f * radians(_Fov / 2.f);
-            direction = _At + ((x - 0.5f) * _AspectRatio * w) * _Right + ((1.f-y) - 0.5f) * w * _Up;
+            float ndc_x = (2.f * x) / _Width - 1.f;
+            float ndc_y = 1.f - (2.f * y) / _Height;
+
+            Vector4 dirNDCSpace = Vector4(ndc_x, ndc_y, -1.f, 1.f);
+            Matrix4x4 proj = Matrix4x4::transpose(getProjection(projectionType));
+            Matrix4x4 projInv = Matrix4x4::inverse(proj);
+            Vector4 dirCameraSpace = projInv * dirNDCSpace;
+
+            Matrix4x4 view = Matrix4x4::transpose(getView());
+            Matrix4x4 viewInv = Matrix4x4::inverse(view);
+
+            Vector4 dirWorldSpace = viewInv * dirCameraSpace;
+            dirWorldSpace /= dirWorldSpace.w();
+            direction = dirWorldSpace.xyz() - _Eye;
             break;
         }
         case ORTHOGRAPHIC:{

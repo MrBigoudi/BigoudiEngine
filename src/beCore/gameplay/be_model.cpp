@@ -274,10 +274,10 @@ VertexDataBuilder VertexDataBuilder::primitiveRectangle(
     float height,
     float width,
     const Vector4& c){
-    Vector3 v0{-width/2.f, -height/2.f, 0.f}; // top left
-    Vector3 v1{width/2.f, -height/2.f, 0.f}; // top right
-    Vector3 v2{-width/2.f, height/2.f, 0.f}; // bottom left
-    Vector3 v3{width/2.f, height/2.f, 0.f}; // bottom right
+    Vector3 v0{-width/2.f, -height/2.f, 0.f}; // bottom left
+    Vector3 v1{width/2.f, -height/2.f, 0.f}; // bottom right
+    Vector3 v2{-width/2.f, height/2.f, 0.f}; // top left
+    Vector3 v3{width/2.f, height/2.f, 0.f}; // top right
     VertexDataBuilder builder{};
     builder._Vertices = {
         {._Pos = v0, ._Col = c, ._Tex = {0.f, 0.f}},
