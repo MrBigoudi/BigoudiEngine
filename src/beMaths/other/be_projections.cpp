@@ -24,15 +24,15 @@ Matrix4x4 lookAt(
     Vector3 baseUp = Vector3::cross(baseBack, baseRight);
 
     Matrix4x4 newMat = Matrix4x4::identity();
-    newMat[0][0] = -baseRight.x();
+    newMat[0][0] = baseRight.x();
     newMat[1][0] = baseRight.y();
     newMat[2][0] = baseRight.z();
 
-    newMat[0][1] = -baseUp.x();
+    newMat[0][1] = baseUp.x();
     newMat[1][1] = baseUp.y();
     newMat[2][1] = baseUp.z();
 
-    newMat[0][2] = -baseBack.x();
+    newMat[0][2] = baseBack.x();
     newMat[1][2] = baseBack.y();
     newMat[2][2] = baseBack.z();
 
@@ -77,13 +77,13 @@ Matrix4x4 perspective(
         );
     }
 
-    float cot = 1.f / tan(fovy / 2.f);
+    float cot = 1.f / tan(fovy * 0.5f);
     Matrix4x4 newMat = Matrix4x4::zeros();
     newMat[0][0] = cot / aspectRatio;
-    newMat[1][1] = cot;
-    newMat[2][2] = -(far+near) / (far - near);
+    newMat[1][1] = -cot;
+    newMat[2][2] = far / (near - far);
     newMat[2][3] = -1.f;
-    newMat[3][2] = -2.f * (far * near) / (far - near);
+    newMat[3][2] = (far * near) / (near - far);
 
     return newMat;
 }

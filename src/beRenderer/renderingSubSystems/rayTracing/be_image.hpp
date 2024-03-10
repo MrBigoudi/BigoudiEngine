@@ -34,7 +34,7 @@ class Image{
 
     public:
         void clear(const Vector3& color = {});
-        void savePPM(const std::string& fileName);
+        void savePPM(const std::string& fileName) const;
 
         static std::vector<unsigned char> pixelsToVectorOfBytes(const Pixels& pixels);
 

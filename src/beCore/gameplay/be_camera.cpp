@@ -37,55 +37,72 @@ Vector3 Camera::getPosition() const {
 }
 
 Matrix4x4 Camera::getView() const {
-    return  lookAt(_Eye, _Eye + _At, _Up);
+    return lookAt(_Eye, _Eye + _At, _Up);
 }
 
 Matrix4x4 Camera::getPerspective() const {
-    return perspective(radians(_Fov), _AspectRatio, _Near, _Far);
+    Matrix4x4 persp = perspective(radians(_Fov), _AspectRatio, _Near, _Far);
+    return persp;
+}
+
+Matrix4x4 Camera::getViewInverse() const{
+    Matrix4x4 view = Matrix4x4::transpose(getView());
+    Matrix4x4 viewInv = Matrix4x4::inverse(view);
+    return viewInv;
+}
+
+Matrix4x4 Camera::getPerspectiveInverse() const{
+    Matrix4x4 proj = Matrix4x4::transpose(getPerspective());
+    Matrix4x4 projInv = Matrix4x4::inverse(proj);
+    return projInv;
 }
 
 void Camera::processKeyboard(CameraMovement direction){
-    float velocity = _MovementSpeed * _Dt;
+    if(!_IsLocked){
+        float velocity = _MovementSpeed * _Dt;
 
-    switch(direction){
-        case FORWARD:
-            _Eye += _At * velocity;
-            break;
-        case BACKWARD:
-            _Eye -= _At * velocity;
-            break;
-        case LEFT:
-            _Eye -= _Right * velocity;
-            break;
-        case RIGHT:
-            _Eye += _Right * velocity;
-            break;
-        case UP:
-            _Eye -= _WorldUp * velocity;
-            break;
-        case DOWN:
-            _Eye += _WorldUp * velocity;
-            break;
+        switch(direction){
+            case FORWARD:
+                _Eye += _At * velocity;
+                break;
+            case BACKWARD:
+                _Eye -= _At * velocity;
+                break;
+            case LEFT:
+                _Eye -= _Right * velocity;
+                break;
+            case RIGHT:
+                _Eye += _Right * velocity;
+                break;
+            case UP:
+                _Eye += _WorldUp * velocity;
+                break;
+            case DOWN:
+                _Eye -= _WorldUp * velocity;
+                break;
+        }
     }
 }
 
 void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPitch){
-    xoffset *= _MouseSensitivity;
-    yoffset *= _MouseSensitivity;
+    if(!_IsLocked){
+        xoffset *= _MouseSensitivity;
+        yoffset *= _MouseSensitivity;
 
-    _Yaw   += xoffset;
-    _Pitch += yoffset;
+        _Yaw   -= xoffset;
+        _Pitch -= yoffset;
 
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
-    if (constrainPitch){
-        if (_Pitch > 89.0f)
-            _Pitch = 89.0f;
-        if (_Pitch < -89.0f)
-            _Pitch = -89.0f;
+        // make sure that when pitch is out of bounds, screen doesn't get flipped
+        if (constrainPitch){
+            if (_Pitch > 89.0f)
+                _Pitch = 89.0f;
+            if (_Pitch < -89.0f)
+                _Pitch = -89.0f;
+        }
+
+        // update Front, Right and Up Vectors using the updated Euler angles
+        updateCameraVectors();
     }
-
-    // update Front, Right and Up Vectors using the updated Euler angles
-    updateCameraVectors();
 }
 
 void Camera::setAspectRatio(float width, float height){
@@ -105,11 +122,11 @@ void Camera::updateCameraVectors(){
     // calculate the new at vector
     Vector3 front{};
     front.x(cos(radians(_Yaw)) * cos(radians(_Pitch)));
-    front.y(sin(radians(_Pitch)));
+    front.y(-sin(radians(_Pitch)));
     front.z(sin(radians(_Yaw)) * cos(radians(_Pitch)));
     _At = Vector3::normalize(front);
     // also re-calculate the Right and Up vector
-    _Right = Vector3::normalize(Vector3::cross(_WorldUp, -_At));
+    _Right = Vector3::normalize(Vector3::cross(_At, _WorldUp));
     _Up    = Vector3::normalize(Vector3::cross(-_At, _Right));
 }
 
@@ -159,28 +176,8 @@ Matrix4x4 Camera::getProjection(CameraProjection projectionType) const {
     return proj;
 }
 
+float Camera::getHeight() const{return _Height;}
+float Camera::getWidth() const{return _Width;}
 
-Ray Camera::rayAt(float x, float y, CameraProjection projectionType[[maybe_unused]]) const{
-    Vector3 direction{0.f,0.f,-1.f};
-    switch(projectionType) {
-        case PERSPECTIVE:{
-            float w = 2.f * radians(_Fov / 2.f);
-            direction = _At + ((x - 0.5f) * _AspectRatio * w) * _Right + ((1.f-y) - 0.5f) * w * _Up;
-            break;
-        }
-        case ORTHOGRAPHIC:{
-            ErrorHandler::handle(
-                __FILE__, __LINE__, 
-                ErrorCode::UNIMPLEMENTED_ERROR,
-                "The orthographic ray at function is not implemented yet!\n"
-                );
-            break;
-        }
-    }
-
-    direction.normalize();
-    Ray ray(_Eye, direction);
-    return ray;
-}
 
 };

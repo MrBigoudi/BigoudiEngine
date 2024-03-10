@@ -96,7 +96,7 @@ TextureImage TextureImage::load(VulkanAppPtr vulkanApp, ImagePtr image){
     newImage._VulkanApp = vulkanApp;
     newImage._TexWidth = image->getWidth();
     newImage._TexHeight = image->getHeight();
-    newImage._TexChannels = 3;
+    newImage._TexChannels = 4;
 
     VkDeviceSize imageSize = newImage._TexWidth * newImage._TexHeight * newImage._TexChannels;
 
@@ -113,7 +113,7 @@ TextureImage TextureImage::load(VulkanAppPtr vulkanApp, ImagePtr image){
     buffer.unmap();
 
     newImage.init(
-        VK_FORMAT_R8G8B8_SRGB, 
+        VK_FORMAT_R8G8B8A8_SRGB, 
         VK_IMAGE_TILING_OPTIMAL, 
         VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
@@ -138,6 +138,7 @@ TextureImage TextureImage::load(VulkanAppPtr vulkanApp, const std::string& path)
 
     stbi_uc* pixels = stbi_load(path.c_str(), &newImage._TexWidth, &newImage._TexHeight, &newImage._TexChannels, 0);
     VkDeviceSize imageSize = newImage._TexWidth * newImage._TexHeight * newImage._TexChannels;
+    fprintf(stdout, "channels: %d\n", newImage._TexChannels);
 
     if(!pixels) {
         ErrorHandler::handle(

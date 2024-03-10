@@ -1,6 +1,7 @@
 #pragma once
 
 #include "be_material.hpp"
+#include "be_matrix4x4.hpp"
 #include "be_vector2.hpp"
 #include "be_vector3.hpp"
 #include "be_vector4.hpp"
@@ -190,9 +191,45 @@ struct VertexDataBuilder{
 
 struct Triangle{
     MaterialPtr _Material = nullptr;
-    Vector3 p0{};
-    Vector3 p1{};
-    Vector3 p2{};
+    Matrix4x4 _Model = {};
+
+    Vector3 _Pos0{};    
+    Vector3 _WorldPos0{};
+    Vector4 _Col0{};
+    Vector3 _Norm0{};
+    Vector2 _Tex0{};
+
+    Vector3 _Pos1{};    
+    Vector3 _WorldPos1{};
+    Vector4 _Col1{};
+    Vector3 _Norm1{};
+    Vector2 _Tex1{};
+
+    Vector3 _Pos2{};    
+    Vector3 _WorldPos2{};
+    Vector4 _Col2{};
+    Vector3 _Norm2{};
+    Vector2 _Tex2{};
+
+    std::string toString() const {
+        return
+            "{\np0: " + _Pos0.toString() 
+            + "\np1: " + _Pos1.toString()
+            + "\np2: " + _Pos2.toString()
+            + "\nwp0: " + _WorldPos0.toString()
+            + "\nwp1: " + _WorldPos1.toString()
+            + "\nwp2: " + _WorldPos2.toString()
+            + "\nc0: " + _Col0.toString()
+            + "\nc1: " + _Col1.toString()
+            + "\nc2: " + _Col2.toString()
+            + "\nn0: " + _Norm0.toString()
+            + "\nn1: " + _Norm1.toString()
+            + "\nn2: " + _Norm2.toString()
+            + "\nuv0: " + _Tex0.toString()
+            + "\nuv1: " + _Tex1.toString()
+            + "\nuv2: " + _Tex2.toString()
+            + "\n}";
+    }
 };
 
 /**
