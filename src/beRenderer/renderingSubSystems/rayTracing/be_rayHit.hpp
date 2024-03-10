@@ -50,14 +50,15 @@ class RayHit{
 
     public:
         Vector3 getPos() const;
+        Vector3 getWorldPos() const;
         Vector4 getCol() const;
-        Vector3 getNorm(const Matrix4x4& view) const;
+        Vector3 getNorm() const;
         Vector2 getTex() const;
 
 
     public:
         static bool compareRayHit(const RayHit& hit1, const RayHit& hit2){
-            return hit1._DistanceToPov < hit2._DistanceToPov;
+            return hit1._DistanceToPov > hit2._DistanceToPov;
         }
 
 };
@@ -83,7 +84,7 @@ class RayHits{
 
         RayHit getClosestHit() {
             std::pop_heap(_Hits.begin(), _Hits.end(), RayHit::compareRayHit);
-            return _Hits[_Hits.size()-1];
+            return _Hits.back();
         }
 
 };

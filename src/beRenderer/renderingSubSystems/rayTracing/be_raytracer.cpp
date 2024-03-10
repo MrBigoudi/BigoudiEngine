@@ -57,17 +57,21 @@ RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& triangl
         return RayHit::NO_HIT;
     }
 
-    Vector4 res = {b0,b1,b2,t};
+    Vector4 res = {b2,b0,b1,t};
     return RayHit(res, trianglePrimitive, ray);
 }
 
 Vector3 RayTracer::shade(RayHits& hits) const {
     // display normals
     RayHit closestHit = hits.getClosestHit();
+    // if(hits.getNbHits() > 1){
+    //     fprintf(stdout, "the ray hit %d triangles!\n", hits.getNbHits());
+    // }
 
-    Vector3 color = closestHit.getNorm(_Frame._Camera->getView()); // norm tmp
+    Vector3 color = closestHit.getNorm(); // norm tmp
     // Vector3 color = Color::RED;
     // Vector3 color = closestHit.getPos(); // local pos
+    // Vector3 color = closestHit.getCol().xyz();
     // Vector3 color = closestHit.getTriangle()._Norm0;
     // Vector3 color = closestHit.getBarycentricCoords();
 
@@ -75,6 +79,7 @@ Vector3 RayTracer::shade(RayHits& hits) const {
     color.g(std::max(color.g(), 0.f));
     color.b(std::max(color.b(), 0.f));
 
+    // return color;
     return Color::toSRGB(color);
 }
 
@@ -132,6 +137,9 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
         uint32_t height = _Image->getHeight();
 
         _Frame = frame;
+        auto camera = frame._Camera;
+        Matrix4x4 viewInv = camera->getViewInverse();
+        Matrix4x4 projInv = camera->getPerspectiveInverse();
 
         Timer timer{};
         if(verbose){
@@ -144,7 +152,7 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
 
         const uint32_t step = 1;
 
-        std::set<size_t> triangleIds{};
+        // std::set<size_t> triangleIds{};
 
         for(uint j = 0; j<height; j+=step){
             #ifndef NDEBUG
@@ -158,7 +166,12 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
 
                 // u = (u + 0.5f) / width;
                 // v = 1.f - (v + 0.5f) / height;
-                RayPtr curRay = RayPtr(new Ray(frame._Camera->rayAt(u,v)));
+                RayPtr curRay = Ray::rayAt(
+                    u, v, 
+                    viewInv, projInv, 
+                    camera->getWidth(), camera->getHeight(), 
+                    camera->getPosition()
+                );
 
                 RayHits hits{};
 
@@ -167,7 +180,7 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
                 // for(auto& triangle : primitives){
                     RayHitOpt hit = rayTriangleIntersection(curRay, triangle);
                     if(hit.has_value()){
-                        triangleIds.insert(k);
+                        // triangleIds.insert(k);
                         hit->setDistanceToPov(frame._Camera->getPosition());
                         hits.addHit(hit.value());
                     }

@@ -2,7 +2,6 @@
 
 
 #include "be_matrix4x4.hpp"
-#include "be_ray.hpp"
 #include "be_ubo.hpp"
 #include "be_vector3.hpp"
 #include <memory>
@@ -175,6 +174,18 @@ class Camera{
         Matrix4x4 getPerspective() const;
 
         /**
+         * Build the camera's view inverse matrix
+         * @return The 4x4 view inverse matrix
+        */
+        Matrix4x4 getViewInverse() const;
+        
+        /**
+         * Build the camera's perspective projection inverse matrix
+         * @return The 4x4 projection inverse matrix
+        */
+        Matrix4x4 getPerspectiveInverse() const;
+
+        /**
          * Return the projection matrix
          * @param projectionType The type of projection default to perspective
          * @see CameraProjection
@@ -203,14 +214,16 @@ class Camera{
         void setAspectRatio(float width, float height);
 
         /**
-         * Create a ray from the camera
-         * @param x The x as a float for sub-pixel sampling
-         * @param y The y as a float for sub-pixel sampling
-         * @return A ray in world space for raytracing
-         * @see Ray
-         * @see RayTracing
+         * Getter for the camera's viewport height
+         * @return The viewport's height
         */
-        Ray rayAt(float x, float y, CameraProjection projectionType = PERSPECTIVE) const;
+        float getHeight() const;
+
+        /**
+         * Getter for the camera's viewport width
+         * @return The viewport's width
+        */
+        float getWidth() const;
 
     private:
         /**
@@ -218,6 +231,8 @@ class Camera{
         */
         void updateCameraVectors();
 };
+
+
 
 struct CameraUboData: UboData{
     alignas(16) be::Matrix4x4 _View{1.f};

@@ -2,7 +2,6 @@
 
 #include "be_projections.hpp"
 #include "be_trigonometry.hpp"
-#include "be_vector4.hpp"
 
 #include <cmath>
 
@@ -43,10 +42,19 @@ Matrix4x4 Camera::getView() const {
 
 Matrix4x4 Camera::getPerspective() const {
     Matrix4x4 persp = perspective(radians(_Fov), _AspectRatio, _Near, _Far);
-    // Matrix4x4 fixMatrix = Matrix4x4::identity();
-    // fixMatrix[1][1] = -1.f;
-    // return fixMatrix * persp;
     return persp;
+}
+
+Matrix4x4 Camera::getViewInverse() const{
+    Matrix4x4 view = Matrix4x4::transpose(getView());
+    Matrix4x4 viewInv = Matrix4x4::inverse(view);
+    return viewInv;
+}
+
+Matrix4x4 Camera::getPerspectiveInverse() const{
+    Matrix4x4 proj = Matrix4x4::transpose(getPerspective());
+    Matrix4x4 projInv = Matrix4x4::inverse(proj);
+    return projInv;
 }
 
 void Camera::processKeyboard(CameraMovement direction){
@@ -168,40 +176,8 @@ Matrix4x4 Camera::getProjection(CameraProjection projectionType) const {
     return proj;
 }
 
+float Camera::getHeight() const{return _Height;}
+float Camera::getWidth() const{return _Width;}
 
-Ray Camera::rayAt(float x, float y, CameraProjection projectionType[[maybe_unused]]) const{
-    Vector3 direction{0.f,0.f,-1.f};
-    switch(projectionType) {
-        case PERSPECTIVE:{
-            float ndc_x = (2.f * x) / _Width - 1.f;
-            float ndc_y = 1.f - (2.f * y) / _Height;
-
-            Vector4 dirNDCSpace = Vector4(ndc_x, ndc_y, -1.f, 1.f);
-            Matrix4x4 proj = Matrix4x4::transpose(getProjection(projectionType));
-            Matrix4x4 projInv = Matrix4x4::inverse(proj);
-            Vector4 dirCameraSpace = projInv * dirNDCSpace;
-
-            Matrix4x4 view = Matrix4x4::transpose(getView());
-            Matrix4x4 viewInv = Matrix4x4::inverse(view);
-
-            Vector4 dirWorldSpace = viewInv * dirCameraSpace;
-            dirWorldSpace /= dirWorldSpace.w();
-            direction = dirWorldSpace.xyz() - _Eye;
-            break;
-        }
-        case ORTHOGRAPHIC:{
-            ErrorHandler::handle(
-                __FILE__, __LINE__, 
-                ErrorCode::UNIMPLEMENTED_ERROR,
-                "The orthographic ray at function is not implemented yet!\n"
-                );
-            break;
-        }
-    }
-
-    direction.normalize();
-    Ray ray(_Eye, direction);
-    return ray;
-}
 
 };
