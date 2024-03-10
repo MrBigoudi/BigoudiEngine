@@ -367,21 +367,20 @@ VertexDataBuilder VertexDataBuilder::primitiveSphere(
     {
         const float stepPhi = PI / resolution;
         const float stepTheta = 2 * PI / resolution;
-        float phi = 0.0f;
-        for (size_t i = 0; i <= resolution; i++) {
-            phi += stepPhi;
-            float theta = 0.0f;
-            for (size_t j = 0; j <= resolution; j++) {
-                theta += stepTheta;
 
-                float x = sin(theta)*sin(phi);
+        for (size_t i = 0; i <= resolution; i++) {
+            float phi = i*stepPhi;
+            for (size_t j = 0; j <= resolution; j++) {
+                float theta = j*stepTheta;
+
+                float x = sin(phi)*sin(theta);
                 float y = cos(phi);
-                float z = cos(theta)*sin(phi);
+                float z = sin(phi)*cos(theta);
 
                 vertices.push_back({x,y,z});
                 // Generate textures
-                uvs.push_back(j / (float)resolution);
-                uvs.push_back(i / (float)resolution);
+                uvs.push_back(static_cast<float>(j) / static_cast<float>(resolution));
+                uvs.push_back(static_cast<float>(i) / static_cast<float>(resolution));
                 // Generate normals
                 normals.push_back(Vector3::normalize({x,y,z}));
             }
