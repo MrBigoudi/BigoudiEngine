@@ -44,7 +44,7 @@ RayPtr Ray::rayAt(float x, float y,
  * Generate a ray in the unit sphere
  * @return A ray in world space
 */
-RayPtr Ray::randomRayInUnitSphere(){
+RayPtr Ray::generateRandomRayInUnitSphere(){
     Vector3 origin = Vector3();
     Vector3 direction = Vector3::normalize(Vector3::random(-1, 1));
     return RayPtr(new Ray(origin, direction));
@@ -56,8 +56,8 @@ RayPtr Ray::randomRayInUnitSphere(){
  * @param planeNormal The normal of the hemisphere plane
  * @return A ray in world space
 */
-RayPtr Ray::randomRayInHemiSphere(const Vector3& sphereCenter, const Vector3& planeNormal){
-    RayPtr ray = Ray::randomRayInUnitSphere();
+RayPtr Ray::generateRandomRayInHemiSphere(const Vector3& sphereCenter, const Vector3& planeNormal){
+    RayPtr ray = Ray::generateRandomRayInUnitSphere();
     ray->_Origin = sphereCenter;
     if(Vector3::dot(ray->_Direction, planeNormal) > 0.f){ // same hemisphere
         return ray;
@@ -71,8 +71,35 @@ RayPtr Ray::randomRayInHemiSphere(const Vector3& sphereCenter, const Vector3& pl
  * @param rayHit The last hit
  * @return A ray in world space
 */
-RayPtr Ray::randomRayInHemiSphere(const RayHit& hit){
-    return randomRayInHemiSphere(hit.getWorldPos(), hit.getWorldNorm());
+RayPtr Ray::generateRandomRayInHemiSphere(const RayHit& hit){
+    return generateRandomRayInHemiSphere(hit.getWorldPos(), hit.getWorldNorm());
+}
+
+/**
+ * Generate a random ray according to Lambertian distribution
+ * @param sphereCenter The position of the center of the sphere
+ * @param planeNormal The normal of the hemisphere plane
+ * @return A ray in world space
+*/
+RayPtr Ray::generateRandomRayLambertianDistribution(const Vector3& sphereCenter, const Vector3& planeNormal){
+    Vector3 origin = sphereCenter;
+    Vector3 direction = generateRandomRayInUnitSphere()->_Direction + planeNormal;
+
+    if(direction.isZero()){
+        direction = planeNormal;
+    }
+
+    direction.normalize();
+    return RayPtr(new Ray(origin, direction));
+}
+
+/**
+ * Generate a random ray according to Lambertian distribution
+ * @param rayHit The last hit
+ * @return A ray in world space
+*/
+RayPtr Ray::generateRandomRayLambertianDistribution(const RayHit& hit){
+    return generateRandomRayLambertianDistribution(hit.getWorldPos(), hit.getWorldNorm());
 }
 
 }

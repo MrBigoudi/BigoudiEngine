@@ -13,6 +13,8 @@ class Maths{
         static int random_int();
         static int random_int(int min, int max);
 
+        static bool isZero(float f);
+
 };
 
 }

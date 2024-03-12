@@ -52,7 +52,7 @@ class Ray{
          * Generate a random ray in the unit sphere
          * @return A ray in world space
         */
-        static RayPtr randomRayInUnitSphere();
+        static RayPtr generateRandomRayInUnitSphere();
 
         /**
          * Generate a random ray in the hemisphere
@@ -60,14 +60,29 @@ class Ray{
          * @param planeNormal The normal of the hemisphere plane
          * @return A ray in world space
         */
-        static RayPtr randomRayInHemiSphere(const Vector3& sphereCenter, const Vector3& planeNormal);
+        static RayPtr generateRandomRayInHemiSphere(const Vector3& sphereCenter, const Vector3& planeNormal);
 
         /**
          * Generate a random ray in the hemisphere
          * @param rayHit The last hit
          * @return A ray in world space
         */
-        static RayPtr randomRayInHemiSphere(const RayHit& hit);
+        static RayPtr generateRandomRayInHemiSphere(const RayHit& hit);
+
+        /**
+         * Generate a random ray according to Lambertian distribution
+         * @param sphereCenter The position of the center of the sphere
+         * @param planeNormal The normal of the hemisphere plane
+         * @return A ray in world space
+        */
+        static RayPtr generateRandomRayLambertianDistribution(const Vector3& sphereCenter, const Vector3& planeNormal);
+
+        /**
+         * Generate a random ray according to Lambertian distribution
+         * @param rayHit The last hit
+         * @return A ray in world space
+        */
+        static RayPtr generateRandomRayLambertianDistribution(const RayHit& hit);
 };
 
 }

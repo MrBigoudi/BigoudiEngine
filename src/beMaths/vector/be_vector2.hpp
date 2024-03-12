@@ -63,6 +63,12 @@ class Vector2{
         static Vector2 random(float min, float max);
 
         /**
+         * Return true if the current vector is zero
+         * @see Maths::isZero
+        */
+        bool isZero() const;
+
+        /**
          * Cast the vector into a string
          * @return The string
         */

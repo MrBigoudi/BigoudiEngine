@@ -1,11 +1,18 @@
 #pragma once
 
 #include "be_vector3.hpp"
+#include "be_errorHandler.hpp"
 #include <cmath>
 
 namespace be{
 
 class Color: public Vector3{
+    public:
+        enum ColorSpace{
+            RGB,
+            SRGB,
+        };
+
     public:
         static const Vector3 BLACK;
         static const Vector3 WHITE;
@@ -33,6 +40,25 @@ class Color: public Vector3{
             newVec.g(linearToSRGB(vec.g()));
             newVec.b(linearToSRGB(vec.b()));
             return newVec;
+        }
+
+        static float linearToGamma(float linear){
+            if(linear < 0){
+                ErrorHandler::handle(
+                    __FILE__, __LINE__,
+                    ErrorCode::MATHS_ERROR,
+                    "Can't correct a linear spaced value if negative!\n"
+                );
+            }
+            return sqrt(linear);
+        }
+
+        static Vector3 linearToGamma(const Vector3& linear){
+            return Vector3(
+                linearToGamma(linear.x()),
+                linearToGamma(linear.y()),
+                linearToGamma(linear.z())
+            );
         }
 };
 

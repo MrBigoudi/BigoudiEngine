@@ -71,6 +71,12 @@ class Vector3{
         static Vector3 random(float min, float max);
 
         /**
+         * Return true if the current vector is zero
+         * @see Maths::isZero
+        */
+        bool isZero() const;
+
+        /**
          * Cast the vector into a string
          * @return The string
         */

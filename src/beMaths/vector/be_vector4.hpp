@@ -80,6 +80,12 @@ class Vector4{
         static Vector4 random(float min, float max);
 
         /**
+         * Return true if the current vector is zero
+         * @see Maths::isZero
+        */
+        bool isZero() const;
+
+        /**
          * Cast the vector into a string
          * @return The string
         */

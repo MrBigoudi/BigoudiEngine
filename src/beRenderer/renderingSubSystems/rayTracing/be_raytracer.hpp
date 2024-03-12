@@ -49,7 +49,7 @@ class RayTracer{
     private:
         std::vector<Triangle> getTriangles() const;
         Vector3 shade(RayHits& hits, uint32_t depth = 0) const;
-        static RayHitOpt rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive);
+        static RayHitOpt rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive, float minDist = 1e-3, float maxDist = INFINITY);
         
         RayHits getHits(RayPtr curRay) const;        
 

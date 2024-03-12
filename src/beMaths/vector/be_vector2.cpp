@@ -73,6 +73,15 @@ Vector2 Vector2::random(float min, float max){
 }
 
 /**
+ * Return true if the current vector is zero
+ * @see Maths::isZero
+*/
+bool Vector2::isZero() const{
+    return Maths::isZero(x())
+        && Maths::isZero(y());
+}
+
+/**
  * Cast the matrix into a string
  * @return The string
 */

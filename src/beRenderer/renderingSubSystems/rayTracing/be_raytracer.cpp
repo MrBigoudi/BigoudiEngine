@@ -4,10 +4,11 @@
 #include "be_gameCoordinator.hpp"
 #include "be_timer.hpp"
 #include "be_utilityFunctions.hpp"
+#include "be_mathsFcts.hpp"
 
 namespace be{
 
-RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive){
+RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive, float minDist, float maxDist){
     Vector3 p0 = trianglePrimitive._WorldPos0;
     Vector3 p1 = trianglePrimitive._WorldPos1;
     Vector3 p2 = trianglePrimitive._WorldPos2;
@@ -32,7 +33,7 @@ RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& triangl
         return RayHit::NO_HIT;
     }
 
-    if(isZero(a)){
+    if(Maths::isZero(a)){
         return RayHit::NO_HIT;
     }
 
@@ -53,7 +54,7 @@ RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& triangl
     }
 
     float t = Vector3::dot(e1, r);
-    if(t < 0){
+    if(t < minDist || t > maxDist){
         return RayHit::NO_HIT;
     }
 
@@ -67,7 +68,8 @@ Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
     }
     
     RayHit closestHit = hits.getClosestHit();
-    RayPtr newRay = Ray::randomRayInHemiSphere(closestHit);    
+    // RayPtr newRay = Ray::generateRandomRayInHemiSphere(closestHit);    
+    RayPtr newRay = Ray::generateRandomRayLambertianDistribution(closestHit);    
     RayHits bouncedHits = getHits(newRay);
 
     if(bouncedHits.getNbHits() > 0){
@@ -173,7 +175,7 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
                 RayHits hits = getHits(curRay);
 
                 if(hits.getNbHits() > 0){
-                    _Image->set(i, j, Color::toSRGB(shade(hits)));
+                    _Image->set(i, j, shade(hits), Color::SRGB);
                 }
             }
         }

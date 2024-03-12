@@ -98,6 +98,17 @@ Vector4 Vector4::random(float min, float max){
 }
 
 /**
+ * Return true if the current vector is zero
+ * @see Maths::isZero
+*/
+bool Vector4::isZero() const{
+    return Maths::isZero(x())
+        && Maths::isZero(y())
+        && Maths::isZero(z())
+        && Maths::isZero(w());
+}
+
+/**
  * Cast the matrix into a string
  * @return The string
 */

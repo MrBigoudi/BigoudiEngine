@@ -85,6 +85,16 @@ Vector3 Vector3::random(float min, float max){
 }
 
 /**
+ * Return true if the current vector is zero
+ * @see Maths::isZero
+*/
+bool Vector3::isZero() const{
+    return Maths::isZero(x())
+        && Maths::isZero(y())
+        && Maths::isZero(z());
+}
+
+/**
  * Cast the matrix into a string
  * @return The string
 */
