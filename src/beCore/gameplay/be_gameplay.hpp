@@ -8,3 +8,4 @@
 #include "be_lights.hpp" // IWYU pragma: keep
 #include "be_scene.hpp" // IWYU pragma: keep
 #include "be_texture.hpp" // IWYU pragma: keep
+#include "be_boundingVolume.hpp" // IWYU pragma: keep

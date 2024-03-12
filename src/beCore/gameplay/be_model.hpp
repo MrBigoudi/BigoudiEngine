@@ -230,6 +230,8 @@ struct Triangle{
             + "\nuv2: " + _Tex2.toString()
             + "\n}";
     }
+
+    bool isWorldP0LeftOfPlane(const Vector3& planePosition, const Vector3& planeNormal) const;
 };
 
 /**

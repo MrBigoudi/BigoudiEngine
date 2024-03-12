@@ -1,9 +1,11 @@
 #pragma once
 
 #include <memory>
+#include "be_boundingVolume.hpp"
 #include "be_frameInfo.hpp"
 #include "be_image.hpp"
 #include "be_model.hpp"
+#include "be_ray.hpp"
 #include "be_rayHit.hpp"
 #include "be_scene.hpp"
 
@@ -20,6 +22,9 @@ class RayTracer{
         bool _IsRunning = false;
         FrameInfo _Frame;
         std::vector<Triangle> _Primitives = {};
+
+        BSHPtr _BSH = nullptr;
+        BVHPtr _BVH = nullptr;
 
         uint32_t _MaxDetph = 2;
 
@@ -49,10 +54,9 @@ class RayTracer{
     private:
         std::vector<Triangle> getTriangles() const;
         Vector3 shade(RayHits& hits, uint32_t depth = 0) const;
-        static RayHitOpt rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive, float minDist = 1e-3, float maxDist = INFINITY);
-        
         RayHits getHits(RayPtr curRay) const;        
-
+        RayHits getHitsBSH(RayPtr curRay) const;
+        RayHits getHitsBVH(RayPtr curRay) const;
 };
 
 }

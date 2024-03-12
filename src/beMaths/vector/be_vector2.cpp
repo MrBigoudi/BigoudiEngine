@@ -386,6 +386,14 @@ float Vector2::getNorm() const{
 }
 
 /**
+ * Get the vector's squared norm
+ * @return The squared norm
+*/
+float Vector2::getSquaredNorm() const{
+    return x()*x() + y()*y();
+}
+
+/**
  * Normalize the vector
  * @param vector The vector to normalize
  * @return The normalized vector

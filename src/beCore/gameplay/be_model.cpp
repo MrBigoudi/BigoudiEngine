@@ -611,5 +611,10 @@ std::vector<Triangle> Model::getTrianglePrimitives() const{
     return triangles;
 }
 
+bool Triangle::isWorldP0LeftOfPlane(const Vector3& planePosition, const Vector3& planeNormal) const{
+    Vector3 planeToPoint = _WorldPos0 - planePosition;
+    return Vector3::dot(planeToPoint, planeNormal) > 0;
+}
+
 
 };

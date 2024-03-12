@@ -4,63 +4,9 @@
 #include "be_gameCoordinator.hpp"
 #include "be_timer.hpp"
 #include "be_utilityFunctions.hpp"
-#include "be_mathsFcts.hpp"
 
 namespace be{
 
-RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive, float minDist, float maxDist){
-    Vector3 p0 = trianglePrimitive._WorldPos0;
-    Vector3 p1 = trianglePrimitive._WorldPos1;
-    Vector3 p2 = trianglePrimitive._WorldPos2;
-
-    Vector3 e0 = p1 - p0;
-    Vector3 e1 = p2 - p0;
-
-    Vector3 w = ray->getDirection();
-    Vector3 o = ray->getOrigin();
-
-    Vector3 tmp = Vector3::cross(e0, e1);
-    if(tmp.getNorm() == 0.f){
-        return RayHit::NO_HIT;
-    }
-
-    Vector3 n = Vector3::normalize(tmp);
-    Vector3 q = Vector3::cross(w, e1);
-    float a = Vector3::dot(e0, q);
-    
-    // counter clock wise order
-    if(Vector3::dot(n, w) >= 0){
-        return RayHit::NO_HIT;
-    }
-
-    if(Maths::isZero(a)){
-        return RayHit::NO_HIT;
-    }
-
-    Vector3 s = (o-p0) / a;
-    Vector3 r = Vector3::cross(s, e0);
-
-    float b0 = Vector3::dot(s, q);
-    if(b0 < 0){
-        return RayHit::NO_HIT;
-    }
-    float b1 = Vector3::dot(r, w);
-    if(b1 < 0){
-        return RayHit::NO_HIT;
-    }
-    float b2 = 1 - b0 - b1;
-    if(b2 < 0){
-        return RayHit::NO_HIT;
-    }
-
-    float t = Vector3::dot(e1, r);
-    if(t < minDist || t > maxDist){
-        return RayHit::NO_HIT;
-    }
-
-    Vector4 res = {b2,b0,b1,t};
-    return RayHit(res, trianglePrimitive, ray);
-}
 
 Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
     if(depth > _MaxDetph){
@@ -70,7 +16,9 @@ Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
     RayHit closestHit = hits.getClosestHit();
     // RayPtr newRay = Ray::generateRandomRayInHemiSphere(closestHit);    
     RayPtr newRay = Ray::generateRandomRayLambertianDistribution(closestHit);    
-    RayHits bouncedHits = getHits(newRay);
+    // RayHits bouncedHits = getHits(newRay);
+    // RayHits bouncedHits = getHitsBSH(newRay);
+    RayHits bouncedHits = getHitsBVH(newRay);
 
     if(bouncedHits.getNbHits() > 0){
         return 0.5f * shade(bouncedHits, depth+1);
@@ -120,10 +68,18 @@ std::vector<Triangle> RayTracer::getTriangles() const{
 }
 
 
+RayHits RayTracer::getHitsBSH(RayPtr curRay) const{
+    return _BSH->getIntersections(curRay, _Frame._Camera->getPosition());
+}
+
+RayHits RayTracer::getHitsBVH(RayPtr curRay) const{
+    return _BVH->getIntersections(curRay, _Frame._Camera->getPosition());
+}
+
 RayHits RayTracer::getHits(RayPtr curRay) const {
     RayHits hits{};
     for(auto& triangle : _Primitives){
-        RayHitOpt hit = rayTriangleIntersection(curRay, triangle);
+        RayHitOpt hit = curRay->rayTriangleIntersection(triangle);
         if(hit.has_value()){
             hit->setDistanceToPov(_Frame._Camera->getPosition());
             hits.addHit(hit.value());
@@ -152,6 +108,8 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
         _Image->clear(backgroundColor);
 
         _Primitives = getTriangles();
+        _BSH = BSHPtr(new BSH(_Primitives));
+        _BVH = BVHPtr(new BVH(_Primitives));
 
         const uint32_t step = 1;
 
@@ -172,7 +130,10 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
                     camera->getPosition()
                 );
 
-                RayHits hits = getHits(curRay);
+                // RayHits hits = getHits(curRay);
+                // RayHits hits = getHitsBSH(curRay);
+                RayHits hits = getHitsBVH(curRay);
+                // RayHits hits = {};
 
                 if(hits.getNbHits() > 0){
                     _Image->set(i, j, shade(hits), Color::SRGB);

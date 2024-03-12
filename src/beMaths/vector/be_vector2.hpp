@@ -276,6 +276,12 @@ class Vector2{
         float getNorm() const;
 
         /**
+         * Get the vector's squared norm
+         * @return The squared norm
+        */
+        float getSquaredNorm() const;
+
+        /**
          * Normalize the vector
          * @param vector The vector to normalize
          * @return The normalized vector

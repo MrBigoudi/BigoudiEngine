@@ -1,14 +1,15 @@
 #pragma once
 
+#include <cmath>
 #include <memory>
+#include "be_model.hpp"
 #include "be_vector3.hpp"
+#include "be_rayHit.hpp"
 
 namespace be{
 
 class Ray;
 using RayPtr = std::shared_ptr<Ray>;
-
-class RayHit;
 
 class Ray{
 
@@ -83,6 +84,36 @@ class Ray{
          * @return A ray in world space
         */
         static RayPtr generateRandomRayLambertianDistribution(const RayHit& hit);
+
+
+        /**
+         * Check if the current ray intersects the given triangle
+         * @param trianglePrimitive The triangle to check intersection with
+         * @param minDist The minimum distance to consider a Hit (to avoid acnea)
+         * @param maxDist The maximum distance to consider a Hit
+         * @return An optional Ray hit
+        */
+        RayHitOpt rayTriangleIntersection(const Triangle& trianglePrimitive, float minDist = 1e-3, float maxDist = INFINITY);
+
+        /**
+         * Check if the current ray intersects a sphere
+         * @param sphereCenter The sphere center
+         * @param sphereRadius The sphere radius
+         * @return true if they intersect
+        */
+        bool raySphereIntersection(const Vector3& sphereCenter, float sphereRadius);
+
+        /**
+         * Check if the current ray intersects a box
+         * @param minX The minimum x-coordinate of the box
+         * @param maxX The maximum x-coordinate of the box
+         * @param minY The minimum y-coordinate of the box
+         * @param maxY The maximum y-coordinate of the box
+         * @param minZ The minimum z-coordinate of the box
+         * @param maxZ The maximum z-coordinate of the box
+         * @return true if they intersect
+        */
+        bool rayBoxIntersection(float minX, float maxX, float minY, float maxY, float minZ, float maxZ);
 };
 
 }
