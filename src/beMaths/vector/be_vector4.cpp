@@ -536,4 +536,15 @@ Vector2 Vector4::xz() const{
     return Vector2(x(), z());
 }
 
+Vector4 Vector4::operator*(const Vector4& vector) const{
+    return Vector4(x()*vector.x(), y()*vector.y(), z()*vector.z(), w()*vector.w());
+}
+
+void Vector4::operator*=(const Vector4& vector){
+    x(x()*vector.x());
+    y(y()*vector.y());
+    z(z()*vector.z());
+    w(w()*vector.w());
+}
+
 }

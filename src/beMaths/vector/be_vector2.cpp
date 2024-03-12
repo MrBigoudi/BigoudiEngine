@@ -430,4 +430,13 @@ void Vector2::normalize(){
     y(y() / norm);
 }
 
+Vector2 Vector2::operator*(const Vector2& vector) const{
+    return Vector2(x()*vector.x(), y()*vector.y());
+}
+
+void Vector2::operator*=(const Vector2& vector){
+    x(x()*vector.x());
+    y(y()*vector.y());
+}
+
 }

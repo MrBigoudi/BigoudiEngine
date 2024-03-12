@@ -15,18 +15,35 @@ class RayTracer;
 using RayTracerPtr = std::shared_ptr<RayTracer>;
 
 class RayTracer{
+    private:
+        enum BoundingVolumeMethod{
+            NAIVE_METHOD, // checking every triangles at all times
+            BVH_METHOD,   // using bounding volume hierarchy with AABB
+            BSH_METHOD,   // using bounding spheres hierarchy
+        };
+
+        enum SamplingDistribution{
+            HEMISPHERE_SAMPLING, // sample bouncing rays on a hemisphere
+            LAMBERTIAN_SAMPLING, // sample bouncing rays using lambertian sampling
+        };
 
     private:
+        Vector3 _BackgroundColor = Color::WHITE;
         ImagePtr _Image = nullptr;
         ScenePtr _Scene = nullptr;
         bool _IsRunning = false;
         FrameInfo _Frame;
         std::vector<Triangle> _Primitives = {};
-
         BSHPtr _BSH = nullptr;
         BVHPtr _BVH = nullptr;
 
-        uint32_t _MaxDetph = 2;
+    private:
+        // raytracing parameters
+        BoundingVolumeMethod _BoundingVolumeMethod = BVH_METHOD;
+        SamplingDistribution _SamplingDistribution = LAMBERTIAN_SAMPLING;
+        uint32_t _MaxBounces = 10;
+        uint32_t _SamplesPerPixels = 2;
+        float _ShadingFactor = 0.5f;
 
 
     public:
@@ -54,9 +71,12 @@ class RayTracer{
     private:
         std::vector<Triangle> getTriangles() const;
         Vector3 shade(RayHits& hits, uint32_t depth = 0) const;
-        RayHits getHits(RayPtr curRay) const;        
+        RayHits getHits(RayPtr curRay) const;
+        RayHits getHitsNaive(RayPtr curRay) const;        
         RayHits getHitsBSH(RayPtr curRay) const;
         RayHits getHitsBVH(RayPtr curRay) const;
+
+        RayPtr sampleNewRay(const RayHit& rayHit) const;
 };
 
 }

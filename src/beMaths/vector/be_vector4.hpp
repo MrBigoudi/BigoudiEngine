@@ -228,6 +228,19 @@ class Vector4{
         Vector4 operator*(float scalar) const;
 
         /**
+         * Component wise ultiplication with a vector
+         * @param vector The second vector
+         * @return A new vector which is the results of the multiplication
+        */
+        Vector4 operator*(const Vector4& vector) const;
+
+        /**
+         * Component wise multiplication between two vectors
+         * @param vector The second vector
+        */
+        void operator*=(const Vector4& vector);
+
+        /**
          * Multiplication with a scalar
          * @param scalar The scalar
          * @param vector The vector

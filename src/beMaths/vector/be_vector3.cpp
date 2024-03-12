@@ -488,4 +488,14 @@ void Vector3::normalize(){
     z(z() / norm);
 }
 
+Vector3 Vector3::operator*(const Vector3& vector) const{
+    return Vector3(x()*vector.x(), y()*vector.y(), z()*vector.z());
+}
+
+void Vector3::operator*=(const Vector3& vector){
+    x(x()*vector.x());
+    y(y()*vector.y());
+    z(z()*vector.z());
+}
+
 }

@@ -69,8 +69,9 @@ void Image::set(uint32_t x, uint32_t y, const Vector3& color, Color::ColorSpace 
             _Pixels[y][x] = color;
             break;
         case Color::SRGB:
-            // Vector3 gammaCorrected = Color::linearToGamma(color);
-            _Pixels[y][x] = Color::toSRGB(color);
+            Vector3 gammaCorrected = Color::linearToGamma(color);
+            // Vector3 gammaCorrected = color;
+            _Pixels[y][x] = Color::toSRGB(gammaCorrected);
             break;
     }
 }

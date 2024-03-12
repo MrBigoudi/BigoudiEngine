@@ -7,25 +7,45 @@
 
 namespace be{
 
+RayPtr RayTracer::sampleNewRay(const RayHit& rayHit) const {
+    switch(_SamplingDistribution){
+        case HEMISPHERE_SAMPLING:
+            return Ray::generateRandomRayInHemiSphere(rayHit);
+        case LAMBERTIAN_SAMPLING:
+            return Ray::generateRandomRayLambertianDistribution(rayHit); 
+    }
+    ErrorHandler::handle(
+        __FILE__, __LINE__,
+        ErrorCode::UNKNOWN_VALUE_ERROR,
+        "The given sample distribution method is unkown!\n"
+    );
+    return nullptr;
+}
+
 
 Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
-    if(depth > _MaxDetph){
+    if(depth > _MaxBounces){
         return Vector3::zeros();
     }
     
     RayHit closestHit = hits.getClosestHit();
-    // RayPtr newRay = Ray::generateRandomRayInHemiSphere(closestHit);    
-    RayPtr newRay = Ray::generateRandomRayLambertianDistribution(closestHit);    
-    // RayHits bouncedHits = getHits(newRay);
-    // RayHits bouncedHits = getHitsBSH(newRay);
-    RayHits bouncedHits = getHitsBVH(newRay);
+    MaterialPtr closestHitMaterial = closestHit.getTriangle()._Material;
+    Vector3 diffuseColor = closestHit.getCol().xyz(); // don't care about alpha for now
 
-    if(bouncedHits.getNbHits() > 0){
-        return 0.5f * shade(bouncedHits, depth+1);
+    Vector3 color = Vector3::zeros();
+
+    for(uint32_t curSubSample=0; curSubSample<_SamplesPerPixels; curSubSample++){
+        RayPtr newRay = sampleNewRay(closestHit);    
+        RayHits bouncedHits = getHits(newRay);
+
+        if(bouncedHits.getNbHits() > 0){
+            color += _ShadingFactor * diffuseColor * shade(bouncedHits, depth+1);
+        } else {
+            color += diffuseColor * _BackgroundColor;
+        }
     }
 
-    float alpha = 0.5f*(newRay->getDirection().y() + 1.f);
-    return (1.f - alpha)*Color::WHITE + alpha*(Vector3(0.5f, 0.7f, 1.f));
+    return color / _SamplesPerPixels;
 }
 
 std::vector<Triangle> RayTracer::getTriangles() const{
@@ -45,7 +65,6 @@ std::vector<Triangle> RayTracer::getTriangles() const{
         auto material = GameCoordinator::getComponent<ComponentMaterial>(obj)._Material;
         auto transform = GameCoordinator::getComponent<ComponentTransform>(obj)._Transform;
         Matrix4x4 modelMatrix = transform->getModelTransposed();
-        // fprintf(stdout, "model:\n%s\n", modelMatrix.toString().c_str());
 
         for(size_t k = 0; k<triangles.size(); k++){
             auto& triangle = triangles[k];
@@ -56,8 +75,6 @@ std::vector<Triangle> RayTracer::getTriangles() const{
 
             triangle._Material = material;
             triangle._Model = modelMatrix;
-
-            // fprintf(stdout, "triangle[%zu]:%s\n", k, triangle.toString().c_str());
         }
 
 
@@ -76,7 +93,7 @@ RayHits RayTracer::getHitsBVH(RayPtr curRay) const{
     return _BVH->getIntersections(curRay, _Frame._Camera->getPosition());
 }
 
-RayHits RayTracer::getHits(RayPtr curRay) const {
+RayHits RayTracer::getHitsNaive(RayPtr curRay) const {
     RayHits hits{};
     for(auto& triangle : _Primitives){
         RayHitOpt hit = curRay->rayTriangleIntersection(triangle);
@@ -87,6 +104,23 @@ RayHits RayTracer::getHits(RayPtr curRay) const {
     }
     return hits;
 }    
+
+RayHits RayTracer::getHits(RayPtr curRay) const {
+    switch(_BoundingVolumeMethod){
+        case NAIVE_METHOD:
+            return getHitsNaive(curRay);
+        case BVH_METHOD:
+            return getHitsBVH(curRay);
+        case BSH_METHOD:
+            return getHitsBSH(curRay);
+    }
+    ErrorHandler::handle(
+        __FILE__, __LINE__,
+        ErrorCode::UNKNOWN_VALUE_ERROR,
+        "The given bounding volume method is unkown!\n"
+    );
+    return {};
+}
 
 
 void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
@@ -105,7 +139,8 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
             fprintf(stdout, "Start ray tracing at `%dx%d' resolution...\n", width, height);
         }
         timer.start();
-        _Image->clear(backgroundColor);
+        _BackgroundColor = backgroundColor;
+        _Image->clear(_BackgroundColor);
 
         _Primitives = getTriangles();
         _BSH = BSHPtr(new BSH(_Primitives));
@@ -130,10 +165,7 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
                     camera->getPosition()
                 );
 
-                // RayHits hits = getHits(curRay);
-                // RayHits hits = getHitsBSH(curRay);
-                RayHits hits = getHitsBVH(curRay);
-                // RayHits hits = {};
+                RayHits hits = getHits(curRay);
 
                 if(hits.getNbHits() > 0){
                     _Image->set(i, j, shade(hits), Color::SRGB);
@@ -142,7 +174,7 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
         }
 
         if(verbose){
-            fprintf(stdout, "\nRay tracing executed in `%d ms'\n", timer.getTicks());
+            fprintf(stdout, "\nRay tracing executed in `%s'\n", Timer::format(timer.getTicks()).c_str());
         }
         _IsRunning = false;
     }

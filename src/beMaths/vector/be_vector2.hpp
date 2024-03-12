@@ -255,6 +255,19 @@ class Vector2{
         Matrix2x4 operator*(const Matrix1x4& matrix) const;
 
         /**
+         * Component wise ultiplication with a vector
+         * @param vector The second vector
+         * @return A new vector which is the results of the multiplication
+        */
+        Vector2 operator*(const Vector2& vector) const;
+
+        /**
+         * Component wise multiplication between two vectors
+         * @param vector The second vector
+        */
+        void operator*=(const Vector2& vector);
+
+        /**
          * Dot product
          * @param v1 The first vector
          * @param v2 The second vector
