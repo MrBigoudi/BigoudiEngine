@@ -53,6 +53,7 @@ class RayHit{
         Vector3 getWorldPos() const;
         Vector4 getCol() const;
         Vector3 getNorm() const;
+        Vector3 getWorldNorm() const;
         Vector2 getTex() const;
 
 

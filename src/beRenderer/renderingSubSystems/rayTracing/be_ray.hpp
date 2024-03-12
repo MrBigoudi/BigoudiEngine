@@ -8,6 +8,8 @@ namespace be{
 class Ray;
 using RayPtr = std::shared_ptr<Ray>;
 
+class RayHit;
+
 class Ray{
 
     private:
@@ -45,6 +47,27 @@ class Ray{
                         float height, 
                         const Vector3& cameraPos
         );
+
+        /**
+         * Generate a random ray in the unit sphere
+         * @return A ray in world space
+        */
+        static RayPtr randomRayInUnitSphere();
+
+        /**
+         * Generate a random ray in the hemisphere
+         * @param sphereCenter The position of the center of the sphere
+         * @param planeNormal The normal of the hemisphere plane
+         * @return A ray in world space
+        */
+        static RayPtr randomRayInHemiSphere(const Vector3& sphereCenter, const Vector3& planeNormal);
+
+        /**
+         * Generate a random ray in the hemisphere
+         * @param rayHit The last hit
+         * @return A ray in world space
+        */
+        static RayPtr randomRayInHemiSphere(const RayHit& hit);
 };
 
 }

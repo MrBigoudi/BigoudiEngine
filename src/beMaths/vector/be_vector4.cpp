@@ -4,6 +4,8 @@
 #include "be_vector.hpp" // IWYU pragma: keep
 
 #include "be_errorHandler.hpp"
+#include "be_mathsFcts.hpp"
+
 #include <cmath>
 
 namespace be{
@@ -53,6 +55,7 @@ Vector4::Vector4(float x, float y, float z, float w){
 
 /**
  * Create a matrix fill with ones
+ * @return The new vector
 */
 Vector4 Vector4::ones(){
     return Vector4(1.f,1.f,1.f,1.f);
@@ -60,9 +63,38 @@ Vector4 Vector4::ones(){
 
 /**
  * Create a matrix fill with zeros
+ * @return The new vector
 */
 Vector4 Vector4::zeros(){
     return Vector4(0.f,0.f,0.f,0.f);
+}
+
+/**
+ * Create a random vector
+ * @return The new vector
+*/
+Vector4 Vector4::random(){
+    return Vector4(
+        Maths::random_float(),
+        Maths::random_float(),
+        Maths::random_float(),
+        Maths::random_float()
+    );
+}
+
+/**
+ * Create a random vector
+ * @param min The minimum value
+ * @param max The maximum mvalue
+ * @return The new vector
+*/
+Vector4 Vector4::random(float min, float max){
+    return Vector4(
+        Maths::random_float(min, max),
+        Maths::random_float(min, max),
+        Maths::random_float(min, max),
+        Maths::random_float(min, max)
+    );
 }
 
 /**

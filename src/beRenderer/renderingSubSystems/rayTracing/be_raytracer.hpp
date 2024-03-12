@@ -19,6 +19,10 @@ class RayTracer{
         ScenePtr _Scene = nullptr;
         bool _IsRunning = false;
         FrameInfo _Frame;
+        std::vector<Triangle> _Primitives = {};
+
+        uint32_t _MaxDetph = 2;
+
 
     public:
         RayTracer(ScenePtr scene, uint32_t width, uint32_t height)
@@ -41,14 +45,13 @@ class RayTracer{
             _Image = std::make_shared<Image>(width, height);
         }
 
-        static RayHitOpt rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive);
-        static Vector3 getHitWorldPosition(const RayHit& hit, const Ray& curRay);
-
     
     private:
         std::vector<Triangle> getTriangles() const;
-        Vector3 shade(RayHits& hits) const;
-
+        Vector3 shade(RayHits& hits, uint32_t depth = 0) const;
+        static RayHitOpt rayTriangleIntersection(RayPtr ray, const Triangle& trianglePrimitive);
+        
+        RayHits getHits(RayPtr curRay) const;        
 
 };
 

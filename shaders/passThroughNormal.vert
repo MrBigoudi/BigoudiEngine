@@ -19,5 +19,6 @@ layout(push_constant) uniform Push{
 void main() {
     gl_Position = cameraUbo.proj * cameraUbo.view * push.model * vec4(vPos, 1.f);
     // fCol = vec4(vNorm*0.5f + 0.5f, 1.f);
-    fCol = vec4(vNorm, 1.f);
+    vec4 norm = normalize(push.model*vec4(vNorm, 0.f));
+    fCol = vec4(norm.xyz, 1.f);
 }

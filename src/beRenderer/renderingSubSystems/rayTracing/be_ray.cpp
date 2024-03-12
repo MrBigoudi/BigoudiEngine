@@ -1,6 +1,7 @@
 #include "be_ray.hpp"
 #include "be_matrix4x4.hpp"
 #include "be_vector4.hpp"
+#include "be_rayHit.hpp"
 
 namespace be{
 
@@ -37,6 +38,41 @@ RayPtr Ray::rayAt(float x, float y,
 
     direction.normalize();
     return RayPtr(new Ray(cameraPos, direction));
+}
+
+/**
+ * Generate a ray in the unit sphere
+ * @return A ray in world space
+*/
+RayPtr Ray::randomRayInUnitSphere(){
+    Vector3 origin = Vector3();
+    Vector3 direction = Vector3::normalize(Vector3::random(-1, 1));
+    return RayPtr(new Ray(origin, direction));
+}
+
+/**
+ * Generate a random ray in the hemisphere
+ * @param sphereCenter The position of the center of the sphere
+ * @param planeNormal The normal of the hemisphere plane
+ * @return A ray in world space
+*/
+RayPtr Ray::randomRayInHemiSphere(const Vector3& sphereCenter, const Vector3& planeNormal){
+    RayPtr ray = Ray::randomRayInUnitSphere();
+    ray->_Origin = sphereCenter;
+    if(Vector3::dot(ray->_Direction, planeNormal) > 0.f){ // same hemisphere
+        return ray;
+    }
+    ray->_Direction *= -1.f;
+    return ray;
+}
+
+/**
+ * Generate a random ray in the hemisphere
+ * @param rayHit The last hit
+ * @return A ray in world space
+*/
+RayPtr Ray::randomRayInHemiSphere(const RayHit& hit){
+    return randomRayInHemiSphere(hit.getWorldPos(), hit.getWorldNorm());
 }
 
 }

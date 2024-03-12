@@ -55,13 +55,29 @@ class Vector4{
 
         /**
          * Create a vector fill with ones
+         * @return The new vector
         */
         static Vector4 ones();
 
         /**
          * Create a vector fill with zeros
+         * @return The new vector
         */
         static Vector4 zeros();
+
+        /**
+         * Create a random vector
+         * @return The new vector
+        */
+        static Vector4 random();
+
+        /**
+         * Create a random vector
+         * @param min The minimum value
+         * @param max The maximum mvalue
+         * @return The new vector
+        */
+        static Vector4 random(float min, float max);
 
         /**
          * Cast the vector into a string

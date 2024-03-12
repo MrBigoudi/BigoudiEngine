@@ -262,9 +262,9 @@ VertexDataBuilder VertexDataBuilder::primitiveTriangle(
     Vector3 v1 = {0.f, 1.f, 0.f};
     Vector3 v2 = {1.f, 0.f, 0.f};
     builder._Vertices = {
-        {._Pos = v0, ._Col = c},
-        {._Pos = v1, ._Col = c},
-        {._Pos = v2, ._Col = c},
+        {._Pos = v0, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {0.f, 0.f}},
+        {._Pos = v1, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {0.5f, 1.f}},
+        {._Pos = v2, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {1.f, 0.f}},
     };
     builder._Indices = {0,2,1};
     return builder;
@@ -280,10 +280,10 @@ VertexDataBuilder VertexDataBuilder::primitiveRectangle(
     Vector3 v3{width/2.f, height/2.f, 0.f}; // top right
     VertexDataBuilder builder{};
     builder._Vertices = {
-        {._Pos = v0, ._Col = c, ._Tex = {0.f, 0.f}},
-        {._Pos = v1, ._Col = c, ._Tex = {1.f, 0.f}},
-        {._Pos = v2, ._Col = c, ._Tex = {0.f, 1.f}},
-        {._Pos = v3, ._Col = c, ._Tex = {1.f, 1.f}},
+        {._Pos = v0, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {0.f, 0.f}},
+        {._Pos = v1, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {1.f, 0.f}},
+        {._Pos = v2, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {0.f, 1.f}},
+        {._Pos = v3, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {1.f, 1.f}},
     };
     builder._Indices = {
         0, 1, 2,

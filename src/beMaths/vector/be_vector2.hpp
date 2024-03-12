@@ -38,13 +38,29 @@ class Vector2{
 
         /**
          * Create a vector fill with ones
+         * @return The new vector
         */
         static Vector2 ones();
 
         /**
          * Create a vector fill with zeros
+         * @return The new vector
         */
         static Vector2 zeros();
+
+        /**
+         * Create a random vector
+         * @return The new vector
+        */
+        static Vector2 random();
+
+        /**
+         * Create a random vector
+         * @param min The minimum value
+         * @param max The maximum mvalue
+         * @return The new vector
+        */
+        static Vector2 random(float min, float max);
 
         /**
          * Cast the vector into a string

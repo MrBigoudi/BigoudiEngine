@@ -61,26 +61,21 @@ RayHitOpt RayTracer::rayTriangleIntersection(RayPtr ray, const Triangle& triangl
     return RayHit(res, trianglePrimitive, ray);
 }
 
-Vector3 RayTracer::shade(RayHits& hits) const {
-    // display normals
+Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
+    if(depth > _MaxDetph){
+        return Vector3::zeros();
+    }
+    
     RayHit closestHit = hits.getClosestHit();
-    // if(hits.getNbHits() > 1){
-    //     fprintf(stdout, "the ray hit %d triangles!\n", hits.getNbHits());
-    // }
+    RayPtr newRay = Ray::randomRayInHemiSphere(closestHit);    
+    RayHits bouncedHits = getHits(newRay);
 
-    Vector3 color = closestHit.getNorm(); // norm tmp
-    // Vector3 color = Color::RED;
-    // Vector3 color = closestHit.getPos(); // local pos
-    // Vector3 color = closestHit.getCol().xyz();
-    // Vector3 color = closestHit.getTriangle()._Norm0;
-    // Vector3 color = closestHit.getBarycentricCoords();
+    if(bouncedHits.getNbHits() > 0){
+        return 0.5f * shade(bouncedHits, depth+1);
+    }
 
-    color.r(std::max(color.r(), 0.f));
-    color.g(std::max(color.g(), 0.f));
-    color.b(std::max(color.b(), 0.f));
-
-    // return color;
-    return Color::toSRGB(color);
+    float alpha = 0.5f*(newRay->getDirection().y() + 1.f);
+    return (1.f - alpha)*Color::WHITE + alpha*(Vector3(0.5f, 0.7f, 1.f));
 }
 
 std::vector<Triangle> RayTracer::getTriangles() const{
@@ -123,11 +118,17 @@ std::vector<Triangle> RayTracer::getTriangles() const{
 }
 
 
-Vector3 RayTracer::getHitWorldPosition(const RayHit& hit, const Ray& curRay){
-    float t = hit.getParametricT();
-    return curRay.at(t);
-}
-
+RayHits RayTracer::getHits(RayPtr curRay) const {
+    RayHits hits{};
+    for(auto& triangle : _Primitives){
+        RayHitOpt hit = rayTriangleIntersection(curRay, triangle);
+        if(hit.has_value()){
+            hit->setDistanceToPov(_Frame._Camera->getPosition());
+            hits.addHit(hit.value());
+        }
+    }
+    return hits;
+}    
 
 
 void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
@@ -148,11 +149,9 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
         timer.start();
         _Image->clear(backgroundColor);
 
-        auto primitives = getTriangles();
+        _Primitives = getTriangles();
 
         const uint32_t step = 1;
-
-        // std::set<size_t> triangleIds{};
 
         for(uint j = 0; j<height; j+=step){
             #ifndef NDEBUG
@@ -164,8 +163,6 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
                 float u = static_cast<float>(i);
                 float v = height - static_cast<float>(j);
 
-                // u = (u + 0.5f) / width;
-                // v = 1.f - (v + 0.5f) / height;
                 RayPtr curRay = Ray::rayAt(
                     u, v, 
                     viewInv, projInv, 
@@ -173,30 +170,13 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
                     camera->getPosition()
                 );
 
-                RayHits hits{};
-
-                for(size_t k=0; k<primitives.size(); k++){
-                    auto& triangle = primitives[k];
-                // for(auto& triangle : primitives){
-                    RayHitOpt hit = rayTriangleIntersection(curRay, triangle);
-                    if(hit.has_value()){
-                        // triangleIds.insert(k);
-                        hit->setDistanceToPov(frame._Camera->getPosition());
-                        hits.addHit(hit.value());
-                    }
-                }
+                RayHits hits = getHits(curRay);
 
                 if(hits.getNbHits() > 0){
-                    _Image->set(i, j, shade(hits));
+                    _Image->set(i, j, Color::toSRGB(shade(hits)));
                 }
             }
         }
-
-        // fprintf(stdout, "%zu triangles hit: ", triangleIds.size());
-        // for(auto k : triangleIds){
-        //     fprintf(stdout, "%zu, ", k);
-        // }
-        // fprintf(stdout, "\n");
 
         if(verbose){
             fprintf(stdout, "\nRay tracing executed in `%d ms'\n", timer.getTicks());

@@ -46,13 +46,29 @@ class Vector3{
 
         /**
          * Create a vector fill with ones
+         * @return The new vector
         */
         static Vector3 ones();
 
         /**
          * Create a vector fill with zeros
+         * @return The new vector
         */
         static Vector3 zeros();
+
+        /**
+         * Create a random vector
+         * @return The new vector
+        */
+        static Vector3 random();
+
+        /**
+         * Create a random vector
+         * @param min The minimum value
+         * @param max The maximum mvalue
+         * @return The new vector
+        */
+        static Vector3 random(float min, float max);
 
         /**
          * Cast the vector into a string
