@@ -29,6 +29,22 @@ class Bounding{
         Bounding(){};
 };
 
+class BoundingCone : public Bounding{
+    public:
+        Vector3 _Tip = {};
+        Vector3 _Axis = {};
+        float _AngularSpan = 0.f;
+
+    public:
+        BoundingCone(){};
+        float getHalfAngle() const{return _AngularSpan / 2.f;}
+
+        // TODO:
+        static BoundingCone merge(const BoundingCone& bc1, const BoundingCone& bc2){
+            return bc1._AngularSpan > bc2._AngularSpan ? bc1 : bc2;
+        }
+};
+
 class AxisAlignedBoundingBox : public Bounding{
     public:
         float _MinX = 0.f;
@@ -44,13 +60,28 @@ class AxisAlignedBoundingBox : public Bounding{
         };
 
     public:
+        AxisAlignedBoundingBox(){};
+        AxisAlignedBoundingBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ)
+            :_MinX(minX), _MaxX(maxX), _MinY(minY), _MaxY(maxY), _MinZ(minZ), _MaxZ(maxZ){
+        };
         AxisAlignedBoundingBox(const std::vector<Triangle>& triangles);
+        static AxisAlignedBoundingBox merge(const AxisAlignedBoundingBox& aabb1, const AxisAlignedBoundingBox& aabb2){
+            return AxisAlignedBoundingBox(
+                std::min(aabb1._MinX, aabb2._MinX),
+                std::max(aabb1._MaxX, aabb2._MaxX),
+                std::min(aabb1._MinY, aabb2._MinY),
+                std::max(aabb1._MaxY, aabb2._MaxY),
+                std::min(aabb1._MinZ, aabb2._MinZ),
+                std::max(aabb1._MaxZ, aabb2._MaxZ)
+            );
+        }
 
     public:
         Vector3 getCenter() const;
         Axis getDominantAxis() const;
         float getDistance(Axis axis) const;
         Vector3 getDominantAxisPlaneNormal() const;
+        float getDiagonalLength() const;
 
         std::string toString() const {
             return "{ minX: " + std::to_string(_MinX) + ", maxX: " + std::to_string(_MaxX)
@@ -105,10 +136,8 @@ class BSH{
                 BSHTree(){};
                 static BSHTreePtr init(const std::vector<Triangle>& triangles);
 
-                RayHits getIntersections(const std::vector<Triangle>& triangles, const RayPtr& ray, const Vector3& cameraPos) const{
-                    RayHits hits{};
+                void getIntersections(const std::vector<Triangle>& triangles, const RayPtr& ray, const Vector3& cameraPos, RayHits& hits) const{
                     _Root->getIntersections(triangles, ray, cameraPos, hits);
-                    return hits;
                 }
         };
 
@@ -121,9 +150,9 @@ class BSH{
     public:
         BSH(const std::vector<Triangle>& triangles);
 
-        RayHits getIntersections(const RayPtr& ray, const Vector3& cameraPos) const{
-            if(_Triangles.empty()){return {};}
-            return _Tree->getIntersections(_Triangles, ray, cameraPos);
+        void getIntersections(const RayPtr& ray, const Vector3& cameraPos, RayHits& hits) const{
+            if(_Triangles.empty()){return;}
+            _Tree->getIntersections(_Triangles, ray, cameraPos, hits);
         }
 
 };
@@ -159,10 +188,8 @@ class BVH{
                 BVHTree(){};
                 static BVHTreePtr init(const std::vector<Triangle>& triangles);
 
-                RayHits getIntersections(const std::vector<Triangle>& triangles, const RayPtr& ray, const Vector3& cameraPos) const{
-                    RayHits hits{};
+                void getIntersections(const std::vector<Triangle>& triangles, const RayPtr& ray, const Vector3& cameraPos, RayHits& hits) const{
                     _Root->getIntersections(triangles, ray, cameraPos, hits);
-                    return hits;
                 }
         };
 
@@ -175,9 +202,9 @@ class BVH{
     public:
         BVH(const std::vector<Triangle>& triangles);
 
-        RayHits getIntersections(const RayPtr& ray, const Vector3& cameraPos) const{
-            if(_Triangles.empty()){return {};}
-            return _Tree->getIntersections(_Triangles, ray, cameraPos);
+        void getIntersections(const RayPtr& ray, const Vector3& cameraPos, RayHits& hits) const{
+            if(_Triangles.empty()){return;}
+            _Tree->getIntersections(_Triangles, ray, cameraPos, hits);
         }
 
 };

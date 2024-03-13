@@ -22,15 +22,70 @@ RayPtr RayTracer::sampleNewRay(const RayHit& rayHit) const {
     return nullptr;
 }
 
+Vector3 RayTracer::colorBRDF(const RayHit& rayHit) const{
+    return rayHit.getCol().xyz();
+}
+
+Vector3 RayTracer::normalBRDF(const RayHit& rayHit) const{
+    Vector3 normals = rayHit.getWorldNorm();
+    Vector3 color = Vector3::zeros();
+    color.r(std::clamp(normals.r(), 0.f, 1.f));
+    color.g(std::clamp(normals.g(), 0.f, 1.f));
+    color.b(std::clamp(normals.b(), 0.f, 1.f));
+    return color;
+}
+
+bool RayTracer::isInShadow(RayPtr shadowRay, float distToLight) const {
+    RayHits shadowHits = getHits(shadowRay);
+    if(shadowHits.getNbHits() == 0){
+        return false;
+    }
+    // check if the shadow ray hits any object before reaching the light source
+    bool isInShadow = false;
+    RayHit shadowHit = shadowHits.getClosestHit();
+    float closestHitDist = (shadowHit.getWorldPos() - shadowRay->getOrigin()).getNorm();
+    if(closestHitDist < distToLight) {
+        isInShadow = true;
+    }
+    return isInShadow;
+}
+
+
+Vector3 RayTracer::lambertBRDF(const RayHit& rayHit) const{
+    Vector3 color = Color::BLACK;
+    // point lights
+    for(const auto& pointLight : _Scene->getPointLights()){
+        Vector3 lightDir = Vector3::normalize((pointLight._Position - rayHit.getWorldPos()));
+        float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir));
+        // cast shadow ray
+        RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), lightDir));
+        float distToLight = (pointLight._Position - rayHit.getWorldPos()).getNorm();
+        if (!isInShadow(shadowRay, distToLight)){
+            color += (diffuseFactor * pointLight._Intensity) * (rayHit.getCol().xyz() * pointLight._Color);
+        }
+    }
+    // directional lights
+    for(const auto& directionalLight : _Scene->getDirectionalLights()){
+        Vector3 lightDir = Vector3::normalize(directionalLight._Direction);
+        float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir));
+        // cast shadow ray
+        RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), -lightDir));
+        if (!isInShadow(shadowRay)){
+            color += (diffuseFactor * directionalLight._Intensity) * (rayHit.getCol().xyz() * directionalLight._Color);
+        }
+    }
+    return color;
+}
+
+
 
 Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
     if(depth > _MaxBounces){
-        return Vector3::zeros();
+        return Color::WHITE;
     }
     
     RayHit closestHit = hits.getClosestHit();
     MaterialPtr closestHitMaterial = closestHit.getTriangle()._Material;
-    Vector3 diffuseColor = closestHit.getCol().xyz(); // don't care about alpha for now
 
     Vector3 color = Vector3::zeros();
 
@@ -39,20 +94,35 @@ Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
         RayHits bouncedHits = getHits(newRay);
 
         if(bouncedHits.getNbHits() > 0){
-            color += _ShadingFactor * diffuseColor * shade(bouncedHits, depth+1);
+            color += _ShadingFactor * shade(bouncedHits, depth+1);
         } else {
-            color += diffuseColor * _BackgroundColor;
+            color += _BackgroundColor;
+        }
+
+        switch(_BRDF){
+            case COLOR_BRDF:
+                color += colorBRDF(closestHit);
+                break;
+            case NORMAL_BRDF:
+                color += normalBRDF(closestHit);
+                break;
+            case LAMBERT_BRDF:
+                color += lambertBRDF(closestHit);
+                break;
         }
     }
 
     return color / _SamplesPerPixels;
 }
 
-std::vector<Triangle> RayTracer::getTriangles() const{
+std::vector<Triangle> RayTracer::getTriangles(){
     std::vector<Triangle> allTriangles = {};
     #ifndef NDEBUG
     fprintf(stdout, "There are %zu objects in the scene!\n", _Scene->getObjects().size());
     #endif
+
+    _BSH.clear();
+    _BVH.clear();
 
     for(auto obj : _Scene->getObjects()){
         
@@ -77,20 +147,27 @@ std::vector<Triangle> RayTracer::getTriangles() const{
             triangle._Model = modelMatrix;
         }
 
-
+        addObjectToAccelerationStructures(triangles);
         allTriangles.insert(allTriangles.end(), triangles.begin(), triangles.end());
     }
-
     return allTriangles;
 }
 
 
 RayHits RayTracer::getHitsBSH(RayPtr curRay) const{
-    return _BSH->getIntersections(curRay, _Frame._Camera->getPosition());
+    RayHits hits{};
+    for(auto& bsh: _BSH){
+        bsh->getIntersections(curRay, _Frame._Camera->getPosition(), hits);
+    }
+    return hits;
 }
 
 RayHits RayTracer::getHitsBVH(RayPtr curRay) const{
-    return _BVH->getIntersections(curRay, _Frame._Camera->getPosition());
+    RayHits hits{};
+    for(auto& bvh: _BVH){
+        bvh->getIntersections(curRay, _Frame._Camera->getPosition(), hits);
+    }
+    return hits;
 }
 
 RayHits RayTracer::getHitsNaive(RayPtr curRay) const {
@@ -122,6 +199,12 @@ RayHits RayTracer::getHits(RayPtr curRay) const {
     return {};
 }
 
+void RayTracer::addObjectToAccelerationStructures(const std::vector<Triangle>& triangles){
+    _BSH.push_back(BSHPtr(new BSH(triangles)));
+    _BVH.push_back(BVHPtr(new BVH(triangles)));
+}
+
+
 
 void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
     if(!_IsRunning){
@@ -143,8 +226,6 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
         _Image->clear(_BackgroundColor);
 
         _Primitives = getTriangles();
-        _BSH = BSHPtr(new BSH(_Primitives));
-        _BVH = BVHPtr(new BVH(_Primitives));
 
         const uint32_t step = 1;
 

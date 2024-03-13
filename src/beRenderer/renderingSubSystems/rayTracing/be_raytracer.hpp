@@ -15,7 +15,7 @@ class RayTracer;
 using RayTracerPtr = std::shared_ptr<RayTracer>;
 
 class RayTracer{
-    private:
+    public:
         enum BoundingVolumeMethod{
             NAIVE_METHOD, // checking every triangles at all times
             BVH_METHOD,   // using bounding volume hierarchy with AABB
@@ -27,6 +27,12 @@ class RayTracer{
             LAMBERTIAN_SAMPLING, // sample bouncing rays using lambertian sampling
         };
 
+        enum BRDFModel{
+            COLOR_BRDF,   // simple color pass through
+            NORMAL_BRDF,  // simple normal pass through
+            LAMBERT_BRDF, // lambert BRDF
+        };
+
     private:
         Vector3 _BackgroundColor = Color::WHITE;
         ImagePtr _Image = nullptr;
@@ -34,14 +40,15 @@ class RayTracer{
         bool _IsRunning = false;
         FrameInfo _Frame;
         std::vector<Triangle> _Primitives = {};
-        BSHPtr _BSH = nullptr;
-        BVHPtr _BVH = nullptr;
+        std::vector<BSHPtr> _BSH = {};
+        std::vector<BVHPtr> _BVH = {};
 
     private:
         // raytracing parameters
         BoundingVolumeMethod _BoundingVolumeMethod = BVH_METHOD;
         SamplingDistribution _SamplingDistribution = LAMBERTIAN_SAMPLING;
-        uint32_t _MaxBounces = 10;
+        BRDFModel _BRDF = COLOR_BRDF;
+        uint32_t _MaxBounces = 2;
         uint32_t _SamplesPerPixels = 2;
         float _ShadingFactor = 0.5f;
 
@@ -66,10 +73,13 @@ class RayTracer{
         void setResolution(uint32_t width, uint32_t height){
             _Image = std::make_shared<Image>(width, height);
         }
+        void enableColorBRDF(){_BRDF = COLOR_BRDF;}
+        void enableNormalBRDF(){_BRDF = NORMAL_BRDF;}
+        void enableLambertBRDF(){_BRDF = LAMBERT_BRDF;}
 
     
     private:
-        std::vector<Triangle> getTriangles() const;
+        std::vector<Triangle> getTriangles();
         Vector3 shade(RayHits& hits, uint32_t depth = 0) const;
         RayHits getHits(RayPtr curRay) const;
         RayHits getHitsNaive(RayPtr curRay) const;        
@@ -77,6 +87,13 @@ class RayTracer{
         RayHits getHitsBVH(RayPtr curRay) const;
 
         RayPtr sampleNewRay(const RayHit& rayHit) const;
+
+        Vector3 colorBRDF(const RayHit& rayHit) const;
+        Vector3 normalBRDF(const RayHit& rayHit) const;
+        Vector3 lambertBRDF(const RayHit& rayHit) const;
+
+        void addObjectToAccelerationStructures(const std::vector<Triangle>& triangles);
+        bool isInShadow(RayPtr shadowRay, float distToLight = INFINITY) const;
 };
 
 }

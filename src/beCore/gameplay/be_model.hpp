@@ -186,6 +186,12 @@ struct VertexDataBuilder{
      * @return A builder
     */
     static VertexDataBuilder primitiveFrame();
+
+    /**
+     * A function to create a simple square room
+     * @return A builder
+    */
+    static VertexDataBuilder primitiveRoom();
 };
 
 

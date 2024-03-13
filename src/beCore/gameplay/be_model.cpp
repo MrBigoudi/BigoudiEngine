@@ -292,6 +292,66 @@ VertexDataBuilder VertexDataBuilder::primitiveRectangle(
     return builder;
 }
 
+VertexDataBuilder VertexDataBuilder::primitiveRoom(){
+    VertexDataBuilder builder{};
+    float hl = 0.5f;
+    builder._Vertices = {
+        // front
+        {._Pos = {-hl, -hl, hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, -1}},
+        {._Pos = {hl, -hl, hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, -1}},
+        {._Pos = {-hl, hl, hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, -1}},
+        {._Pos = {hl, hl, hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, -1}},
+        // back
+        {._Pos = {-hl, -hl, -hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, 1}},
+        {._Pos = {hl, -hl, -hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, 1}},
+        {._Pos = {-hl, hl, -hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, 1}},
+        {._Pos = {hl, hl, -hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, 1}},
+        // left
+        {._Pos = {-hl, -hl, hl}, ._Col = {1.f,0.f,0.f,1.f}, ._Norm = {1, 0, 0}},
+        {._Pos = {-hl, hl, hl}, ._Col = {1.f,0.f,0.f,1.f}, ._Norm = {1, 0, 0}},
+        {._Pos = {-hl, -hl, -hl}, ._Col = {1.f,0.f,0.f,1.f}, ._Norm = {1, 0, 0}},
+        {._Pos = {-hl, hl, -hl}, ._Col = {1.f,0.f,0.f,1.f}, ._Norm = {1, 0, 0}},
+        // right
+        {._Pos = {hl, -hl, hl}, ._Col = {0.f,0.f,1.f,1.f}, ._Norm = {-1, 0, 0}},
+        {._Pos = {hl, hl, hl}, ._Col = {0.f,0.f,1.f,1.f}, ._Norm = {-1, 0, 0}},
+        {._Pos = {hl, -hl, -hl}, ._Col = {0.f,0.f,1.f,1.f}, ._Norm = {-1, 0, 0}},
+        {._Pos = {hl, hl, -hl}, ._Col = {0.f,0.f,1.f,1.f}, ._Norm = {-1, 0, 0}},
+        // top
+        {._Pos = {-hl, hl, hl}, ._Col = {1.f,1.f,1.f,1.f}, ._Norm = {0, -1, 0}},
+        {._Pos = {hl, hl, hl}, ._Col = {1.f,1.f,1.f,1.f}, ._Norm = {0, -1, 0}},
+        {._Pos = {-hl, hl, -hl}, ._Col = {1.f,1.f,1.f,1.f}, ._Norm = {0, -1, 0}},
+        {._Pos = {hl, hl, -hl}, ._Col = {1.f,1.f,1.f,1.f}, ._Norm = {0, -1, 0}},
+        // bottom
+        {._Pos = {-hl, -hl, hl}, ._Col = {0.f,1.f,0.f,1.f}, ._Norm = {0, 1, 0}},
+        {._Pos = {hl, -hl, hl}, ._Col = {0.f,1.f,0.f,1.f}, ._Norm = {0, 1, 0}},
+        {._Pos = {-hl, -hl, -hl}, ._Col = {0.f,1.f,0.f,1.f}, ._Norm = {0, 1, 0}},
+        {._Pos = {hl, -hl, -hl}, ._Col = {0.f,1.f,0.f,1.f}, ._Norm = {0, 1, 0}}
+    };
+    
+    builder._Indices = {
+        // front face
+        0, 2, 1,
+        2, 3, 1,
+        // back face
+        4, 5, 6,
+        6, 5, 7,
+        // left face
+        8, 10, 9,
+        10, 11, 9,
+        // right face
+        12, 13, 14,
+        14, 13, 15,
+        // top face
+        16, 18, 17,
+        18, 19, 17,
+        // bottom face
+        20, 21, 22,
+        22, 21, 23
+    };
+    
+    return builder;
+}
+
 
 VertexDataBuilder VertexDataBuilder::primitiveCube(
     float length,

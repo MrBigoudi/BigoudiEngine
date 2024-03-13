@@ -59,6 +59,13 @@ Vector3 AxisAlignedBoundingBox::getCenter() const{
     return (max + min) / 2.f;
 }
 
+float AxisAlignedBoundingBox::getDiagonalLength() const{
+    Vector3 min = Vector3(_MinX, _MinY, _MinZ);
+    Vector3 max = Vector3(_MaxX, _MaxY, _MaxZ);
+    return (max - min).getNorm();
+}
+
+
 AxisAlignedBoundingBox::Axis AxisAlignedBoundingBox::getDominantAxis() const{
     float distX = getDistance(Axis::X);
     float distY = getDistance(Axis::Y);
