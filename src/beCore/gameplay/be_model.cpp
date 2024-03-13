@@ -262,9 +262,9 @@ VertexDataBuilder VertexDataBuilder::primitiveTriangle(
     Vector3 v1 = {0.f, 1.f, 0.f};
     Vector3 v2 = {1.f, 0.f, 0.f};
     builder._Vertices = {
-        {._Pos = v0, ._Col = c},
-        {._Pos = v1, ._Col = c},
-        {._Pos = v2, ._Col = c},
+        {._Pos = v0, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {0.f, 0.f}},
+        {._Pos = v1, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {0.5f, 1.f}},
+        {._Pos = v2, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {1.f, 0.f}},
     };
     builder._Indices = {0,2,1};
     return builder;
@@ -280,15 +280,75 @@ VertexDataBuilder VertexDataBuilder::primitiveRectangle(
     Vector3 v3{width/2.f, height/2.f, 0.f}; // top right
     VertexDataBuilder builder{};
     builder._Vertices = {
-        {._Pos = v0, ._Col = c, ._Tex = {0.f, 0.f}},
-        {._Pos = v1, ._Col = c, ._Tex = {1.f, 0.f}},
-        {._Pos = v2, ._Col = c, ._Tex = {0.f, 1.f}},
-        {._Pos = v3, ._Col = c, ._Tex = {1.f, 1.f}},
+        {._Pos = v0, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {0.f, 0.f}},
+        {._Pos = v1, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {1.f, 0.f}},
+        {._Pos = v2, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {0.f, 1.f}},
+        {._Pos = v3, ._Col = c, ._Norm = {0.f, 0.f, 1.f}, ._Tex = {1.f, 1.f}},
     };
     builder._Indices = {
         0, 1, 2,
         2, 1, 3,
     };
+    return builder;
+}
+
+VertexDataBuilder VertexDataBuilder::primitiveRoom(){
+    VertexDataBuilder builder{};
+    float hl = 0.5f;
+    builder._Vertices = {
+        // front
+        {._Pos = {-hl, -hl, hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, -1}},
+        {._Pos = {hl, -hl, hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, -1}},
+        {._Pos = {-hl, hl, hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, -1}},
+        {._Pos = {hl, hl, hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, -1}},
+        // back
+        {._Pos = {-hl, -hl, -hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, 1}},
+        {._Pos = {hl, -hl, -hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, 1}},
+        {._Pos = {-hl, hl, -hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, 1}},
+        {._Pos = {hl, hl, -hl}, ._Col = {0.01f,0.01f,0.01f,1.f}, ._Norm = {0, 0, 1}},
+        // left
+        {._Pos = {-hl, -hl, hl}, ._Col = {1.f,0.f,0.f,1.f}, ._Norm = {1, 0, 0}},
+        {._Pos = {-hl, hl, hl}, ._Col = {1.f,0.f,0.f,1.f}, ._Norm = {1, 0, 0}},
+        {._Pos = {-hl, -hl, -hl}, ._Col = {1.f,0.f,0.f,1.f}, ._Norm = {1, 0, 0}},
+        {._Pos = {-hl, hl, -hl}, ._Col = {1.f,0.f,0.f,1.f}, ._Norm = {1, 0, 0}},
+        // right
+        {._Pos = {hl, -hl, hl}, ._Col = {0.f,0.f,1.f,1.f}, ._Norm = {-1, 0, 0}},
+        {._Pos = {hl, hl, hl}, ._Col = {0.f,0.f,1.f,1.f}, ._Norm = {-1, 0, 0}},
+        {._Pos = {hl, -hl, -hl}, ._Col = {0.f,0.f,1.f,1.f}, ._Norm = {-1, 0, 0}},
+        {._Pos = {hl, hl, -hl}, ._Col = {0.f,0.f,1.f,1.f}, ._Norm = {-1, 0, 0}},
+        // top
+        {._Pos = {-hl, hl, hl}, ._Col = {1.f,1.f,1.f,1.f}, ._Norm = {0, -1, 0}},
+        {._Pos = {hl, hl, hl}, ._Col = {1.f,1.f,1.f,1.f}, ._Norm = {0, -1, 0}},
+        {._Pos = {-hl, hl, -hl}, ._Col = {1.f,1.f,1.f,1.f}, ._Norm = {0, -1, 0}},
+        {._Pos = {hl, hl, -hl}, ._Col = {1.f,1.f,1.f,1.f}, ._Norm = {0, -1, 0}},
+        // bottom
+        {._Pos = {-hl, -hl, hl}, ._Col = {0.f,1.f,0.f,1.f}, ._Norm = {0, 1, 0}},
+        {._Pos = {hl, -hl, hl}, ._Col = {0.f,1.f,0.f,1.f}, ._Norm = {0, 1, 0}},
+        {._Pos = {-hl, -hl, -hl}, ._Col = {0.f,1.f,0.f,1.f}, ._Norm = {0, 1, 0}},
+        {._Pos = {hl, -hl, -hl}, ._Col = {0.f,1.f,0.f,1.f}, ._Norm = {0, 1, 0}}
+    };
+    
+    builder._Indices = {
+        // front face
+        0, 2, 1,
+        2, 3, 1,
+        // back face
+        4, 5, 6,
+        6, 5, 7,
+        // left face
+        8, 10, 9,
+        10, 11, 9,
+        // right face
+        12, 13, 14,
+        14, 13, 15,
+        // top face
+        16, 18, 17,
+        18, 19, 17,
+        // bottom face
+        20, 21, 22,
+        22, 21, 23
+    };
+    
     return builder;
 }
 
@@ -609,6 +669,11 @@ std::vector<Triangle> Model::getTrianglePrimitives() const{
         triangles.push_back(triTmp);
     }
     return triangles;
+}
+
+bool Triangle::isWorldP0LeftOfPlane(const Vector3& planePosition, const Vector3& planeNormal) const{
+    Vector3 planeToPoint = _WorldPos0 - planePosition;
+    return Vector3::dot(planeToPoint, planeNormal) > 0;
 }
 
 

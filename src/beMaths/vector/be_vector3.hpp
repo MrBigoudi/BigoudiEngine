@@ -46,13 +46,35 @@ class Vector3{
 
         /**
          * Create a vector fill with ones
+         * @return The new vector
         */
         static Vector3 ones();
 
         /**
          * Create a vector fill with zeros
+         * @return The new vector
         */
         static Vector3 zeros();
+
+        /**
+         * Create a random vector
+         * @return The new vector
+        */
+        static Vector3 random();
+
+        /**
+         * Create a random vector
+         * @param min The minimum value
+         * @param max The maximum mvalue
+         * @return The new vector
+        */
+        static Vector3 random(float min, float max);
+
+        /**
+         * Return true if the current vector is zero
+         * @see Maths::isZero
+        */
+        bool isZero() const;
 
         /**
          * Cast the vector into a string
@@ -240,6 +262,19 @@ class Vector3{
         Matrix3x4 operator*(const Matrix1x4& matrix) const;
 
         /**
+         * Component wise ultiplication with a vector
+         * @param vector The second vector
+         * @return A new vector which is the results of the multiplication
+        */
+        Vector3 operator*(const Vector3& vector) const;
+
+        /**
+         * Component wise multiplication between two vectors
+         * @param vector The second vector
+        */
+        void operator*=(const Vector3& vector);
+
+        /**
          * Dot product
          * @param v1 The first vector
          * @param v2 The second vector
@@ -273,6 +308,12 @@ class Vector3{
          * @return The norm
         */
         float getNorm() const;
+
+        /**
+         * Get the vector's squared norm
+         * @return The squared norm
+        */
+        float getSquaredNorm() const;
 
         /**
          * Normalize the vector

@@ -55,13 +55,35 @@ class Vector4{
 
         /**
          * Create a vector fill with ones
+         * @return The new vector
         */
         static Vector4 ones();
 
         /**
          * Create a vector fill with zeros
+         * @return The new vector
         */
         static Vector4 zeros();
+
+        /**
+         * Create a random vector
+         * @return The new vector
+        */
+        static Vector4 random();
+
+        /**
+         * Create a random vector
+         * @param min The minimum value
+         * @param max The maximum mvalue
+         * @return The new vector
+        */
+        static Vector4 random(float min, float max);
+
+        /**
+         * Return true if the current vector is zero
+         * @see Maths::isZero
+        */
+        bool isZero() const;
 
         /**
          * Cast the vector into a string
@@ -206,6 +228,19 @@ class Vector4{
         Vector4 operator*(float scalar) const;
 
         /**
+         * Component wise ultiplication with a vector
+         * @param vector The second vector
+         * @return A new vector which is the results of the multiplication
+        */
+        Vector4 operator*(const Vector4& vector) const;
+
+        /**
+         * Component wise multiplication between two vectors
+         * @param vector The second vector
+        */
+        void operator*=(const Vector4& vector);
+
+        /**
          * Multiplication with a scalar
          * @param scalar The scalar
          * @param vector The vector
@@ -297,6 +332,12 @@ class Vector4{
          * @return The norm
         */
         float getNorm() const;
+
+        /**
+         * Get the vector's squared norm
+         * @return The squared norm
+        */
+        float getSquaredNorm() const;
 
         /**
          * Normalize the vector

@@ -25,7 +25,7 @@ void main() {
     vec4 p = cameraUbo._View * worldP;
     gl_Position = cameraUbo._Proj * p;
     
-    vec4 n = push._NormalMat * vec4(normalize(vNorm), 1.f);
+    vec4 n = push._NormalMat * vec4(normalize(vNorm), 0.f);
     fViewNorm = normalize(n.xyz);
     fWorldNorm = normalize(vNorm);
 

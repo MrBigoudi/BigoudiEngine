@@ -4,6 +4,8 @@
 #include "be_vector.hpp" // IWYU pragma: keep
 
 #include "be_errorHandler.hpp"
+#include "be_mathsFcts.hpp"
+
 #include <cmath>
 
 namespace be{
@@ -32,6 +34,7 @@ Vector2::Vector2(float x, float y){
 
 /**
  * Create a matrix fill with ones
+ * @return The new vector
 */
 Vector2 Vector2::ones(){
     return Vector2(1.f,1.f);
@@ -39,9 +42,43 @@ Vector2 Vector2::ones(){
 
 /**
  * Create a matrix fill with zeros
+ * @return The new vector
 */
 Vector2 Vector2::zeros(){
     return Vector2(0.f,0.f);
+}
+
+/**
+ * Create a random vector
+ * @return The new vector
+*/
+Vector2 Vector2::random(){
+    return Vector2(
+        Maths::random_float(),
+        Maths::random_float()
+    );
+}
+
+/**
+ * Create a random vector
+ * @param min The minimum value
+ * @param max The maximum mvalue
+ * @return The new vector
+*/
+Vector2 Vector2::random(float min, float max){
+    return Vector2(
+        Maths::random_float(min, max),
+        Maths::random_float(min, max)
+    );
+}
+
+/**
+ * Return true if the current vector is zero
+ * @see Maths::isZero
+*/
+bool Vector2::isZero() const{
+    return Maths::isZero(x())
+        && Maths::isZero(y());
 }
 
 /**
@@ -349,6 +386,14 @@ float Vector2::getNorm() const{
 }
 
 /**
+ * Get the vector's squared norm
+ * @return The squared norm
+*/
+float Vector2::getSquaredNorm() const{
+    return x()*x() + y()*y();
+}
+
+/**
  * Normalize the vector
  * @param vector The vector to normalize
  * @return The normalized vector
@@ -383,6 +428,15 @@ void Vector2::normalize(){
     }
     x(x() / norm);
     y(y() / norm);
+}
+
+Vector2 Vector2::operator*(const Vector2& vector) const{
+    return Vector2(x()*vector.x(), y()*vector.y());
+}
+
+void Vector2::operator*=(const Vector2& vector){
+    x(x()*vector.x());
+    y(y()*vector.y());
 }
 
 }

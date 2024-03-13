@@ -1,7 +1,6 @@
 #pragma once
 
 #include "be_model.hpp"
-#include "be_ray.hpp"
 #include "be_vector3.hpp"
 #include "be_vector4.hpp"
 #include <cmath>
@@ -28,12 +27,11 @@ class RayHit{
         Vector4 _Representation{};
         float _DistanceToPov = INFINITY;
         Triangle _Triangle = {}; 
-        RayPtr _Ray = nullptr;
 
     public:
 
-        RayHit(const Vector4& representation, const Triangle& triangle, RayPtr ray)
-            : _Representation(representation), _Triangle(triangle), _Ray(ray){
+        RayHit(const Vector4& representation, const Triangle& triangle)
+            : _Representation(representation), _Triangle(triangle){
         }
 
         Vector3 getBarycentricCoords() const{
@@ -53,6 +51,7 @@ class RayHit{
         Vector3 getWorldPos() const;
         Vector4 getCol() const;
         Vector3 getNorm() const;
+        Vector3 getWorldNorm() const;
         Vector2 getTex() const;
 
 

@@ -32,12 +32,12 @@ class Timer{
         /**
          * The clock time when the time started
         */
-        unsigned int _StartTicks = 0;
+        uint32_t _StartTicks = 0;
 
         /**
          * The ticks stored when the timer was on pause
         */
-        unsigned int _PauseTicks = 0;
+        uint32_t _PauseTicks = 0;
 
         /**
          * The time state
@@ -84,14 +84,22 @@ class Timer{
 
         /**
          * Get the ellapsed time when the timer was running
+         * @return The time in milliseconds
         */
-        unsigned int getTicks() const;
+        uint32_t getTicks() const;
 
         /**
          * Pause the current thread for a given amount of time
          * @param timeToSleep The time the thread needs to sleep (in milliseconds)
         */
         static void sleep(uint32_t timeToSleep);
+
+        /**
+         * Format the given time to a readable string
+         * @param milliseconds The time in milliseconds
+         * @return A string
+        */
+        static std::string format(uint32_t milliseconds);
 
 };
 

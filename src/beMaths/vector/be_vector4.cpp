@@ -4,6 +4,8 @@
 #include "be_vector.hpp" // IWYU pragma: keep
 
 #include "be_errorHandler.hpp"
+#include "be_mathsFcts.hpp"
+
 #include <cmath>
 
 namespace be{
@@ -53,6 +55,7 @@ Vector4::Vector4(float x, float y, float z, float w){
 
 /**
  * Create a matrix fill with ones
+ * @return The new vector
 */
 Vector4 Vector4::ones(){
     return Vector4(1.f,1.f,1.f,1.f);
@@ -60,9 +63,49 @@ Vector4 Vector4::ones(){
 
 /**
  * Create a matrix fill with zeros
+ * @return The new vector
 */
 Vector4 Vector4::zeros(){
     return Vector4(0.f,0.f,0.f,0.f);
+}
+
+/**
+ * Create a random vector
+ * @return The new vector
+*/
+Vector4 Vector4::random(){
+    return Vector4(
+        Maths::random_float(),
+        Maths::random_float(),
+        Maths::random_float(),
+        Maths::random_float()
+    );
+}
+
+/**
+ * Create a random vector
+ * @param min The minimum value
+ * @param max The maximum mvalue
+ * @return The new vector
+*/
+Vector4 Vector4::random(float min, float max){
+    return Vector4(
+        Maths::random_float(min, max),
+        Maths::random_float(min, max),
+        Maths::random_float(min, max),
+        Maths::random_float(min, max)
+    );
+}
+
+/**
+ * Return true if the current vector is zero
+ * @see Maths::isZero
+*/
+bool Vector4::isZero() const{
+    return Maths::isZero(x())
+        && Maths::isZero(y())
+        && Maths::isZero(z())
+        && Maths::isZero(w());
 }
 
 /**
@@ -431,6 +474,14 @@ float Vector4::getNorm() const{
 }
 
 /**
+ * Get the vector's squared norm
+ * @return The squared norm
+*/
+float Vector4::getSquaredNorm() const{
+    return x()*x() + y()*y() + z()*z() + w()*w();
+}
+
+/**
  * Normalize the vector
  * @param vector The vector to normalize
  * @return The normalized vector
@@ -483,6 +534,17 @@ Vector2 Vector4::yz() const{
 
 Vector2 Vector4::xz() const{
     return Vector2(x(), z());
+}
+
+Vector4 Vector4::operator*(const Vector4& vector) const{
+    return Vector4(x()*vector.x(), y()*vector.y(), z()*vector.z(), w()*vector.w());
+}
+
+void Vector4::operator*=(const Vector4& vector){
+    x(x()*vector.x());
+    y(y()*vector.y());
+    z(z()*vector.z());
+    w(w()*vector.w());
 }
 
 }

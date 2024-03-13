@@ -135,7 +135,7 @@ unsigned int Timer::getTicks() const {
  * Helper function to get current time in milliseconds 
  * @return The time in milliseconds
 */
-unsigned int Timer::getCurrentTime() const {
+uint32_t Timer::getCurrentTime() const {
     using namespace std::chrono;
     auto timeSinceEpoch = high_resolution_clock::now().time_since_epoch();
     auto timeSinceEpochMilliseconds = duration_cast<milliseconds>(timeSinceEpoch).count();
@@ -148,6 +148,25 @@ unsigned int Timer::getCurrentTime() const {
 */
 void Timer::sleep(uint32_t timeToSleep){
     std::this_thread::sleep_for(std::chrono::milliseconds(timeToSleep));
+}
+
+/**
+ * Format the given time to a readable string
+ * @param milliseconds The time in milliseconds
+ * @return A string
+*/
+std::string Timer::format(uint32_t milliseconds){
+    uint32_t minutes = milliseconds / 60000;
+    milliseconds %= 60000;
+    uint32_t seconds = milliseconds / 1000;
+    milliseconds %= 1000;
+
+    std::stringstream ss;
+    ss << std::setfill('0') << std::setw(2) << minutes << "m " // Format minutes with leading zero if necessary
+       << std::setw(2) << seconds << "s " // Format seconds with leading zero if necessary
+       << std::setw(3) << milliseconds << "ms";   // Format milliseconds with leading zeros if necessary
+
+    return ss.str();
 }
 
 }

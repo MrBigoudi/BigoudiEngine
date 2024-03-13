@@ -23,6 +23,8 @@ class Scene{
         std::vector<PointLight> _PointLights = {};
         std::vector<DirectionalLight> _DirectionalLights = {};
 
+        LightCutsTreePtr _LightTree = nullptr;
+
         /**
          * A smart pointer to the vulkan application
          * @see VulkanApp
@@ -51,6 +53,37 @@ class Scene{
         void setLights(const std::vector<PointLight>& pointLights, const std::vector<DirectionalLight>& directionalLights){
             setPointLights(pointLights);
             setDirectionalLights(directionalLights);
+            std::vector<PointLightPtr> ps = {};
+            std::vector<DirectionalLightPtr> ds = {};
+            for(auto p : pointLights){
+                ps.push_back(std::make_shared<PointLight>(p));
+            }
+            for(auto d : directionalLights){
+                ds.push_back(std::make_shared<DirectionalLight>(d));
+            }
+
+            if(ps.empty() && ds.empty()){
+                return;
+            }
+
+            // for now
+            if(!_LightTree){
+                _LightTree = LightCutsTreePtr(
+                    new LightCutsTree(
+                        ps,
+                        ds,
+                        {}
+                    )
+                );
+            }
+        }
+
+        std::vector<PointLight> getPointLights() const {
+            return _PointLights;
+        }
+
+        std::vector<DirectionalLight> getDirectionalLights() const {
+            return _DirectionalLights;
         }
 
     private:

@@ -61,6 +61,19 @@ Vector3 RayHit::getNorm() const {
     return (b0 * n0) + (b1 * n1) + (b2 * n2);
 }
 
+Vector3 RayHit::getWorldNorm() const {
+    Vector3 n0 = Vector3::normalize((_Triangle._Model * Vector4(_Triangle._Norm0, 0.f)).xyz());
+    Vector3 n1 = Vector3::normalize((_Triangle._Model * Vector4(_Triangle._Norm1, 0.f)).xyz());
+    Vector3 n2 = Vector3::normalize((_Triangle._Model * Vector4(_Triangle._Norm2, 0.f)).xyz());
+
+    Vector3 baryCoords = getBarycentricCoords();
+    float b0 = baryCoords[0];
+    float b1 = baryCoords[1];
+    float b2 = baryCoords[2];
+
+    return (b0 * n0) + (b1 * n1) + (b2 * n2);
+}
+
 Vector2 RayHit::getTex() const {
     Vector2 uv0 = _Triangle._Tex0;
     Vector2 uv1 = _Triangle._Tex1;

@@ -62,15 +62,24 @@ const Vector3 Image::get(uint32_t x, uint32_t y) const {
     return _Pixels[y][x];
 }
 
-void Image::set(uint32_t x, uint32_t y, const Vector3& color){
+void Image::set(uint32_t x, uint32_t y, const Vector3& color, Color::ColorSpace space){
     checkIndices(x, y);
-    _Pixels[y][x] = color;
+    switch(space){
+        case Color::RGB:
+            _Pixels[y][x] = color;
+            break;
+        case Color::SRGB:
+            // Vector3 gammaCorrected = Color::linearToGamma(color);
+            Vector3 gammaCorrected = color;
+            _Pixels[y][x] = Color::toSRGB(gammaCorrected);
+            break;
+    }
 }
 
 void Image::clear(const Vector3& color){
     for(uint32_t y=0; y<_Height; y++){
         for(uint32_t x=0; x<_Width; x++){
-            set(x,y,color);
+            set(x, y, color, Color::RGB);
         }
     }
 }

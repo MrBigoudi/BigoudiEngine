@@ -1,6 +1,8 @@
 #pragma once
 
 #include "be_vector3.hpp"
+#include "be_color.hpp"
+
 #include <vector>
 #include <memory>
 
@@ -30,7 +32,8 @@ class Image{
         uint32_t getHeight() const {return _Height;}
         const Pixels getPixels() const {return _Pixels;}
         const Vector3 get(uint32_t x, uint32_t y) const;
-        void set(uint32_t x, uint32_t y, const Vector3& color);
+
+        void set(uint32_t x, uint32_t y, const Vector3& color, Color::ColorSpace space = Color::RGB);
 
     public:
         void clear(const Vector3& color = {});
