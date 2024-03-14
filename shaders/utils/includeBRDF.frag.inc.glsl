@@ -15,7 +15,7 @@ layout(location = 5) in vec2 fTex;
 layout(location = 0) out vec4 outColor;
 
 // maximum number of point lights
-const int MAX_NB_POINT_LIGHTS = 1024;
+const int MAX_NB_POINT_LIGHTS = 1;
 // maximum number of directional lights
 const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
 

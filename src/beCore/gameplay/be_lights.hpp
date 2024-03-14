@@ -10,12 +10,12 @@ namespace be{
 /**
  * The maximum number of point lights in a scene
 */
-static const int MAX_NB_POINT_LIGHTS = 1024;
+static const int MAX_NB_POINT_LIGHTS = 1;
 
 /**
  * The maximum number of directional lights in a scene
 */
-static const int MAX_NB_DIRECTIONAL_LIGHTS = 1024;
+static const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
 
 /**
  * The maximum number of oriented lights in a scene
@@ -251,7 +251,7 @@ struct LightUboData: public UboData{
      * @note Aligned as 16 for vulkan shader
      * @see PointLight
     */
-    alignas(16) PointLight _PointLights[MAX_NB_POINT_LIGHTS];
+    PointLight _PointLights[MAX_NB_POINT_LIGHTS];
 
     /**
      * The number of directional lights
@@ -264,7 +264,7 @@ struct LightUboData: public UboData{
      * @note Aligned as 16 for vulkan shader
      * @see DirecionalLight
     */
-    alignas(16) DirectionalLight _DirectionalLights[MAX_NB_DIRECTIONAL_LIGHTS];
+    DirectionalLight _DirectionalLights[MAX_NB_DIRECTIONAL_LIGHTS];
 
     // TODO: add oriented lights
 };
