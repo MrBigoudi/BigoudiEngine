@@ -55,23 +55,23 @@ Vector3 RayTracer::lambertBRDF(const RayHit& rayHit) const{
     Vector3 color = Color::BLACK;
     // point lights
     for(const auto& pointLight : _Scene->getPointLights()){
-        Vector3 lightDir = Vector3::normalize((pointLight._Position - rayHit.getWorldPos()));
+        Vector3 lightDir = Vector3::normalize((pointLight->_Position.xyz() - rayHit.getWorldPos()));
         float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir));
         // cast shadow ray
         RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), lightDir));
-        float distToLight = (pointLight._Position - rayHit.getWorldPos()).getNorm();
+        float distToLight = (pointLight->_Position.xyz() - rayHit.getWorldPos()).getNorm();
         if (!isInShadow(shadowRay, distToLight)){
-            color += (diffuseFactor * pointLight._Intensity) * (rayHit.getCol().xyz() * pointLight._Color);
+            color += (diffuseFactor * pointLight->_Intensity) * (rayHit.getCol().xyz() * pointLight->_Color.xyz());
         }
     }
     // directional lights
     for(const auto& directionalLight : _Scene->getDirectionalLights()){
-        Vector3 lightDir = Vector3::normalize(directionalLight._Direction);
+        Vector3 lightDir = Vector3::normalize(directionalLight->_Direction.xyz());
         float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir));
         // cast shadow ray
         RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), -lightDir));
         if (!isInShadow(shadowRay)){
-            color += (diffuseFactor * directionalLight._Intensity) * (rayHit.getCol().xyz() * directionalLight._Color);
+            color += (diffuseFactor * directionalLight->_Intensity) * (rayHit.getCol().xyz() * directionalLight->_Color.xyz());
         }
     }
     return color;

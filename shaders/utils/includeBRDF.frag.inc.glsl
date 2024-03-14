@@ -46,8 +46,8 @@ struct Material {
  * A structure representing a point light
 */
 struct PointLight{
-    vec3 _Position;
-    vec3 _Color;
+    vec4 _Position;
+    vec4 _Color;
     float _Intensity;
 };
 
@@ -55,8 +55,8 @@ struct PointLight{
  * A structure representing a directional light
 */
 struct DirectionalLight{
-    vec3 _Direction;
-    vec3 _Color;
+    vec4 _Direction;
+    vec4 _Color;
     float _Intensity;
 };
 
@@ -95,10 +95,10 @@ layout(set = 2, binding = 0) uniform MaterialUbo{
  * @return The color value of the response
 */
 vec4 getDiffusePointLight(PointLight light, vec3 objViewPos, vec3 objNorm, vec4 objColor){
-    vec3 lightViewPos = vec3(cameraUbo._View * vec4(light._Position, 1.f));
+    vec3 lightViewPos = vec3(cameraUbo._View * light._Position);
     vec3 lightDir = normalize(lightViewPos - objViewPos);
     float weight = light._Intensity * dot(lightDir, objNorm) / PI;
-    return max(weight, 0.f) * vec4(light._Color, 1.f) * objColor;
+    return max(weight, 0.f) * light._Color * objColor;
 }
 
 /**
@@ -109,8 +109,8 @@ vec4 getDiffusePointLight(PointLight light, vec3 objViewPos, vec3 objNorm, vec4 
  * @return The color value of the response
 */
 vec4 getDiffuseDirectionalLight(DirectionalLight light, vec3 objNorm, vec4 objColor){
-    float weight = light._Intensity * dot(normalize(-light._Direction), objNorm) / PI;
-    return max(weight, 0.f) * vec4(light._Color, 1.f) * objColor;
+    float weight = light._Intensity * dot(normalize(-light._Direction.xyz), objNorm) / PI;
+    return max(weight, 0.f) * light._Color * objColor;
 }
 
 /**
@@ -120,7 +120,7 @@ vec4 getDiffuseDirectionalLight(DirectionalLight light, vec3 objNorm, vec4 objCo
  * @return The wi vector
 */
 vec3 getWi(PointLight light, vec3 objViewPos){
-    vec3 lightViewPos = vec3(cameraUbo._View * vec4(light._Position, 1.f));
+    vec3 lightViewPos = vec3(cameraUbo._View * light._Position);
     return normalize(lightViewPos - objViewPos);
 }
 
@@ -130,7 +130,7 @@ vec3 getWi(PointLight light, vec3 objViewPos){
  * @return The wi vector
 */
 vec3 getWi(DirectionalLight light){
-    return normalize(-light._Direction);
+    return normalize(-light._Direction.xyz);
 }
 
 /**
@@ -283,11 +283,11 @@ vec3 diffuseBRDF(Material m, vec3 color){
 vec3 getAttenuation(PointLight l, vec3 lightViewPos, vec3 fragViewPos) {
 	float d = distance(lightViewPos, fragViewPos);
     float den = sqr(d) + EPSILON;
-	return l._Intensity * l._Color / den;
+	return l._Intensity * l._Color.xyz / den;
 }
 
 vec3 getAttenuation(DirectionalLight l) {
-	return l._Intensity * l._Color;
+	return l._Intensity * l._Color.xyz;
 }
 
 vec3 getToneMap (vec3 radiance, float exposure, float gamma) {

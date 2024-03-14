@@ -36,7 +36,7 @@ void main() {
         
         vec3 li = getAttenuation(
                     curPointLight, 
-                    vec3(cameraUbo._View * vec4(curPointLight._Position, 1.f)),
+                    vec3(cameraUbo._View * curPointLight._Position),
                     fViewPos
                 );
 

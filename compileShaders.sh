@@ -7,6 +7,7 @@ preprocessedDirectory="${inputDirectory}/preprocessed"
 preprocessingScript="${inputDirectory}/shaderPreprocessor.py"
 
 compiler="glslc"
+CC="-g"
 types=("vert" "frag")
 
 # Empty the output directory
@@ -40,7 +41,7 @@ for shaderType in "${types[@]}"; do
         # Debug log
         echo "Compiling shader ${file} to ${outputFile}..."
         # Compile the shader using glslc
-        glslc "${tmpFile}" -o "${outputFile}"
+        ${compiler} "${CC}" "${tmpFile}" -o "${outputFile}" 
 
         # Check if the compilation was successful
         if [ $? -eq 0 ]; then

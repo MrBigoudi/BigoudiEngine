@@ -8,16 +8,16 @@ vec4 getSpecularPointLight(PointLight light, vec3 objViewPos, vec3 objNorm, vec4
     vec3 wo = getWo(objViewPos);
     vec3 wh = getWh(wi, wo);
     float weight = materialUbo._ObjMaterial._Specular * light._Intensity * clamp(dot(wh, objNorm), 0.f, 1.f);
-    return max(weight, 0.f) * vec4(light._Color, 1.f) * objColor;
+    return max(weight, 0.f) * light._Color * objColor;
 }
 
 vec4 getSpecularDirectional(DirectionalLight light, vec3 objViewPos, vec3 objNorm, vec4 objColor){
-    vec3 wi = normalize(vec3(cameraUbo._View * vec4(light._Direction, 1.f)));
+    vec3 wi = normalize(vec3(cameraUbo._View * light._Direction));
     vec3 wo = getWo(objViewPos);
     vec3 wh = getWh(wi, wo);
 
     float weight = materialUbo._ObjMaterial._Specular * light._Intensity * dot(wh, objNorm);
-    return max(weight, 0.f) * vec4(light._Color, 1.f) * objColor;
+    return max(weight, 0.f) * light._Color * objColor;
 }
 
 
