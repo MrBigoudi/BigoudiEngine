@@ -15,7 +15,7 @@ layout(location = 5) in vec2 fTex;
 layout(location = 0) out vec4 outColor;
 
 // maximum number of point lights
-const int MAX_NB_POINT_LIGHTS = 1;
+const int MAX_NB_POINT_LIGHTS = 10;
 // maximum number of directional lights
 const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
 
@@ -63,7 +63,7 @@ struct DirectionalLight{
 /**
  * The camera ubo
 */
-layout(set = 0, binding = 0) uniform CameraUbo{
+layout(set = 0, binding = 0, std140) uniform CameraUbo{
     mat4 _View;
     mat4 _Proj;
 } cameraUbo;
@@ -71,7 +71,7 @@ layout(set = 0, binding = 0) uniform CameraUbo{
 /**
  * The lights ubo
 */
-layout(set = 1, binding = 0) uniform LightsUbo{
+layout(set = 1, binding = 0, std140) uniform LightsUbo{
     uint _NbPointLights;
     PointLight _PointLights[MAX_NB_POINT_LIGHTS];
     uint _NbDirectionalLights;
@@ -81,7 +81,7 @@ layout(set = 1, binding = 0) uniform LightsUbo{
 /**
  * The object material ubo
 */
-layout(set = 2, binding = 0) uniform MaterialUbo{
+layout(set = 2, binding = 0, std140) uniform MaterialUbo{
     Material _ObjMaterial;
 } materialUbo;
 

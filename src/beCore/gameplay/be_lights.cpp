@@ -41,12 +41,9 @@ std::string PointLight::toString() const {
 */
 AxisAlignedBoundingBox DirectionalLight::getAABB() const {
     return AxisAlignedBoundingBox(
-        _Direction.x(),
-        _Direction.x(),
-        _Direction.y(),
-        _Direction.y(),
-        _Direction.z(),
-        _Direction.z()
+        -0.5f, 0.5f,
+        -0.5f, 0.5f,
+        -0.5f, 0.5f
     );
 }
 
@@ -154,7 +151,6 @@ void LightUboContainer::addPointLight(PointLightPtr pointLight){
         return;
     }
     _UboData._PointLights[_UboData._NbPointLights] = *pointLight;
-    fprintf(stdout, "added point light: %s\n", _UboData._PointLights[_UboData._NbPointLights].toString().c_str());
     _UboData._NbPointLights++;
 }
 
@@ -315,7 +311,7 @@ void LightCutsTree::LightNode::mergeTwoBestNodes(std::vector<LightNodePtr>& allN
             if(n1 == n2) continue; // can't use same child
             // get the metric
             LightNodePtr newNodeTmp = createParent(n1, n2);
-            float curClusterMetric = newNode->getSizeMetric();
+            float curClusterMetric = newNodeTmp->getSizeMetric();
             // keep the best one
             if(curClusterMetric < minClusterMetric){
                 leftChild = n1;

@@ -10,7 +10,7 @@ namespace be{
 /**
  * The maximum number of point lights in a scene
 */
-static const int MAX_NB_POINT_LIGHTS = 1;
+static const int MAX_NB_POINT_LIGHTS = 10;
 
 /**
  * The maximum number of directional lights in a scene
@@ -75,21 +75,18 @@ struct Light{
 struct PointLight: public Light {
     /**
      * The light position
-     * @note Align as 16 for Vulkan shaders
     */
-    alignas(16) Vector4 _Position{};
+    Vector4 _Position{};
 
     /**
      * The light color
-     * @note Align as 16 for Vulkan shaders
     */
-    alignas(16) Vector4 _Color{};
+    Vector4 _Color{};
 
     /**
      * The light intensity
-     * @note Align as 4 for Vulkan shaders
     */
-    alignas(4) float _Intensity = 1.f;
+    float _Intensity = 1.f;
 
     /**
      * Getter for the light intensity
@@ -114,21 +111,18 @@ struct PointLight: public Light {
 struct DirectionalLight: public Light{
     /**
      * The light direction
-     * @note Align as 16 for Vulkan shaders
     */
-    alignas(16) Vector4 _Direction{};
+    Vector4 _Direction{};
 
     /**
      * The light color
-     * @note Align as 16 for Vulkan shaders
     */
-    alignas(16) Vector4 _Color{};
+    Vector4 _Color{};
 
     /**
      * The light intensity
-     * @note Align as 4 for Vulkan shaders
     */
-    alignas(4) float _Intensity = 1.f;
+    float _Intensity = 1.f;
 
     /**
      * Getter for the light intensity
@@ -153,33 +147,28 @@ struct DirectionalLight: public Light{
 struct OrientedLight: public Light{
     /**
      * The light position
-     * @note Align as 16 for Vulkan shaders
     */
-    alignas(16) Vector4 _Position{};
+    Vector4 _Position{};
 
     /**
      * The light direction
-     * @note Align as 16 for Vulkan shaders
     */
-    alignas(16) Vector4 _Direction{};
+    Vector4 _Direction{};
 
     /**
      * The light color
-     * @note Align as 16 for Vulkan shaders
     */
-    alignas(16) Vector4 _Color{};
+    Vector4 _Color{};
 
     /**
      * The light intensity
-     * @note Align as 4 for Vulkan shaders
     */
-    alignas(4) float _Intensity = 1.f;
+    float _Intensity = 1.f;
 
     /**
      * The light opening angle
-     * @note Align as 4 for Vulkan shaders
     */
-    alignas(4) float _Angle = 0.f;
+    float _Angle = 0.f;
 
     /**
      * Getter for the light intensity
@@ -242,26 +231,23 @@ using OrientedLightPtr = std::shared_ptr<OrientedLight>;
 struct LightUboData: public UboData{
     /**
      * The number of point lights
-     * @note Aligned as 4 for vulkan shader
     */
-    alignas(4) uint32_t _NbPointLights = 0;
+    uint32_t _NbPointLights = 0;
 
     /**
      * The array of point lights
-     * @note Aligned as 16 for vulkan shader
      * @see PointLight
     */
     PointLight _PointLights[MAX_NB_POINT_LIGHTS];
 
     /**
      * The number of directional lights
-     * @note Aligned as 4 for vulkan shader
+     * @note Aligned as 16 for vulkan shader
     */
-    alignas(4) uint32_t _NbDirectionalLights = 0;
+    alignas(16) uint32_t _NbDirectionalLights = 0;
 
     /**
      * The array of directional lights
-     * @note Aligned as 16 for vulkan shader
      * @see DirecionalLight
     */
     DirectionalLight _DirectionalLights[MAX_NB_DIRECTIONAL_LIGHTS];

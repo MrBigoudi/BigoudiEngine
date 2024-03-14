@@ -15,7 +15,7 @@ layout(push_constant, std430) uniform Push{
     mat4 _NormalMat;
 }push;
 
-layout(set = 0, binding = 0) uniform CameraUbo{
+layout(set = 0, binding = 0, std140) uniform CameraUbo{
     mat4 _View;
     mat4 _Proj;
 } cameraUbo;
