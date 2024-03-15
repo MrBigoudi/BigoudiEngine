@@ -208,17 +208,16 @@ float& Material::get(uint32_t id){
 
 void MaterialUboContainer::update(uint32_t frameIndex){
     checkFrameIndex(frameIndex);
-    _UboData.check();
     _Ubos[frameIndex]->writeToBuffer(&_UboData);
 }
 
 void MaterialUboContainer::init(uint32_t size, VulkanAppPtr vulkanApp){
     UboContainer::init(size, vulkanApp);
-    _UboData = Material{};
+    _UboData = MaterialUboData{};
     for(uint32_t i = 0; i<_Size; i++){
         _Ubos[i] = be::BufferPtr(new be::Buffer(
             vulkanApp, 
-            sizeof(Material),
+            sizeof(MaterialUboData),
             1,
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -228,19 +227,42 @@ void MaterialUboContainer::init(uint32_t size, VulkanAppPtr vulkanApp){
     }
 }
 
-void MaterialUboContainer::setMaterial(MaterialPtr material){
+void MaterialUboContainer::setMaterial(MaterialPtr material, uint32_t id){
     material->check();
-    _UboData = Material{};
-    _UboData._Metallic = material->_Metallic;
-    _UboData._Subsurface = material->_Subsurface;
-    _UboData._Specular = material->_Specular;
-    _UboData._Roughness = material->_Roughness;
-    _UboData._SpecularTint = material->_SpecularTint;
-    _UboData._Anisotropic = material->_Anisotropic;
-    _UboData._Sheen = material->_Sheen;
-    _UboData._SheenTint = material->_SheenTint;
-    _UboData._Clearcoat = material->_Clearcoat;
-    _UboData._ClearcoatGloss = material->_ClearcoatGloss;
+    if(id >= MAX_NB_MATERIALS){
+        ErrorHandler::handle(
+            __FILE__, __LINE__, ErrorCode::OUT_OF_RANGE_ERROR,
+            "Can't set a material with an id greater than " 
+            + std::to_string(MAX_NB_MATERIALS)
+            + "! Given id: " + std::to_string(id)
+            + "!\n"
+        );
+    }
+
+    _UboData._Materials[id]._Metallic = material->_Metallic;
+    _UboData._Materials[id]._Subsurface = material->_Subsurface;
+    _UboData._Materials[id]._Specular = material->_Specular;
+    _UboData._Materials[id]._Roughness = material->_Roughness;
+    _UboData._Materials[id]._SpecularTint = material->_SpecularTint;
+    _UboData._Materials[id]._Anisotropic = material->_Anisotropic;
+    _UboData._Materials[id]._Sheen = material->_Sheen;
+    _UboData._Materials[id]._SheenTint = material->_SheenTint;
+    _UboData._Materials[id]._Clearcoat = material->_Clearcoat;
+    _UboData._Materials[id]._ClearcoatGloss = material->_ClearcoatGloss;
+}
+
+std::string Material::toString() const {
+    return "{\n_Metallic: " + std::to_string(_Metallic)
+            + "\n_Subsurface: " + std::to_string(_Subsurface)
+            + "\n_Specular: " + std::to_string(_Specular)
+            + "\n_Roughness: " + std::to_string(_Roughness)
+            + "\n_SpecularTint: " + std::to_string(_SpecularTint)
+            + "\n_Anisotropic: " + std::to_string(_Anisotropic)
+            + "\n_Sheen: " + std::to_string(_Sheen)
+            + "\n_SheenTint: " + std::to_string(_SheenTint)
+            + "\n_Clearcoat: " + std::to_string(_Clearcoat)
+            + "\n_ClearcoatGloss: " + std::to_string(_ClearcoatGloss)
+            + "\n}";
 }
 
 };

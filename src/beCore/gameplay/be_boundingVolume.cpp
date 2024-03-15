@@ -65,6 +65,27 @@ float AxisAlignedBoundingBox::getDiagonalLength() const{
     return (max - min).getNorm();
 }
 
+std::string AxisAlignedBoundingBox::toString() const {
+    return "{ minX: " + std::to_string(_MinX) + ", maxX: " + std::to_string(_MaxX)
+        + ", minY: " + std::to_string(_MinY) + ", maxY: " + std::to_string(_MaxY)
+        + ", minZ: " + std::to_string(_MinZ) + ", maxZ: " + std::to_string(_MaxZ)
+        + " }";
+}
+
+std::string BoundingSphere::toString() const {
+    return "{ center: " + _Center.toString() + ", radius: " + std::to_string(_Radius) + " }";
+}
+
+AxisAlignedBoundingBox AxisAlignedBoundingBox::merge(const AxisAlignedBoundingBox& aabb1, const AxisAlignedBoundingBox& aabb2){
+    return AxisAlignedBoundingBox(
+        std::min(aabb1._MinX, aabb2._MinX),
+        std::max(aabb1._MaxX, aabb2._MaxX),
+        std::min(aabb1._MinY, aabb2._MinY),
+        std::max(aabb1._MaxY, aabb2._MaxY),
+        std::min(aabb1._MinZ, aabb2._MinZ),
+        std::max(aabb1._MaxZ, aabb2._MaxZ)
+    );
+}
 
 AxisAlignedBoundingBox::Axis AxisAlignedBoundingBox::getDominantAxis() const{
     float distX = getDistance(Axis::X);

@@ -15,9 +15,11 @@ layout(location = 5) in vec2 fTex;
 layout(location = 0) out vec4 outColor;
 
 // maximum number of point lights
-const int MAX_NB_POINT_LIGHTS = 1024;
+const int MAX_NB_POINT_LIGHTS = 10;
 // maximum number of directional lights
 const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
+// maximum number of materials
+const int MAX_NB_MATERIALS = 10;
 
 // pi constant
 const float PI = 3.14159265358979323846;
@@ -27,7 +29,7 @@ const float EPSILON = 1e-5;
 
 /**
  * A structure representing a material
- * @ see be::Material
+ * @see be::Material
 */
 struct Material {
     float _Metallic;
@@ -46,8 +48,8 @@ struct Material {
  * A structure representing a point light
 */
 struct PointLight{
-    vec3 _Position;
-    vec3 _Color;
+    vec4 _Position;
+    vec4 _Color;
     float _Intensity;
 };
 
@@ -55,8 +57,8 @@ struct PointLight{
  * A structure representing a directional light
 */
 struct DirectionalLight{
-    vec3 _Direction;
-    vec3 _Color;
+    vec4 _Direction;
+    vec4 _Color;
     float _Intensity;
 };
 
@@ -71,7 +73,7 @@ layout(set = 0, binding = 0) uniform CameraUbo{
 /**
  * The lights ubo
 */
-layout(set = 1, binding = 0) uniform LightsUbo{
+layout(set = 1, binding = 0, std140) uniform LightsUbo{
     uint _NbPointLights;
     PointLight _PointLights[MAX_NB_POINT_LIGHTS];
     uint _NbDirectionalLights;
@@ -81,9 +83,14 @@ layout(set = 1, binding = 0) uniform LightsUbo{
 /**
  * The object material ubo
 */
-layout(set = 2, binding = 0) uniform MaterialUbo{
-    Material _ObjMaterial;
+layout(set = 2, binding = 0, std140) uniform MaterialUbo{
+    Material _Materials[MAX_NB_MATERIALS];
 } materialUbo;
+
+layout(push_constant, std430) uniform Push{
+    mat4 _Model;
+    uint _MaterialId;
+}push;
 
 
 /**
@@ -95,10 +102,10 @@ layout(set = 2, binding = 0) uniform MaterialUbo{
  * @return The color value of the response
 */
 vec4 getDiffusePointLight(PointLight light, vec3 objViewPos, vec3 objNorm, vec4 objColor){
-    vec3 lightViewPos = vec3(cameraUbo._View * vec4(light._Position, 1.f));
+    vec3 lightViewPos = vec3(cameraUbo._View * light._Position);
     vec3 lightDir = normalize(lightViewPos - objViewPos);
     float weight = light._Intensity * dot(lightDir, objNorm) / PI;
-    return max(weight, 0.f) * vec4(light._Color, 1.f) * objColor;
+    return max(weight, 0.f) * light._Color * objColor;
 }
 
 /**
@@ -109,8 +116,8 @@ vec4 getDiffusePointLight(PointLight light, vec3 objViewPos, vec3 objNorm, vec4 
  * @return The color value of the response
 */
 vec4 getDiffuseDirectionalLight(DirectionalLight light, vec3 objNorm, vec4 objColor){
-    float weight = light._Intensity * dot(normalize(-light._Direction), objNorm) / PI;
-    return max(weight, 0.f) * vec4(light._Color, 1.f) * objColor;
+    float weight = light._Intensity * dot(normalize(-light._Direction.xyz), objNorm) / PI;
+    return max(weight, 0.f) * light._Color * objColor;
 }
 
 /**
@@ -120,7 +127,7 @@ vec4 getDiffuseDirectionalLight(DirectionalLight light, vec3 objNorm, vec4 objCo
  * @return The wi vector
 */
 vec3 getWi(PointLight light, vec3 objViewPos){
-    vec3 lightViewPos = vec3(cameraUbo._View * vec4(light._Position, 1.f));
+    vec3 lightViewPos = vec3(cameraUbo._View * light._Position);
     return normalize(lightViewPos - objViewPos);
 }
 
@@ -130,7 +137,7 @@ vec3 getWi(PointLight light, vec3 objViewPos){
  * @return The wi vector
 */
 vec3 getWi(DirectionalLight light){
-    return normalize(-light._Direction);
+    return normalize(-light._Direction.xyz);
 }
 
 /**
@@ -283,11 +290,11 @@ vec3 diffuseBRDF(Material m, vec3 color){
 vec3 getAttenuation(PointLight l, vec3 lightViewPos, vec3 fragViewPos) {
 	float d = distance(lightViewPos, fragViewPos);
     float den = sqr(d) + EPSILON;
-	return l._Intensity * l._Color / den;
+	return l._Intensity * l._Color.xyz / den;
 }
 
 vec3 getAttenuation(DirectionalLight l) {
-	return l._Intensity * l._Color;
+	return l._Intensity * l._Color.xyz;
 }
 
 vec3 getToneMap (vec3 radiance, float exposure, float gamma) {

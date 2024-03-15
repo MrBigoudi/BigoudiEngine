@@ -27,7 +27,7 @@ void main() {
     vec3 worldN = normalize(fWorldNorm);
 
     vec3 wo = getWo(fViewPos);
-    Material m = materialUbo._ObjMaterial;
+    Material m = materialUbo._Materials[push._MaterialId];
     vec3 color = fCol.xyz;
 
     for(int i=0; i<min(MAX_NB_POINT_LIGHTS, lightsUbo._NbPointLights); i++){
@@ -36,7 +36,7 @@ void main() {
         
         vec3 li = getAttenuation(
                     curPointLight, 
-                    vec3(cameraUbo._View * vec4(curPointLight._Position, 1.f)),
+                    vec3(cameraUbo._View * curPointLight._Position),
                     fViewPos
                 );
 

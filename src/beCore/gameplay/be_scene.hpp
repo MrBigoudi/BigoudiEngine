@@ -4,25 +4,61 @@
 #include "be_gameObject.hpp"
 #include "be_lights.hpp"
 
-#include "tiny_gltf.h"
+// #include "tiny_gltf.h"
 #include <vector>
 
 namespace be{
 
+/**
+ * Forward declaration of the scene class
+ * @see Scene
+*/
 class Scene;
+
+/**
+ * Smart pointer to a scene
+ * @see Scene
+*/
 using ScenePtr = std::shared_ptr<Scene>;
 
+
+/**
+ * A class representing a game scene
+*/
 class Scene{
 
     private:
+        /**
+         * The list of game objects
+        */
         std::vector<GameObject> _GameObjects = {};
 
+        /**
+         * The list of cameras
+        */
         std::vector<CameraPtr> _Cameras = {};
-        uint32_t _MainCamera = 0; // id of main camera
 
-        std::vector<PointLight> _PointLights = {};
-        std::vector<DirectionalLight> _DirectionalLights = {};
+        /**
+         * The id of the main camera
+        */
+        uint32_t _MainCamera = 0;
 
+        /**
+         * The list of point lights
+         * @see Light
+        */
+        std::vector<PointLightPtr> _PointLights = {};
+
+        /**
+         * The list of directional lights
+         * @see Light
+        */
+        std::vector<DirectionalLightPtr> _DirectionalLights = {};
+
+        /**
+         * The light-tree for lightcuts acceleration
+         * @see Light
+        */
         LightCutsTreePtr _LightTree = nullptr;
 
         /**
@@ -32,71 +68,70 @@ class Scene{
         VulkanAppPtr _VulkanApp = nullptr; 
 
     public:
+        /**
+         * A basic constructor
+         * @param vulkanApp A pointer to the vulkan application
+        */
         Scene(VulkanAppPtr vulkanApp): _VulkanApp(vulkanApp){};
-        // void initFromGLTF(const std::string& filepath);
+
+        /**
+         * A getter to the list of game objects
+         * @return the list of objects
+        */
         std::vector<GameObject> getObjects() const {return _GameObjects;}
 
+        /**
+         * Add a game object to the scene
+         * @param obj The object to add
+        */
         void addGameObject(GameObject obj);
-        void addGamePointLight(PointLight light);
-        void addGameDirectionalLight(DirectionalLight light);
 
-        void setPointLights(const std::vector<PointLight>& pointLights){
-            _PointLights.clear();
-            _PointLights = pointLights;
+        /**
+         * Add a point light to the scene
+         * @param light The light to add
+        */
+        void addGamePointLight(PointLightPtr light);
+
+        /**
+         * Add a directional light to the scene
+         * @param light The light to add
+        */
+        void addGameDirectionalLight(DirectionalLightPtr light);
+
+        /**
+         * Add a point light to the scene
+         * @param position The light position
+         * @param color The light color
+         * @param intensity The light intensity
+        */
+        void addGamePointLight(const Vector3& position, const Vector3& color, float intensity);
+
+        /**
+         * Add a directional light to the scene
+         * @param direction The light direction
+         * @param color The light color
+         * @param intensity The light intensity
+        */
+        void addGameDirectionalLight(const Vector3& direction, const Vector3& color, float intensity);
+
+        /**
+         * Getter to the scene point lights
+         * @return The vector of point lights
+        */
+        std::vector<PointLightPtr> getPointLights() const;
+
+        /**
+         * Getter to the scene directional lights
+         * @return The vector of directional lights
+        */
+        std::vector<DirectionalLightPtr> getDirectionalLights() const;
+
+        void buildTree(){
+            _LightTree = LightCutsTreePtr(new LightCutsTree(
+                _PointLights, _DirectionalLights, {}
+            ));
         }
 
-        void setDirectionalLights(const std::vector<DirectionalLight>& directionalLights){
-            _DirectionalLights.clear();
-            _DirectionalLights = directionalLights;
-        }
-
-        void setLights(const std::vector<PointLight>& pointLights, const std::vector<DirectionalLight>& directionalLights){
-            setPointLights(pointLights);
-            setDirectionalLights(directionalLights);
-            std::vector<PointLightPtr> ps = {};
-            std::vector<DirectionalLightPtr> ds = {};
-            for(auto p : pointLights){
-                ps.push_back(std::make_shared<PointLight>(p));
-            }
-            for(auto d : directionalLights){
-                ds.push_back(std::make_shared<DirectionalLight>(d));
-            }
-
-            if(ps.empty() && ds.empty()){
-                return;
-            }
-
-            // for now
-            if(!_LightTree){
-                _LightTree = LightCutsTreePtr(
-                    new LightCutsTree(
-                        ps,
-                        ds,
-                        {}
-                    )
-                );
-            }
-        }
-
-        std::vector<PointLight> getPointLights() const {
-            return _PointLights;
-        }
-
-        std::vector<DirectionalLight> getDirectionalLights() const {
-            return _DirectionalLights;
-        }
-
-    private:
-        // tinygltf::Model loadModelGLTF(const std::string& filepath);
-        // void initGameObjects(const tinygltf::Model& model);
-        // void addGameObject(const tinygltf::Node& node, const tinygltf::Model& model);
-        
-        // void addGameObjectTransform(GameObject object, const tinygltf::Node& node);
-        // void addGameObjectModel(GameObject object, const tinygltf::Node& node, const tinygltf::Model& model);
-
-
-        // void initCameras(const tinygltf::Model& model);
-        // void initLights(const tinygltf::Model& model);
 };
 
 };

@@ -45,8 +45,6 @@ bool IRenderSubSystem::needPerObjectBind() const {
     return _NeedPerObjectBind;
 }
 
-void IRenderSubSystem::updateDescriptorSets(GameObject object[[maybe_unused]], FrameInfo& frameInfo[[maybe_unused]]){
-
-}
+void IRenderSubSystem::updateDescriptorSets(GameObject object[[maybe_unused]], FrameInfo& frameInfo[[maybe_unused]]){}
 
 };
