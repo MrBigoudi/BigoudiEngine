@@ -75,8 +75,8 @@ class RenderSystem : public GameSystem{
         static GameObject createRenderableObject(
             ComponentRenderSubSystem renderSubSystem,
             ComponentModel model,
-            ComponentTransform transform = {._Transform = TransformPtr(new Transform())},
-            ComponentMaterial material = {._Material = MaterialPtr(new Material())}
+            ComponentTransform transform = {},
+            ComponentMaterial material = {}
         );
 };
 };

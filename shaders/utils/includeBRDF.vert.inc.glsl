@@ -12,7 +12,6 @@ layout(location = 5) out vec2 fTex;
 
 layout(push_constant, std430) uniform Push{
     mat4 _Model;
-    mat4 _NormalMat;
 }push;
 
 layout(set = 0, binding = 0, std140) uniform CameraUbo{
@@ -24,8 +23,11 @@ void main() {
     vec4 worldP = push._Model * vec4(vPos, 1.f);
     vec4 p = cameraUbo._View * worldP;
     gl_Position = cameraUbo._Proj * p;
+
+    mat4 viewModel = cameraUbo._View * push._Model;
+    mat4 normalMat = transpose(inverse(viewModel));
     
-    vec4 n = push._NormalMat * vec4(normalize(vNorm), 0.f);
+    vec4 n = normalMat * vec4(normalize(vNorm), 0.f);
     fViewNorm = normalize(n.xyz);
     fWorldNorm = normalize(vNorm);
 

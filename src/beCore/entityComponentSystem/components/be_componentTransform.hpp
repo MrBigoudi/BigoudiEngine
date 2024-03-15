@@ -11,7 +11,7 @@ namespace be{
  * @see Transform
 */
 struct ComponentTransform{
-    TransformPtr _Transform = nullptr;
+    TransformPtr _Transform = TransformPtr(new Transform());
 
     static ComponentTransform create(
         const Vector3& position = {}, 

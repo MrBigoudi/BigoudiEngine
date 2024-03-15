@@ -18,6 +18,8 @@ layout(location = 0) out vec4 outColor;
 const int MAX_NB_POINT_LIGHTS = 10;
 // maximum number of directional lights
 const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
+// maximum number of materials
+const int MAX_NB_MATERIALS = 10;
 
 // pi constant
 const float PI = 3.14159265358979323846;
@@ -27,7 +29,7 @@ const float EPSILON = 1e-5;
 
 /**
  * A structure representing a material
- * @ see be::Material
+ * @see be::Material
 */
 struct Material {
     float _Metallic;
@@ -63,7 +65,7 @@ struct DirectionalLight{
 /**
  * The camera ubo
 */
-layout(set = 0, binding = 0, std140) uniform CameraUbo{
+layout(set = 0, binding = 0) uniform CameraUbo{
     mat4 _View;
     mat4 _Proj;
 } cameraUbo;
@@ -82,8 +84,13 @@ layout(set = 1, binding = 0, std140) uniform LightsUbo{
  * The object material ubo
 */
 layout(set = 2, binding = 0, std140) uniform MaterialUbo{
-    Material _ObjMaterial;
+    Material _Materials[MAX_NB_MATERIALS];
 } materialUbo;
+
+layout(push_constant, std430) uniform Push{
+    mat4 _Model;
+    uint _MaterialId;
+}push;
 
 
 /**
