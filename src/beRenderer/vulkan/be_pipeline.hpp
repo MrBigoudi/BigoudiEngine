@@ -308,9 +308,16 @@ class Pipeline{
         void initBlinnPhongShaders();
 
         /**
-         * Initiate shaders for the Disney GGX BRDF
+         * Initiate shaders for the Microfacet BRDF
          * @see shaders/ggxBRDF.vert
          * @see shaders/ggxBRDF.frag
+        */
+        void initMicroFacetsShaders();
+
+        /**
+         * Initiate shaders for the Disney GGX BSDF
+         * @see shaders/ggxBSDF.vert
+         * @see shaders/ggxBSDF.frag
         */
         void initDisneyShaders();
         
