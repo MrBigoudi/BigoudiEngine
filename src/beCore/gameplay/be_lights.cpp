@@ -204,10 +204,15 @@ namespace be{
 */
 std::string LightCutsTree::LightNode::toString() const {
     if(isLeaf()){
-        return "{ "+ _Representative->toString() + " }";
+        return "{ repr: "+ _Representative->toString() 
+                + ", i: " + std::to_string(_TotalIntensity) 
+                + ", nbLights: " + std::to_string(_Lights.size()) 
+                + " }";
     }
-    return "{\n " 
+    return "{\n repr: " 
         + _Representative->toString()
+        + ", i: " + std::to_string(_TotalIntensity) 
+        + ", nbLights: " + std::to_string(_Lights.size()) 
         + "\n\tleft: " + _LeftChild->toString() 
         + "\n\tright:" + _RightChild->toString()
         + "\n}";
@@ -325,6 +330,7 @@ void LightCutsTree::LightNode::mergeTwoBestNodes(std::vector<LightNodePtr>& allN
                 leftChild = n1;
                 rightChild = n2;
                 newNode = newNodeTmp;
+                minClusterMetric = curClusterMetric;
             }
         }
     }
@@ -372,7 +378,7 @@ LightCutsTree::LightCutsTree(
     
     #ifndef NDEBUG
     // display the tree if in debug mode
-    // fprintf(stdout, "tree:\n%s\n", _LightsTree->toString().c_str());
+    fprintf(stdout, "tree:\n%s\n", _LightsTree->toString().c_str());
     #endif
 }
 
