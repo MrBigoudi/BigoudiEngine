@@ -70,12 +70,15 @@ void Scene::addGameDirectionalLight(DirectionalLightPtr light){
 * @param color The light color
 * @param intensity The light intensity
 */
-void Scene::addGamePointLight(const Vector3& position, const Vector3& color, float intensity){
+void Scene::addGamePointLight(const Vector3& position, const Vector3& color, float intensity, bool makeVisible){
     PointLightPtr newLight = PointLightPtr(new PointLight());
     newLight->_Color = Vector4(color, 1.f);
     newLight->_Intensity = intensity;
     newLight->_Position = Vector4(position, 1.f);
     _PointLights.push_back(newLight);
+    if(makeVisible){
+        // TODO:
+    }
 }
 
 /**

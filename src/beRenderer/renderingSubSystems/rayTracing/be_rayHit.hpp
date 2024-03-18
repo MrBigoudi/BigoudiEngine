@@ -25,7 +25,6 @@ class RayHit{
          * _Representation = [b0, b1, b2, t]
         */
         Vector4 _Representation{};
-        float _DistanceToPov = INFINITY;
         Triangle _Triangle = {}; 
 
     public:
@@ -40,8 +39,6 @@ class RayHit{
         float getParametricT() const{
             return _Representation.z();
         }
-        void setDistanceToPov(const Vector3& pov);
-        float getDistanceToPov() const { return _DistanceToPov;}
 
         Triangle getTriangle() const {return _Triangle;}
 
@@ -49,15 +46,17 @@ class RayHit{
     public:
         Vector3 getPos() const;
         Vector3 getWorldPos() const;
+        Vector3 getViewPos() const;
         Vector4 getCol() const;
         Vector3 getNorm() const;
         Vector3 getWorldNorm() const;
+        Vector3 getViewNorm() const;
         Vector2 getTex() const;
 
 
     public:
         static bool compareRayHit(const RayHit& hit1, const RayHit& hit2){
-            return hit1._DistanceToPov > hit2._DistanceToPov;
+            return hit1._Representation[3] > hit2._Representation[3];
         }
 
 };

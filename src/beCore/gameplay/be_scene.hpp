@@ -103,8 +103,9 @@ class Scene{
          * @param position The light position
          * @param color The light color
          * @param intensity The light intensity
+         * @param makeVisible Choose to display the point light as a sphere, default false
         */
-        void addGamePointLight(const Vector3& position, const Vector3& color, float intensity);
+        void addGamePointLight(const Vector3& position, const Vector3& color, float intensity, bool makeVisible=false);
 
         /**
          * Add a directional light to the scene

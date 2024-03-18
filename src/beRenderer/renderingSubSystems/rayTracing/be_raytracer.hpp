@@ -48,8 +48,9 @@ class RayTracer{
         BoundingVolumeMethod _BoundingVolumeMethod = BVH_METHOD;
         SamplingDistribution _SamplingDistribution = LAMBERTIAN_SAMPLING;
         BRDFModel _BRDF = COLOR_BRDF;
-        uint32_t _MaxBounces = 2;
-        uint32_t _SamplesPerPixels = 2;
+        uint32_t _MaxBounces = 0;
+        uint32_t _SamplesPerPixels = 1;
+        uint32_t _SamplesPerBounces = 2;
         float _ShadingFactor = 0.5f;
 
 
@@ -91,9 +92,17 @@ class RayTracer{
         Vector3 colorBRDF(const RayHit& rayHit) const;
         Vector3 normalBRDF(const RayHit& rayHit) const;
         Vector3 lambertBRDF(const RayHit& rayHit) const;
+        Vector3 lambertBRDF(const RayHit& rayHit, PointLightPtr light) const;
+        Vector3 lambertBRDF(const RayHit& rayHit, DirectionalLightPtr light) const;
+        Vector3 lambertBRDF(const RayHit& rayHit, 
+            const std::vector<PointLightPtr>& pointLights,
+            const std::vector<DirectionalLightPtr>& directionalLights 
+        ) const;
 
         void addObjectToAccelerationStructures(const std::vector<Triangle>& triangles);
         bool isInShadow(RayPtr shadowRay, float distToLight = INFINITY) const;
+
+        Vector3 getClusterEstimate(const RayHit& rayHit, LightCutsTree::LightNodePtr cluster);
 };
 
 }

@@ -221,7 +221,6 @@ void BSH::BSHNode::getIntersections(const std::vector<Triangle>& triangles, cons
                 auto& triangle = triangles[triangleIndex];
                 RayHitOpt hit = ray->rayTriangleIntersection(triangle);
                 if(hit.has_value()){
-                    hit->setDistanceToPov(cameraPos);
                     hits.addHit(hit.value());
                 }
             }
@@ -302,7 +301,6 @@ void BVH::BVHNode::getIntersections(const std::vector<Triangle>& triangles, cons
                 auto& triangle = triangles[triangleIndex];
                 RayHitOpt hit = ray->rayTriangleIntersection(triangle);
                 if(hit.has_value()){
-                    hit->setDistanceToPov(cameraPos);
                     hits.addHit(hit.value());
                 }
             }

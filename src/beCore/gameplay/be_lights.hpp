@@ -4,18 +4,19 @@
 #include "be_ubo.hpp"
 #include "be_vector3.hpp"
 #include <cstdint>
+#include <set>
 
 namespace be{
 
 /**
  * The maximum number of point lights in a scene
 */
-static const int MAX_NB_POINT_LIGHTS = 10;
+static const int MAX_NB_POINT_LIGHTS = 1024;
 
 /**
  * The maximum number of directional lights in a scene
 */
-static const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
+static const int MAX_NB_DIRECTIONAL_LIGHTS = 1024;
 
 /**
  * The maximum number of oriented lights in a scene
@@ -322,7 +323,7 @@ using LightCutsTreePtr = std::shared_ptr<LightCutsTree>;
 */
 class LightCutsTree{
 
-    private:
+    public:
         /**
          * Forward declaration of a light node
          * @see LightNode
@@ -334,6 +335,8 @@ class LightCutsTree{
          * @see LightNode
         */
         using LightNodePtr = std::shared_ptr<LightNode>;
+
+        using LightCut = std::vector<LightNodePtr>;
 
         /**
          * A structure representing a node in the tree
@@ -348,6 +351,11 @@ class LightCutsTree{
              * The representative light of the node
             */
             LightPtr _Representative = nullptr;
+
+            /**
+             * List of lights in the cluster
+            */
+            std::set<LightPtr> _Lights = {};
 
             /**
              * The type of the representative light
@@ -400,6 +408,9 @@ class LightCutsTree{
              * Get the size metric of the node
             */
             float getSizeMetric() const;
+
+            float getVisibility() const;
+            float getGeometry(const Vector3& pointToShade) const;
 
 
             /**

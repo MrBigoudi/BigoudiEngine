@@ -3,6 +3,8 @@
 #include "be_errorHandler.hpp"
 #include "be_mathsFcts.hpp"
 
+#include <algorithm>
+
 namespace be{
 
 
@@ -270,6 +272,11 @@ LightCutsTree::LightNodePtr LightCutsTree::LightNode::createParent(LightNodePtr 
     newNode->_TotalIntensity = leftChild->_TotalIntensity + rightChild->_TotalIntensity;
     newNode->_AABB = AxisAlignedBoundingBox::merge(leftChild->_AABB, rightChild->_AABB);
     newNode->_BoundingCone = BoundingCone::merge(leftChild->_BoundingCone, rightChild->_BoundingCone);
+    std::set_union(
+        leftChild->_Lights.begin(), leftChild->_Lights.end(), 
+       rightChild->_Lights.begin(),rightChild->_Lights.end(), 
+        std::inserter(newNode->_Lights, newNode->_Lights.begin())
+    );
     // set the children
     newNode->_LeftChild = leftChild;
     newNode->_RightChild = rightChild;
@@ -291,6 +298,7 @@ LightCutsTree::LightNodePtr LightCutsTree::LightNode::createLeafNode(LightPtr li
     newNode->_TotalIntensity = light->getIntensity();
     newNode->_AABB = light->getAABB();
     newNode->_BoundingCone = light->getBoundingCone();
+    newNode->_Lights.insert(light);
     return newNode;
 }
 
@@ -364,7 +372,7 @@ LightCutsTree::LightCutsTree(
     
     #ifndef NDEBUG
     // display the tree if in debug mode
-    fprintf(stdout, "tree:\n%s\n", _LightsTree->toString().c_str());
+    // fprintf(stdout, "tree:\n%s\n", _LightsTree->toString().c_str());
     #endif
 }
 
@@ -408,6 +416,28 @@ void LightCutsTree::createLeaves(const std::vector<OrientedLightPtr>& inputLight
         newNode->_Type = ORIENTED_LIGHT;
         allNodes.push_back(newNode);
     }
+}
+
+
+float LightCutsTree::LightNode::getVisibility() const{
+    return 1.f; // all light are potentially visible
+}
+
+float LightCutsTree::LightNode::getGeometry(const Vector3& pointToShade) const{
+    switch(_Type){
+        case POINT_LIGHT:{
+            Vector4 lightPos = static_cast<PointLight*>(_Representative.get())->_Position;
+            return 1.f / (lightPos.xyz() - pointToShade).getSquaredNorm();
+        }
+        case DIRECTIONAL_LIGHT:{
+            return 1.f;
+        }
+        // TODO:
+        case ORIENTED_LIGHT:{
+            return 0.f;
+        }
+    }
+    return 0.f;
 }
 
 
