@@ -3,6 +3,7 @@
 #include "be_boundingVolume.hpp"
 #include "be_ubo.hpp"
 #include "be_vector3.hpp"
+#include "be_color.hpp"
 #include <cstdint>
 #include <set>
 
@@ -41,6 +42,12 @@ struct Light{
      * @return The intensity as a float
     */
     virtual float getIntensity() const = 0;
+
+    /**
+     * Getter for the light color
+     * @return The color as a Vector3
+    */
+    virtual Vector3 getColor() const = 0;
 
     /**
      * Getter for the light bounding box
@@ -96,6 +103,12 @@ struct PointLight: public Light {
     float getIntensity() const override {return _Intensity;}
 
     /**
+     * Getter for the light color
+     * @return The color as a Vector3
+    */
+    virtual Vector3 getColor() const override {return _Color.xyz();}
+
+    /**
      * Getter for the light bounding box
      * @return the AABB of the light
      * @see AxisAlignedBoundingBox
@@ -130,6 +143,12 @@ struct DirectionalLight: public Light{
      * @return The intensity as a float
     */
     float getIntensity() const override {return _Intensity;}
+
+    /**
+     * Getter for the light color
+     * @return The color as a Vector3
+    */
+    virtual Vector3 getColor() const override {return _Color.xyz();}
 
     /**
      * Getter for the light bounding box
@@ -176,6 +195,12 @@ struct OrientedLight: public Light{
      * @return The intensity as a float
     */
     float getIntensity() const override {return _Intensity;}
+
+    /**
+     * Getter for the light color
+     * @return The color as a Vector3
+    */
+    virtual Vector3 getColor() const override {return _Color.xyz();}
 
     /**
      * Getter for the light bounding box
@@ -353,11 +378,6 @@ class LightCutsTree{
             LightPtr _Representative = nullptr;
 
             /**
-             * List of lights in the cluster
-            */
-            std::set<LightPtr> _Lights = {};
-
-            /**
              * The type of the representative light
             */
             LightType _Type;
@@ -393,6 +413,11 @@ class LightCutsTree{
             */
             LightNodePtr _RightChild = nullptr;
 
+            bool _IsLeftChildSame = false;
+            Vector3 _TotalColor = Color::BLACK;
+            
+
+
             /**
              * Cast a tree node into a string
              * @return A std::string
@@ -410,7 +435,8 @@ class LightCutsTree{
             float getSizeMetric() const;
 
             float getVisibility() const;
-            float getGeometry(const Vector3& pointToShade) const;
+            float getGeometric(const Vector3& pointToShade) const;
+            float getGeometricBound(const Vector3& pointToShade) const;
 
 
             /**
@@ -444,6 +470,7 @@ class LightCutsTree{
              * @note The given list will be modified
             */
             static void mergeTwoBestNodes(std::vector<LightNodePtr>& allNodes);
+
         };
 
     private:
@@ -469,6 +496,10 @@ class LightCutsTree{
             const std::vector<DirectionalLightPtr>& directionalLights,
             const std::vector<OrientedLightPtr>& orientedLights
         );
+
+        LightNodePtr getRoot() const {
+            return _LightsTree;
+        }
 
     private:
         /**

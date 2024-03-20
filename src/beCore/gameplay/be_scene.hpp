@@ -133,6 +133,10 @@ class Scene{
             ));
         }
 
+        LightCutsTree::LightNodePtr getLightTreeRoot() const {
+            return _LightTree->getRoot();
+        }
+
 };
 
 };

@@ -25,12 +25,13 @@ class RayHit{
          * _Representation = [b0, b1, b2, t]
         */
         Vector4 _Representation{};
-        Triangle _Triangle = {}; 
+        Triangle _Triangle = {};
+        Vector3 _Direction = {};
 
     public:
 
-        RayHit(const Vector4& representation, const Triangle& triangle)
-            : _Representation(representation), _Triangle(triangle){
+        RayHit(const Vector4& representation, const Triangle& triangle, const Vector3& direction)
+            : _Representation(representation), _Triangle(triangle), _Direction(direction){
         }
 
         Vector3 getBarycentricCoords() const{
@@ -52,6 +53,7 @@ class RayHit{
         Vector3 getWorldNorm() const;
         Vector3 getViewNorm() const;
         Vector2 getTex() const;
+        Vector3 getDirection() const;
 
 
     public:

@@ -1,5 +1,6 @@
 #include "be_boundingVolume.hpp"
 #include <cassert>
+#include "be_matrix3x3.hpp"
 
 namespace be{
 
@@ -309,6 +310,56 @@ void BVH::BVHNode::getIntersections(const std::vector<Triangle>& triangles, cons
             _RightChild->getIntersections(triangles, ray, cameraPos, hits);
         }
     }
+}
+
+
+Vector3 AxisAlignedBoundingBox::getClosestPoint(const Vector3& point) const{
+    // Clamp the point's coordinates to the range of the AABB along each axis
+    Vector3 closest{};
+    closest.x(point.x() <= _MinX ? _MinX : (point.x() >= _MaxX ? _MaxX : point.x()));
+    closest.y(point.y() <= _MinY ? _MinY : (point.y() >= _MaxY ? _MaxY : point.y()));
+    closest.z(point.z() <= _MinZ ? _MinZ : (point.z() >= _MaxZ ? _MaxZ : point.z()));
+    return closest;
+}
+
+float AxisAlignedBoundingBox::getDistance(const Vector3& point) const{
+    Vector3 closest = getClosestPoint(point);
+    return (closest-point).getNorm();
+}
+
+AxisAlignedBoundingBox AxisAlignedBoundingBox::rotate(float angle) const{
+    be::Matrix3x3 rotationMatrix = be::Matrix3x3::identity();
+    rotationMatrix[0][0] = std::cos(angle);
+    rotationMatrix[0][1] = -std::sin(angle);
+    rotationMatrix[1][0] = std::sin(angle);
+    rotationMatrix[1][1] = std::cos(angle);
+    std::array<Vector3, 8> rotatedPoints;
+    rotatedPoints[0] = rotationMatrix * Vector3{_MinX, _MinY, _MinZ};
+    rotatedPoints[1] = rotationMatrix * Vector3{_MinX, _MinY, _MaxZ};
+    rotatedPoints[2] = rotationMatrix * Vector3{_MinX, _MaxY, _MinZ};
+    rotatedPoints[3] = rotationMatrix * Vector3{_MinX, _MaxY, _MaxZ};
+    rotatedPoints[4] = rotationMatrix * Vector3{_MaxX, _MinY, _MinZ};
+    rotatedPoints[5] = rotationMatrix * Vector3{_MaxX, _MinY, _MaxZ};
+    rotatedPoints[6] = rotationMatrix * Vector3{_MaxX, _MaxY, _MinZ};
+    rotatedPoints[7] = rotationMatrix * Vector3{_MaxX, _MaxY, _MaxZ};
+
+    float minX = INFINITY;
+    float minY = INFINITY;
+    float minZ = INFINITY;
+    float maxX = -INFINITY;
+    float maxY = -INFINITY;
+    float maxZ = -INFINITY;
+    
+    for(auto point : rotatedPoints){
+        if(point.x() < minX){minX = point.x();}
+        if(point.y() < minY){minY = point.y();}
+        if(point.z() < minZ){minZ = point.z();}
+        if(point.x() > maxX){maxX = point.x();}
+        if(point.y() > maxY){maxY = point.y();}
+        if(point.z() > maxZ){maxZ = point.z();}
+    }
+
+    return AxisAlignedBoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
 }
 
 

@@ -10,7 +10,7 @@ vec3 microfacetBRDF(Material m, vec3 color, vec3 n, vec3 wo, vec3 wi){
     float D = getGGXDistribution(wh, roughness, n);
 
     float reflectance = 1.f;
-    vec3 f0 = 0.16f * reflectance * reflectance * (1.f - m._Metallic) + color * m._Metallic;
+    vec3 f0 = 0.16f * reflectance * reflectance * (1.f - m._Metallic) * vec3(1.f, 1.f, 1.f) + color * m._Metallic;
     vec3 F = getSchlickFresnel(f0, wi, wh);
     float G = getGGXSmithGeometric(wi, wo, n, roughness);
     float den = 4.f * clamp(dot(n, wi), 0.f, 1.f) * clamp(dot(n, wo), 0.f, 1.f) + EPSILON;

@@ -312,6 +312,8 @@ class Vector4{
         */
         Matrix4x4 operator*(const Matrix1x4& matrix) const;
 
+        static Vector4 mix(const Vector4& v1, const Vector4& v2, float a);
+
         /**
          * Dot product
          * @param v1 The first vector

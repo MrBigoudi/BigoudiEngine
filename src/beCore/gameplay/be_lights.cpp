@@ -205,14 +205,16 @@ namespace be{
 std::string LightCutsTree::LightNode::toString() const {
     if(isLeaf()){
         return "{ repr: "+ _Representative->toString() 
-                + ", i: " + std::to_string(_TotalIntensity) 
-                + ", nbLights: " + std::to_string(_Lights.size()) 
+                + ", intensity: " + std::to_string(_TotalIntensity) 
+                + ", color: " + _TotalColor.toString()
+                + ", aabb: " + _AABB.toString()
                 + " }";
     }
     return "{\n repr: " 
         + _Representative->toString()
-        + ", i: " + std::to_string(_TotalIntensity) 
-        + ", nbLights: " + std::to_string(_Lights.size()) 
+        + ", intensity: " + std::to_string(_TotalIntensity) 
+        + ", color: " + _TotalColor.toString()
+        + ", aabb: " + _AABB.toString()
         + "\n\tleft: " + _LeftChild->toString() 
         + "\n\tright:" + _RightChild->toString()
         + "\n}";
@@ -277,16 +279,16 @@ LightCutsTree::LightNodePtr LightCutsTree::LightNode::createParent(LightNodePtr 
     newNode->_TotalIntensity = leftChild->_TotalIntensity + rightChild->_TotalIntensity;
     newNode->_AABB = AxisAlignedBoundingBox::merge(leftChild->_AABB, rightChild->_AABB);
     newNode->_BoundingCone = BoundingCone::merge(leftChild->_BoundingCone, rightChild->_BoundingCone);
-    std::set_union(
-        leftChild->_Lights.begin(), leftChild->_Lights.end(), 
-       rightChild->_Lights.begin(),rightChild->_Lights.end(), 
-        std::inserter(newNode->_Lights, newNode->_Lights.begin())
-    );
+    // node color = sum child colors
+    newNode->_TotalColor = leftChild->_TotalColor + rightChild->_TotalColor;
     // set the children
     newNode->_LeftChild = leftChild;
     newNode->_RightChild = rightChild;
     // select representative light
     LightNodePtr representativeNode = selectRepresentative(leftChild, rightChild);
+    if(representativeNode.get() == leftChild.get()){
+        newNode->_IsLeftChildSame = true;
+    }
     newNode->_Representative = representativeNode->_Representative;
     newNode->_Type = representativeNode->_Type;
     return newNode;
@@ -303,7 +305,7 @@ LightCutsTree::LightNodePtr LightCutsTree::LightNode::createLeafNode(LightPtr li
     newNode->_TotalIntensity = light->getIntensity();
     newNode->_AABB = light->getAABB();
     newNode->_BoundingCone = light->getBoundingCone();
-    newNode->_Lights.insert(light);
+    newNode->_TotalColor = light->getColor();
     return newNode;
 }
 
@@ -376,9 +378,9 @@ LightCutsTree::LightCutsTree(
     }
     _LightsTree = allNodes[0];
     
-    #ifndef NDEBUG
     // display the tree if in debug mode
-    fprintf(stdout, "tree:\n%s\n", _LightsTree->toString().c_str());
+    #ifndef NDEBUG
+    // fprintf(stdout, "tree:\n%s\n", _LightsTree->toString().c_str());
     #endif
 }
 
@@ -425,25 +427,32 @@ void LightCutsTree::createLeaves(const std::vector<OrientedLightPtr>& inputLight
 }
 
 
-float LightCutsTree::LightNode::getVisibility() const{
-    return 1.f; // all light are potentially visible
+float LightCutsTree::LightNode::getVisibility() const {
+    // all light are potentially visible
+    return 1.f;
 }
 
-float LightCutsTree::LightNode::getGeometry(const Vector3& pointToShade) const{
+float LightCutsTree::LightNode::getGeometricBound(const Vector3& pointToShade) const{
+    // get the closest point in the bounding box of the cluster
+    Vector3 closestPoint = _AABB.getClosestPoint(pointToShade);
+    // get the distance between this point and the point to shade
+    float d2 = (closestPoint-pointToShade).getSquaredNorm();
+    // bound the distance
+    d2 = std::max(1.f, d2);
+    return 1.f / d2;
+}
+
+float LightCutsTree::LightNode::getGeometric(const Vector3& pointToShade) const{
     switch(_Type){
         case POINT_LIGHT:{
-            Vector4 lightPos = static_cast<PointLight*>(_Representative.get())->_Position;
+            PointLightPtr pointLight = std::dynamic_pointer_cast<PointLight>(_Representative);
+            Vector4 lightPos = pointLight->_Position;
             return 1.f / (lightPos.xyz() - pointToShade).getSquaredNorm();
         }
-        case DIRECTIONAL_LIGHT:{
-            return 1.f;
-        }
         // TODO:
-        case ORIENTED_LIGHT:{
+        default:
             return 0.f;
-        }
     }
-    return 0.f;
 }
 
 

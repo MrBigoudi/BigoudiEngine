@@ -108,5 +108,9 @@ Vector2 RayHit::getTex() const {
     return b0 * uv0 + b1 * uv1 + b2 * uv2;
 }
 
+Vector3 RayHit::getDirection() const {
+    return _Direction;
+}
+
 
 }

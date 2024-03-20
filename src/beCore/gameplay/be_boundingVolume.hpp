@@ -244,6 +244,10 @@ class AxisAlignedBoundingBox : public Bounding{
          * @return An std::string
         */
         std::string toString() const;
+
+        float getDistance(const Vector3& point) const;
+        Vector3 getClosestPoint(const Vector3& point) const;
+        AxisAlignedBoundingBox rotate(float angle) const;
 };
 
 /**

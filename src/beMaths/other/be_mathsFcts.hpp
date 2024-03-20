@@ -14,7 +14,9 @@ class Maths{
         static int random_int(int min, int max);
 
         static bool isZero(float f);
+        static float sqr(float f);
 
+        static float clamp(float f, float min, float max);
 };
 
 }

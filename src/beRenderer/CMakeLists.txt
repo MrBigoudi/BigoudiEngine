@@ -11,3 +11,4 @@ target_include_directories(BigoudiEngine
 # add the subdirectories
 add_subdirectory(vulkan)
 add_subdirectory(renderingSubSystems)
+add_subdirectory(pbr)
