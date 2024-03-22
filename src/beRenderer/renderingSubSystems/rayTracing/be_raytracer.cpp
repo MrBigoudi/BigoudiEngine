@@ -1,9 +1,13 @@
 #include "be_raytracer.hpp"
+#include "be_GGX.hpp"
 #include "be_color.hpp"
 #include "be_components.hpp" // IWYU pragma: keep
 #include "be_gameCoordinator.hpp"
 #include "be_timer.hpp"
+#include "be_trigonometry.hpp"
 #include "be_utilityFunctions.hpp"
+
+#include <omp.h>
 
 namespace be{
 
@@ -42,77 +46,405 @@ bool RayTracer::isInShadow(RayPtr shadowRay, float distToLight) const {
     }
     // check if the shadow ray hits any object before reaching the light source
     bool isInShadow = false;
-    RayHit shadowHit = shadowHits.getClosestHit();
-    float closestHitDist = (shadowHit.getWorldPos() - shadowRay->getOrigin()).getNorm();
-    if(closestHitDist < distToLight) {
-        isInShadow = true;
+    for(auto hit: shadowHits._Hits){
+        RayHit shadowHit = shadowHits.getClosestHit();
+        float hitDist = (shadowHit.getWorldPos() - shadowRay->getOrigin()).getNorm();
+        if(hitDist < distToLight) {
+            isInShadow = true;
+        }
     }
     return isInShadow;
 }
 
+Vector3 RayTracer::ggxBRDF(const RayHit& rayHit) const{
+    return ggxBRDF(rayHit, _Scene->getPointLights(), _Scene->getDirectionalLights());
+}
 
-Vector3 RayTracer::lambertBRDF(const RayHit& rayHit) const{
+Vector3 RayTracer::ggxBRDF(const RayHit& rayHit, 
+            const std::vector<PointLightPtr>& pointLights,
+            const std::vector<DirectionalLightPtr>& directionalLights 
+        ) const{
     Vector3 color = Color::BLACK;
     // point lights
-    for(const auto& pointLight : _Scene->getPointLights()){
-        Vector3 lightDir = Vector3::normalize((pointLight->_Position.xyz() - rayHit.getWorldPos()));
-        float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir));
-        // cast shadow ray
-        RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), lightDir));
-        float distToLight = (pointLight->_Position.xyz() - rayHit.getWorldPos()).getNorm();
-        if (!isInShadow(shadowRay, distToLight)){
-            color += (diffuseFactor * pointLight->_Intensity) * (rayHit.getCol().xyz() * pointLight->_Color.xyz());
-        }
+    for(const auto& pointLight : pointLights){
+        color += ggxBRDF(rayHit, pointLight);
     }
     // directional lights
-    for(const auto& directionalLight : _Scene->getDirectionalLights()){
-        Vector3 lightDir = Vector3::normalize(directionalLight->_Direction.xyz());
-        float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir));
-        // cast shadow ray
-        RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), -lightDir));
-        if (!isInShadow(shadowRay)){
-            color += (diffuseFactor * directionalLight->_Intensity) * (rayHit.getCol().xyz() * directionalLight->_Color.xyz());
-        }
+    for(const auto& directionalLight : directionalLights){
+        color += ggxBRDF(rayHit, directionalLight);
+    }
+    return color;
+}
+
+Vector3 RayTracer::ggxBRDF(const RayHit& rayHit, PointLightPtr light) const{
+    Vector3 hitWorldPos = rayHit.getWorldPos();
+
+    Vector3 wi = Vector3::normalize(light->_Position.xyz() - hitWorldPos);
+    Vector3 wo = Vector3::normalize(-rayHit.getDirection());
+    MaterialPtr material = rayHit.getTriangle()._Material;
+
+    Vector3 hitNormal = rayHit.getWorldNorm();
+    Vector3 surfaceColor = rayHit.getCol().xyz();
+
+    Vector3 materialReflectance = GGX::BRDF(
+        wi, wo,
+        hitNormal, 
+        surfaceColor, 
+        material->_Roughness, 
+        material->_Metallic
+    );
+
+    Vector3 lightRadiance = GGX::getAttenuation(light, hitWorldPos);
+    float wiDotN = std::max(0.f, Vector3::dot(wi, hitNormal));
+
+    // cast shadow ray
+    Vector3 lightDir = Vector3::normalize((light->_Position.xyz() - rayHit.getWorldPos()));
+    RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), lightDir));
+    float distToLight = (light->_Position.xyz() - rayHit.getWorldPos()).getNorm();
+    if (!isInShadow(shadowRay, distToLight)){
+        return lightRadiance * materialReflectance * wiDotN;
+    }
+    return Color::BLACK;
+}
+
+
+Vector3 RayTracer::ggxBRDF(const RayHit& rayHit, DirectionalLightPtr light) const{
+    Vector3 wi = -light->_Direction.xyz();
+    Vector3 wo = -rayHit.getDirection();
+    MaterialPtr material = rayHit.getTriangle()._Material;
+
+    Vector3 hitNormal = rayHit.getWorldNorm();
+    Vector3 surfaceColor = rayHit.getCol().xyz();
+
+    Vector3 materialReflectance = GGX::BRDF(
+        wi, wo,
+        hitNormal, 
+        surfaceColor, 
+        material->_Roughness, 
+        material->_Metallic
+    );
+
+    Vector3 lightRadiance = GGX::getAttenuation(light);
+    float wiDotN = std::max(0.f, Vector3::dot(wi, hitNormal));
+
+    // cast shadow ray
+    Vector3 lightDir = Vector3::normalize(light->_Direction.xyz());
+    RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), -lightDir));
+    if (!isInShadow(shadowRay)){
+        return lightRadiance * materialReflectance * wiDotN;
+    }
+    return Color::BLACK;
+}
+
+
+
+Vector3 RayTracer::lambertBRDF(const RayHit& rayHit, PointLightPtr light) const{
+    Vector3 lightDir = Vector3::normalize((light->_Position.xyz() - rayHit.getWorldPos()));
+    float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir)) / PI;
+    // cast shadow ray
+    RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), lightDir));
+    float distToLight = (light->_Position.xyz() - rayHit.getWorldPos()).getNorm();
+    if (!isInShadow(shadowRay, distToLight)){
+        return (diffuseFactor * light->_Intensity) * (rayHit.getCol().xyz() * light->_Color.xyz());
+    }
+    return Color::BLACK;
+}
+
+Vector3 RayTracer::lambertBRDF(const RayHit& rayHit, DirectionalLightPtr light) const{
+    Vector3 lightDir = Vector3::normalize(light->_Direction.xyz());
+    float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir));
+    // cast shadow ray
+    RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), -lightDir));
+    if (!isInShadow(shadowRay)){
+        return (diffuseFactor * light->_Intensity) * (rayHit.getCol().xyz() * light->_Color.xyz());
+    }
+    return Color::BLACK;
+}
+
+Vector3 RayTracer::lambertBRDF(const RayHit& rayHit, 
+        const std::vector<PointLightPtr>& pointLights,
+        const std::vector<DirectionalLightPtr>& directionalLights 
+    ) const{
+    Vector3 color = Color::BLACK;
+    // point lights
+    for(const auto& pointLight : pointLights){
+        color += lambertBRDF(rayHit, pointLight);
+    }
+    // directional lights
+    for(const auto& directionalLight : directionalLights){
+        color += lambertBRDF(rayHit, directionalLight);
     }
     return color;
 }
 
 
+Vector3 RayTracer::lambertBRDF(const RayHit& rayHit) const{
+    return lambertBRDF(rayHit, _Scene->getPointLights(), _Scene->getDirectionalLights());
+}
 
-Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
+// Vector3 RayTracer::getErrorBoundLambertBRDF(const RayHit& rayHit, LightCutsTree::LightNodePtr curNode) const{
+//     Vector3 worlPosHit = rayHit.getWorldPos();
+//     // distance between the hit point and the center of the AABB
+//     float distToLight = curNode->_AABB.getDistance( worlPosHit);
+//     // direction from the center of the AABB to the hit
+//     Vector3 lightDir = (curNode->_AABB.getClosestPoint(worlPosHit) - worlPosHit);
+//     if(lightDir.getSquaredNorm() < EPSILON){
+//         return curNode->_Representative->getColor() * rayHit.getCol().xyz();
+//     }
+//     float diffuseFactor = std::max(0.f, Vector3::dot(rayHit.getWorldNorm(), lightDir)) / PI;
+//     // cast shadow ray
+//     RayPtr shadowRay = RayPtr(new Ray(worlPosHit, lightDir));
+//     if (!isInShadow(shadowRay, distToLight)){
+//         return diffuseFactor * (rayHit.getCol().xyz() * curNode->_Representative->getColor());
+//     }
+//     return Color::BLACK;
+// }
+
+// Vector3 RayTracer::getClusterEstimate(const RayHit& rayHit, LightCutsTree::LightNodePtr cluster) const {
+//     switch(cluster->_Type){
+//         case POINT_LIGHT:{
+//             PointLightPtr pointLight = std::dynamic_pointer_cast<PointLight>(cluster->_Representative);
+//             PointLightPtr light = PointLightPtr(new PointLight());
+//             light->_Color = pointLight->_Color;
+//             light->_Position = pointLight->_Position;
+//             light->_Intensity = 1.f;
+//             switch(_BRDF){
+//                 case LAMBERT_BRDF:
+//                     return lambertBRDF(rayHit, light) * cluster->_TotalIntensity;
+//                 // TODO:
+//                 default:
+//                     return Vector3::zeros();
+//             }
+//         }
+//         case DIRECTIONAL_LIGHT:{
+//             DirectionalLightPtr directionalLight = std::dynamic_pointer_cast<DirectionalLight>(cluster->_Representative);
+//             DirectionalLightPtr light = DirectionalLightPtr(new DirectionalLight());
+//             light->_Color = directionalLight->_Color;
+//             light->_Direction = directionalLight->_Direction;
+//             light->_Intensity = 1.f;
+//             switch(_BRDF){
+//                 case LAMBERT_BRDF:
+//                     return lambertBRDF(rayHit, light) * cluster->_TotalIntensity;
+//                 // TODO:
+//                 default:
+//                     return Vector3::zeros();
+//             }
+//         }
+//         // TODO:
+//         case ORIENTED_LIGHT:{
+//             return Vector3::zeros();
+//         }
+//     }
+// 
+//     return Vector3::zeros();
+// }
+
+
+Vector3 RayTracer::getClusterEstimate(const RayHit& rayHit, LightCutsTree::LightNodePtr cluster) const {
+    switch(cluster->_Type){
+        case POINT_LIGHT:{
+            PointLightPtr pointLight = std::dynamic_pointer_cast<PointLight>(cluster->_Representative);
+            float visibility = 1.f; // already in Lambert shadow ray
+            float geometric = 1.f; 
+            // float geometric = cluster->getGeometric(rayHit.getWorldPos());
+            float intensity = cluster->_TotalIntensity;
+            Vector3 material{};
+            switch(_BRDF){
+                case LAMBERT_BRDF:
+                    material = lambertBRDF(rayHit, pointLight) / pointLight->_Intensity; // already in the lanbert model
+                    break;
+                case GGX_BRDF:
+                    material = ggxBRDF(rayHit, pointLight) / pointLight->_Intensity; // already in the lanbert model
+                    break;
+                // TODO:
+                default:
+                    break;
+            } 
+            // cluster->_BRDF = material * intensity;
+            return material*geometric*visibility*intensity; 
+        }
+        // TODO: handle directional lighting
+        default:{
+            return Vector3::zeros();
+        }
+    }
+}
+
+Vector3 RayTracer::getClusterError(const RayHit& rayHit, LightCutsTree::LightNodePtr cluster) const {
+    switch(cluster->_Type){
+        case POINT_LIGHT:{
+            PointLightPtr pointLight = std::dynamic_pointer_cast<PointLight>(cluster->_Representative);
+            float visibility = cluster->getVisibility();
+            float geometric = cluster->getGeometricBound(rayHit.getWorldPos());
+            float intensity = cluster->_TotalIntensity;
+            // material upper bound
+            // diffuse
+            Vector3 diffuseBound = cluster->_TotalColor * rayHit.getCol().xyz();
+            // cosine upper bound
+            float theta = std::acos(
+                be::Vector3::dot(rayHit.getWorldNorm(), {0.f, 0.f, 1.f})
+            );
+            AxisAlignedBoundingBox rotatedAABB = cluster->_AABB.rotate(theta);
+            float cosBound = 1.f;
+            float maxZ = rotatedAABB._MaxZ;
+            float maxZ2 = maxZ*maxZ;
+            if(maxZ >= 0){
+                float minX2 = std::min(rotatedAABB._MinX*rotatedAABB._MinX, rotatedAABB._MaxX*rotatedAABB._MaxX);
+                float minY2 = std::min(rotatedAABB._MinY*rotatedAABB._MinY, rotatedAABB._MaxY*rotatedAABB._MaxY);
+                cosBound = maxZ / std::sqrt(minX2 + minY2 + maxZ2);
+            } else {
+                float maxX2 = std::max(rotatedAABB._MinX*rotatedAABB._MinX, rotatedAABB._MaxX*rotatedAABB._MaxX);
+                float maxY2 = std::max(rotatedAABB._MinY*rotatedAABB._MinY, rotatedAABB._MaxY*rotatedAABB._MaxY);
+                cosBound = maxZ / std::sqrt(maxX2 + maxY2 + maxZ2);
+            }
+            Vector3 material = diffuseBound*std::max(0.f, cosBound);
+            return material*geometric*visibility*intensity; 
+        }
+        // TODO:
+        default:{
+            return Vector3::zeros();
+        }
+    }
+}
+
+Vector3 RayTracer::shadeLightCuts(RayHits& hits, uint32_t depth) const {
+    if(hits.getNbHits() == 0){
+        return _BackgroundColor;
+    }
+
     if(depth > _MaxBounces){
         return Color::WHITE;
     }
     
     RayHit closestHit = hits.getClosestHit();
-    MaterialPtr closestHitMaterial = closestHit.getTriangle()._Material;
 
     Vector3 color = Vector3::zeros();
+            
+    // init cut == root
+    CutHeap rootCut = {};
+    LightCutsTree::LightNodePtr root = _Scene->getLightTreeRoot();
+    rootCut._Cluster = root;
+    rootCut._ClusterEstimate = getClusterEstimate(closestHit, root);
+    rootCut._ClusterError = getClusterError(closestHit, root);
+    // setError(closestHit, root);
 
-    for(uint32_t curSubSample=0; curSubSample<_SamplesPerPixels; curSubSample++){
+    std::vector<CutHeap> cutHeap = {};
+    std::make_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
+    cutHeap.push_back(rootCut);
+    std::push_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
+    
+    while(getCutHeapError(cutHeap.front()) > _LightcutsErrorThreshold 
+            && cutHeap.size() < _LightcutsMaxClusters
+        ){
+        // get worst cluster
+        auto worstCut = cutHeap.front();
+        std::pop_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
+        cutHeap.pop_back();
+
+        auto worstCluster = worstCut._Cluster;
+        CutHeap leftCut{};
+        CutHeap rightCut{};
+        // get its two children
+        leftCut._Cluster = worstCluster->_LeftChild;
+        rightCut._Cluster = worstCluster->_RightChild;
+        // estimate their clusters
+        if(worstCluster->_IsLeftChildSame){
+            leftCut._ClusterEstimate = worstCut._ClusterEstimate * (leftCut._Cluster->_TotalIntensity / worstCluster->_TotalIntensity);
+            rightCut._ClusterEstimate = getClusterEstimate(closestHit, rightCut._Cluster);
+        } else {
+            leftCut._ClusterEstimate = getClusterEstimate(closestHit, leftCut._Cluster);
+            rightCut._ClusterEstimate = worstCut._ClusterEstimate * (rightCut._Cluster->_TotalIntensity / worstCluster->_TotalIntensity);
+        }
+        // get their error
+        leftCut._ClusterError = getClusterError(closestHit, leftCut._Cluster);
+        rightCut._ClusterError = getClusterError(closestHit, rightCut._Cluster);
+
+        // setError(closestHit, leftChild);
+        // setError(closestHit, rightChild);
+
+        // add them to heap
+        cutHeap.push_back(leftCut);
+        cutHeap.push_back(rightCut);
+        std::push_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
+    }
+    // return sum of estimates
+    // fprintf(stdout, "cut size: %zu / %zu\n", cutHeap.size(), _Scene->getPointLights().size());
+    for(auto cluster : cutHeap){
+        // fprintf(stdout, "cur cluster: %s\n", cluster->toString().c_str());
+        color += cluster._ClusterEstimate;
+        // color += cluster->_BRDF;
+    }
+
+    if(depth == _MaxBounces){
+        return color;
+    }
+
+    // path tracing
+    Vector3 bounceColor = Vector3::zeros();
+    for(uint32_t curSubSample=0; curSubSample<_SamplesPerBounces; curSubSample++){
         RayPtr newRay = sampleNewRay(closestHit);    
         RayHits bouncedHits = getHits(newRay);
 
         if(bouncedHits.getNbHits() > 0){
-            color += _ShadingFactor * shade(bouncedHits, depth+1);
+            bounceColor += _ShadingFactor * shadeLightCuts(bouncedHits, depth+1);
         } else {
-            color += _BackgroundColor;
-        }
-
-        switch(_BRDF){
-            case COLOR_BRDF:
-                color += colorBRDF(closestHit);
-                break;
-            case NORMAL_BRDF:
-                color += normalBRDF(closestHit);
-                break;
-            case LAMBERT_BRDF:
-                color += lambertBRDF(closestHit);
-                break;
+            bounceColor += _BackgroundColor;
         }
     }
+    color += bounceColor / _SamplesPerBounces;
 
-    return color / _SamplesPerPixels;
+    return color;
+}
+
+
+
+
+Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
+    if(hits.getNbHits() == 0){
+        return _BackgroundColor;
+    }
+
+    if(depth > _MaxBounces){
+        return Color::WHITE;
+    }
+    
+    RayHit closestHit = hits.getClosestHit();
+
+    Vector3 color = Vector3::zeros();
+    switch(_BRDF){
+        case COLOR_BRDF:
+            color += colorBRDF(closestHit);
+            break;
+        case NORMAL_BRDF:
+            color += normalBRDF(closestHit);
+            break;
+        case LAMBERT_BRDF:
+            color += lambertBRDF(closestHit);
+            break;
+        case GGX_BRDF:
+            color += ggxBRDF(closestHit);
+            break;
+    }
+
+    if(depth == _MaxBounces){
+        return color;
+    }
+
+    // path tracing
+    Vector3 bounceColor = Vector3::zeros();
+    for(uint32_t curSubSample=0; curSubSample<_SamplesPerBounces; curSubSample++){
+        RayPtr newRay = sampleNewRay(closestHit);    
+        RayHits bouncedHits = getHits(newRay);
+
+        if(bouncedHits.getNbHits() > 0){
+            bounceColor += _ShadingFactor * shade(bouncedHits, depth+1);
+        } else {
+            bounceColor += _BackgroundColor;
+        }
+    }
+    color += bounceColor / _SamplesPerBounces;
+
+    return color;
 }
 
 std::vector<Triangle> RayTracer::getTriangles(){
@@ -135,6 +467,8 @@ std::vector<Triangle> RayTracer::getTriangles(){
         auto material = GameCoordinator::getComponent<ComponentMaterial>(obj)._Material;
         auto transform = GameCoordinator::getComponent<ComponentTransform>(obj)._Transform;
         Matrix4x4 modelMatrix = transform->getModelTransposed();
+        Matrix4x4 viewMatrix = Matrix4x4::transpose(_Frame._Camera->getView());
+        Matrix4x4 normalMat = Matrix4x4::transpose(Matrix4x4::inverse(viewMatrix*transform->getModel()));
 
         for(size_t k = 0; k<triangles.size(); k++){
             auto& triangle = triangles[k];
@@ -143,8 +477,17 @@ std::vector<Triangle> RayTracer::getTriangles(){
             triangle._WorldPos1 = (modelMatrix * Vector4(triangle._Pos1, 1.f)).xyz();
             triangle._WorldPos2 = (modelMatrix * Vector4(triangle._Pos2, 1.f)).xyz();
 
+            triangle._ViewPos0 = (viewMatrix * Vector4(triangle._Pos0, 1.f)).xyz();
+            triangle._ViewPos1 = (viewMatrix * Vector4(triangle._Pos1, 1.f)).xyz();
+            triangle._ViewPos2 = (viewMatrix * Vector4(triangle._Pos2, 1.f)).xyz();
+
+            triangle._ViewNorm0 = (normalMat * Vector4(triangle._Norm0, 0.f)).xyz();
+            triangle._ViewNorm1 = (normalMat * Vector4(triangle._Norm1, 0.f)).xyz();
+            triangle._ViewNorm2 = (normalMat * Vector4(triangle._Norm2, 0.f)).xyz();
+
             triangle._Material = material;
             triangle._Model = modelMatrix;
+            triangle._NormalMat = normalMat;
         }
 
         addObjectToAccelerationStructures(triangles);
@@ -175,7 +518,6 @@ RayHits RayTracer::getHitsNaive(RayPtr curRay) const {
     for(auto& triangle : _Primitives){
         RayHitOpt hit = curRay->rayTriangleIntersection(triangle);
         if(hit.has_value()){
-            hit->setDistanceToPov(_Frame._Camera->getPosition());
             hits.addHit(hit.value());
         }
     }
@@ -220,6 +562,7 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
         Timer timer{};
         if(verbose){
             fprintf(stdout, "Start ray tracing at `%dx%d' resolution...\n", width, height);
+            fprintf(stdout, "Using OpenMP, max_threads = %d\n", omp_get_max_threads());
         }
         timer.start();
         _BackgroundColor = backgroundColor;
@@ -227,29 +570,54 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
 
         _Primitives = getTriangles();
 
-        const uint32_t step = 1;
+        float step = 1.f;
+        if(_SamplesPerPixels > 1){
+            step = 1.f / (_SamplesPerPixels >> 1); // more samples to make weird effects diseaper
+        }
 
-        for(uint j = 0; j<height; j+=step){
+
+        # pragma omp parallel for
+        for(uint32_t j = 0.f; j<height; j++){
             #ifndef NDEBUG
+            #ifndef _OPENMP
             float progress = j / (height+1.f);
             displayProgressBar(progress);
+            #else
+            displayProgressBarOpenMP((height+1.f));
+            #endif
             #endif
 
-            for(uint32_t i = 0; i<width; i+=step){
-                float u = static_cast<float>(i);
-                float v = height - static_cast<float>(j);
+            # pragma omp parallel for
+            for(uint32_t i = 0.f; i<width; i++){
+                Vector3 color = Vector3::zeros();
+                int nbHits = 0;
 
-                RayPtr curRay = Ray::rayAt(
-                    u, v, 
-                    viewInv, projInv, 
-                    camera->getWidth(), camera->getHeight(), 
-                    camera->getPosition()
-                );
+                // subpixel sampling
+                for(float deltaI=0; deltaI<1; deltaI+=step){
+                    for(float deltaJ=0; deltaJ<1; deltaJ+=step){
+                        float u = (i+deltaI);
+                        float v = height - (j+deltaJ);
 
-                RayHits hits = getHits(curRay);
+                        RayPtr curRay = Ray::rayAt(
+                            u, v, 
+                            viewInv, projInv, 
+                            camera->getWidth(), camera->getHeight(), 
+                            camera->getPosition()
+                        );
 
-                if(hits.getNbHits() > 0){
-                    _Image->set(i, j, shade(hits), Color::SRGB);
+                        RayHits hits = getHits(curRay);
+                        nbHits += hits.getNbHits();
+                        if(_UseLightCuts){
+                            color += shadeLightCuts(hits);
+                        } else {
+                            color += shade(hits);
+                        }
+                    }
+                }
+                
+                if(nbHits > 0){
+                    color /= _SamplesPerPixels;
+                    _Image->set(i, j, color, Color::SRGB);
                 }
             }
         }
@@ -261,4 +629,5 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
     }
 }
     
+
 }

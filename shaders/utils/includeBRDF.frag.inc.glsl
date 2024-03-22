@@ -15,9 +15,9 @@ layout(location = 5) in vec2 fTex;
 layout(location = 0) out vec4 outColor;
 
 // maximum number of point lights
-const int MAX_NB_POINT_LIGHTS = 10;
+const int MAX_NB_POINT_LIGHTS = 1024;
 // maximum number of directional lights
-const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
+const int MAX_NB_DIRECTIONAL_LIGHTS = 1024;
 // maximum number of materials
 const int MAX_NB_MATERIALS = 10;
 
@@ -204,7 +204,7 @@ float getGGXDistribution(vec3 wh, float alpha, vec3 objNorm){
 */
 vec3 getSchlickFresnel(vec3 f0, vec3 wi, vec3 wh){
     float LoH = clamp(dot(wi, wh), 0.f, 1.f);
-    return f0 + (vec3(1.f) - f0) * pow(1.f - LoH, 5.f);
+    return f0 + (vec3(1.f, 1.f, 1.f) - f0) * pow(1.f - LoH, 5.f);
 }
 
 /**

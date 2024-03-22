@@ -3,19 +3,21 @@
 #include "be_boundingVolume.hpp"
 #include "be_ubo.hpp"
 #include "be_vector3.hpp"
+#include "be_color.hpp"
 #include <cstdint>
+#include <set>
 
 namespace be{
 
 /**
  * The maximum number of point lights in a scene
 */
-static const int MAX_NB_POINT_LIGHTS = 10;
+static const int MAX_NB_POINT_LIGHTS = 1024;
 
 /**
  * The maximum number of directional lights in a scene
 */
-static const int MAX_NB_DIRECTIONAL_LIGHTS = 1;
+static const int MAX_NB_DIRECTIONAL_LIGHTS = 1024;
 
 /**
  * The maximum number of oriented lights in a scene
@@ -40,6 +42,12 @@ struct Light{
      * @return The intensity as a float
     */
     virtual float getIntensity() const = 0;
+
+    /**
+     * Getter for the light color
+     * @return The color as a Vector3
+    */
+    virtual Vector3 getColor() const = 0;
 
     /**
      * Getter for the light bounding box
@@ -95,6 +103,12 @@ struct PointLight: public Light {
     float getIntensity() const override {return _Intensity;}
 
     /**
+     * Getter for the light color
+     * @return The color as a Vector3
+    */
+    virtual Vector3 getColor() const override {return _Color.xyz();}
+
+    /**
      * Getter for the light bounding box
      * @return the AABB of the light
      * @see AxisAlignedBoundingBox
@@ -106,6 +120,7 @@ struct PointLight: public Light {
      * @return A std::string
     */
     std::string toString() const override;
+
 };
 
 struct DirectionalLight: public Light{
@@ -129,6 +144,12 @@ struct DirectionalLight: public Light{
      * @return The intensity as a float
     */
     float getIntensity() const override {return _Intensity;}
+
+    /**
+     * Getter for the light color
+     * @return The color as a Vector3
+    */
+    virtual Vector3 getColor() const override {return _Color.xyz();}
 
     /**
      * Getter for the light bounding box
@@ -175,6 +196,12 @@ struct OrientedLight: public Light{
      * @return The intensity as a float
     */
     float getIntensity() const override {return _Intensity;}
+
+    /**
+     * Getter for the light color
+     * @return The color as a Vector3
+    */
+    virtual Vector3 getColor() const override {return _Color.xyz();}
 
     /**
      * Getter for the light bounding box
@@ -322,7 +349,7 @@ using LightCutsTreePtr = std::shared_ptr<LightCutsTree>;
 */
 class LightCutsTree{
 
-    private:
+    public:
         /**
          * Forward declaration of a light node
          * @see LightNode
@@ -334,6 +361,8 @@ class LightCutsTree{
          * @see LightNode
         */
         using LightNodePtr = std::shared_ptr<LightNode>;
+
+        using LightCut = std::vector<LightNodePtr>;
 
         /**
          * A structure representing a node in the tree
@@ -385,6 +414,11 @@ class LightCutsTree{
             */
             LightNodePtr _RightChild = nullptr;
 
+            bool _IsLeftChildSame = false;
+            Vector3 _TotalColor = Color::BLACK;
+            
+
+
             /**
              * Cast a tree node into a string
              * @return A std::string
@@ -400,6 +434,10 @@ class LightCutsTree{
              * Get the size metric of the node
             */
             float getSizeMetric() const;
+
+            float getVisibility() const;
+            float getGeometric(const Vector3& pointToShade) const;
+            float getGeometricBound(const Vector3& pointToShade) const;
 
 
             /**
@@ -433,6 +471,7 @@ class LightCutsTree{
              * @note The given list will be modified
             */
             static void mergeTwoBestNodes(std::vector<LightNodePtr>& allNodes);
+
         };
 
     private:
@@ -458,6 +497,10 @@ class LightCutsTree{
             const std::vector<DirectionalLightPtr>& directionalLights,
             const std::vector<OrientedLightPtr>& orientedLights
         );
+
+        LightNodePtr getRoot() const {
+            return _LightsTree;
+        }
 
     private:
         /**

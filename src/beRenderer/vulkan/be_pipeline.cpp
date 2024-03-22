@@ -352,7 +352,7 @@ void Pipeline::initBlinnPhongShaders(){
     );
 }
 
-void Pipeline::initDisneyShaders(){
+void Pipeline::initMicroFacetsShaders(){
     initVertexShader(
         GraphicsShader::SHADER_DIR
         + std::string("ggxBRDF.vert.spv")
@@ -360,6 +360,17 @@ void Pipeline::initDisneyShaders(){
     initFragmentShader(
         GraphicsShader::SHADER_DIR
         + std::string("ggxBRDF.frag.spv")
+    );
+}
+
+void Pipeline::initDisneyShaders(){
+    initVertexShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("ggxBSDF.vert.spv")
+    );
+    initFragmentShader(
+        GraphicsShader::SHADER_DIR
+        + std::string("ggxBSDF.frag.spv")
     );
 }
 

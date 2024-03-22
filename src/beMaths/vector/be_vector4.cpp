@@ -547,4 +547,9 @@ void Vector4::operator*=(const Vector4& vector){
     w(w()*vector.w());
 }
 
+Vector4 Vector4::mix(const Vector4& v1, const Vector4& v2, float a){
+    return (1.f - a) * v1 + a * v2;
+}
+
+
 }

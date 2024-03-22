@@ -498,4 +498,9 @@ void Vector3::operator*=(const Vector3& vector){
     z(z()*vector.z());
 }
 
+Vector3 Vector3::mix(const Vector3& v1, const Vector3& v2, float a){
+    return (1.f - a) * v1 + a * v2;
+}
+
+
 }

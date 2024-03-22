@@ -21,6 +21,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # dependencies
 find_package(glfw3 REQUIRED)
 find_package(Vulkan REQUIRED)
+find_package(OpenMP REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
 
 # add source files
 add_subdirectory(src)
@@ -38,10 +40,9 @@ target_compile_features(BigoudiEngine_cflags INTERFACE cxx_std_20)
 target_compile_options(BigoudiEngine_cflags INTERFACE
     "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
     "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
+    ${OpenMP_CXX_FLAGS}
 )
-
-# set the cpp standards
-target_link_libraries(BigoudiEngine PRIVATE glfw Vulkan::Vulkan BigoudiEngine_cflags)
+target_link_libraries(BigoudiEngine PRIVATE glfw Vulkan::Vulkan BigoudiEngine_cflags OpenMP::OpenMP_CXX)
 
 # compile shaders
 add_custom_target(

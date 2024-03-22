@@ -1,4 +1,5 @@
 #include "be_mathsFcts.hpp"
+#include <algorithm>
 #include <cstdlib>
 
 namespace be{
@@ -23,6 +24,15 @@ bool Maths::isZero(float f){
     const float epsilon = 1e-9;
     return (f>-epsilon) && (f<epsilon);
 }
+
+float Maths::sqr(float f){
+    return f*f;
+}
+
+float Maths::clamp(float f, float min, float max){
+    return std::min(std::max(f, min), max);
+}
+
 
 
 }

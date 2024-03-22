@@ -169,4 +169,11 @@ std::string Timer::format(uint32_t milliseconds){
     return ss.str();
 }
 
+std::string Timer::getCurrentDateAndTime(){
+    std::time_t currentTime = std::time(nullptr);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&currentTime), "%Y-%m-%d_%H-%M-%S");
+    return ss.str();
+}
+
 }

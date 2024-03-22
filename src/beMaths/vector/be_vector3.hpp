@@ -274,6 +274,8 @@ class Vector3{
         */
         void operator*=(const Vector3& vector);
 
+        static Vector3 mix(const Vector3& v1, const Vector3& v2, float a);
+
         /**
          * Dot product
          * @param v1 The first vector

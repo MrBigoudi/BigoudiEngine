@@ -2,6 +2,7 @@
 
 #include "be_vector3.hpp"
 #include "be_color.hpp"
+#include "be_timer.hpp"
 
 #include <vector>
 #include <memory>
@@ -37,7 +38,7 @@ class Image{
 
     public:
         void clear(const Vector3& color = {});
-        void savePPM(const std::string& fileName) const;
+        void savePPM(const std::string& fileName = "tmp/" + Timer::getCurrentDateAndTime() + ".ppm") const;
 
         static std::vector<unsigned char> pixelsToVectorOfBytes(const Pixels& pixels);
 

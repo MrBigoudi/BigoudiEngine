@@ -101,6 +101,8 @@ class Timer{
         */
         static std::string format(uint32_t milliseconds);
 
+        static std::string getCurrentDateAndTime();
+
 };
 
 }

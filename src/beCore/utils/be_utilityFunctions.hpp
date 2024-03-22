@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <iostream>
 
@@ -26,6 +27,24 @@ inline void displayProgressBar(float progress, int barWidth = 70){
     }
     fprintf(stdout, "] %.0f %%\r", progress * 100.0);
     fflush(stdout);
+}
+
+inline void displayProgressBarOpenMP(uint32_t max, int barWidth = 70){
+    static uint32_t curCpt = 0;
+    curCpt++;
+    #pragma omp master
+    {
+        float progress = float(curCpt) / max;
+        fprintf(stdout, "[");
+        int pos = barWidth * progress;
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos) fprintf(stdout, "=");
+            else if (i == pos) fprintf(stdout, ">");
+            else fprintf(stdout, " ");
+        }
+        fprintf(stdout, "] %.0f %%\r", progress * 100.0);
+        fflush(stdout);
+    }
 }
 
 };

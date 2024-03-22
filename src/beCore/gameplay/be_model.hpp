@@ -198,23 +198,30 @@ struct VertexDataBuilder{
 struct Triangle{
     MaterialPtr _Material = nullptr;
     Matrix4x4 _Model = {};
+    Matrix4x4 _NormalMat = {};
 
     Vector3 _Pos0{};    
     Vector3 _WorldPos0{};
+    Vector3 _ViewPos0{};
     Vector4 _Col0{};
     Vector3 _Norm0{};
+    Vector3 _ViewNorm0{};
     Vector2 _Tex0{};
 
     Vector3 _Pos1{};    
     Vector3 _WorldPos1{};
+    Vector3 _ViewPos1{};
     Vector4 _Col1{};
     Vector3 _Norm1{};
+    Vector3 _ViewNorm1{};
     Vector2 _Tex1{};
 
     Vector3 _Pos2{};    
     Vector3 _WorldPos2{};
+    Vector3 _ViewPos2{};
     Vector4 _Col2{};
     Vector3 _Norm2{};
+    Vector3 _ViewNorm2{};
     Vector2 _Tex2{};
 
     std::string toString() const {
@@ -225,12 +232,18 @@ struct Triangle{
             + "\nwp0: " + _WorldPos0.toString()
             + "\nwp1: " + _WorldPos1.toString()
             + "\nwp2: " + _WorldPos2.toString()
+            + "\nvp0: " + _ViewPos0.toString()
+            + "\nvp1: " + _ViewPos1.toString()
+            + "\nvp2: " + _ViewPos2.toString()
             + "\nc0: " + _Col0.toString()
             + "\nc1: " + _Col1.toString()
             + "\nc2: " + _Col2.toString()
             + "\nn0: " + _Norm0.toString()
             + "\nn1: " + _Norm1.toString()
             + "\nn2: " + _Norm2.toString()
+            + "\nvn0: " + _ViewNorm0.toString()
+            + "\nvn1: " + _ViewNorm1.toString()
+            + "\nvn2: " + _ViewNorm2.toString()
             + "\nuv0: " + _Tex0.toString()
             + "\nuv1: " + _Tex1.toString()
             + "\nuv2: " + _Tex2.toString()

@@ -161,7 +161,7 @@ RayHitOpt Ray::rayTriangleIntersection(const Triangle& trianglePrimitive, float 
     }
 
     Vector4 res = {b2,b0,b1,t};
-    return RayHit(res, trianglePrimitive);
+    return RayHit(res, trianglePrimitive, _Direction);
 }
 
 /**

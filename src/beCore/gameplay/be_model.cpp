@@ -10,6 +10,7 @@
 #include "be_trigonometry.hpp"
 #include "be_vector3.hpp"
 #include "be_vulkanApp.hpp"
+#include "be_mathsFcts.hpp"
 
 #include "be_utilityFunctions.hpp"
 
@@ -242,7 +243,18 @@ void VertexDataBuilder::loadOffModel(const std::string& filePath){
 
 		Vector3 e0 = _Vertices[v1]._Pos - _Vertices[v0]._Pos;
 		Vector3 e1 = _Vertices[v2]._Pos - _Vertices[v0]._Pos;
-		Vector3 n = Vector3::normalize(Vector3::cross(e0, e1));
+        Vector3 e2 = Vector3::cross(e0, e1);
+		Vector3 n = e2;
+        if(Maths::isZero(e2.getNorm())){
+            ErrorHandler::handle(
+                __FILE__, __LINE__,
+                ErrorCode::BAD_VALUE_ERROR,
+                "Warning: The model " + filePath + " has a wrong triangle\n",
+                ErrorLevel::WARNING
+            );
+        } else {
+            n.normalize();
+        }
 		for(int j=0; j<3; j++){
             _Vertices[_Indices[i+j]]._Norm += n;
         }
