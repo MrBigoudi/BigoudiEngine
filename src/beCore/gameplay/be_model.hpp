@@ -224,6 +224,8 @@ struct Triangle{
     Vector3 _ViewNorm2{};
     Vector2 _Tex2{};
 
+    bool _IsLight = false;
+
     std::string toString() const {
         return
             "{\np0: " + _Pos0.toString() 

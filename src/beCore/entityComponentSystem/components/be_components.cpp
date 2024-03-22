@@ -11,6 +11,7 @@ void Components::registerComponents(){
     GameCoordinator::registerComponent<ComponentMaterial>();
     GameCoordinator::registerComponent<ComponentCollider>();
     GameCoordinator::registerComponent<ComponentRigidBody>();
+    GameCoordinator::registerComponent<ComponentLight>();
 }
 
 };

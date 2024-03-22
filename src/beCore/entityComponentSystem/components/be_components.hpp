@@ -6,6 +6,7 @@
 #include "be_componentMaterial.hpp" // IWYU pragma: keep
 #include "be_componentCollider.hpp" // IWYU pragma: keep
 #include "be_componentRigidBody.hpp" // IWYU pragma: keep
+#include "be_componentLight.hpp" // IWYU pragma: keep
 
 namespace be{
 

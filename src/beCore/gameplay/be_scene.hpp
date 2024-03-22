@@ -3,6 +3,7 @@
 #include "be_camera.hpp"
 #include "be_gameObject.hpp"
 #include "be_lights.hpp"
+#include "be_renderSubSystem.hpp"
 
 // #include "tiny_gltf.h"
 #include <vector>
@@ -136,6 +137,21 @@ class Scene{
         LightCutsTree::LightNodePtr getLightTreeRoot() const {
             return _LightTree->getRoot();
         }
+
+    public:
+        GameObject addCubeOfLight(IRenderSubSystemPtr rss, 
+            const Vector3& center, float length, 
+            const Vector3& color, float intensity,
+            const Vector3& rotation = Vector3::zeros(),
+            float step = 0.1f
+        );
+
+        GameObject addCubeOfLight(IRenderSubSystemPtr rss, 
+            const Vector3& center, const Vector3& scale, 
+            const Vector3& color, float intensity,
+            const Vector3& rotation = Vector3::zeros(),
+            float step = 0.1f
+        );
 
 };
 

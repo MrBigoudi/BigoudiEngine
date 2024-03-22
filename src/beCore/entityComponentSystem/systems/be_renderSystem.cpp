@@ -24,6 +24,9 @@ void RenderSystem::renderGameObjects(FrameInfo frameInfo, IRenderSubSystem* rend
 
     for(auto const& object : instance->_Objects){
         auto rss = GameCoordinator::getComponent<ComponentRenderSubSystem>(object);
+        if(rss._RenderSubSystem == nullptr){ // nullptr is special system to not render
+            continue;
+        }
         if(rss._RenderSubSystem.get() == renderSubSystem){
             if(renderSubSystem->needPerObjectBind()){
                 renderSubSystem->updateDescriptorSets(object, frameInfo);
@@ -56,6 +59,7 @@ void RenderSystem::init(){
     signature.set(GameCoordinator::getComponentType<ComponentTransform>());
     signature.set(GameCoordinator::getComponentType<ComponentRenderSubSystem>());
     signature.set(GameCoordinator::getComponentType<ComponentMaterial>());
+    signature.set(GameCoordinator::getComponentType<ComponentLight>());
     GameCoordinator::setSystemSignature<RenderSystem>(signature);
 }
 
@@ -63,7 +67,8 @@ GameObject RenderSystem::createRenderableObject(
         ComponentRenderSubSystem renderSubSystem,
         ComponentModel model,
         ComponentTransform transform,
-        ComponentMaterial material
+        ComponentMaterial material,
+        ComponentLight light
     ){
 
     auto newGameObject = GameCoordinator::createObject();
@@ -82,6 +87,10 @@ GameObject RenderSystem::createRenderableObject(
     GameCoordinator::addComponent(
         newGameObject, 
         renderSubSystem
+    );
+    GameCoordinator::addComponent(
+        newGameObject, 
+        light
     );
 
     return newGameObject;
