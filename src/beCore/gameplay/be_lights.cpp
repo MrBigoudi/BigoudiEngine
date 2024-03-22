@@ -192,6 +192,8 @@ void LightUboContainer::addDirectionalLight(DirectionalLightPtr directionalLight
     _UboData._NbDirectionalLights++;
 }
 
+
+
 };
 
 

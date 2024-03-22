@@ -101,7 +101,7 @@ class RayTracer{
         Vector3 colorBRDF(const RayHit& rayHit) const;
         Vector3 normalBRDF(const RayHit& rayHit) const;
 
-        Vector3 getErrorBoundLambertBRDF(const RayHit& rayHit, LightCutsTree::LightNodePtr curNode) const;
+        // Vector3 getErrorBoundLambertBRDF(const RayHit& rayHit, LightCutsTree::LightNodePtr curNode) const;
         Vector3 lambertBRDF(const RayHit& rayHit) const;
         Vector3 lambertBRDF(const RayHit& rayHit, PointLightPtr light) const;
         Vector3 lambertBRDF(const RayHit& rayHit, DirectionalLightPtr light) const;

@@ -78,9 +78,7 @@ Vector3 RayTracer::ggxBRDF(const RayHit& rayHit,
 
 Vector3 RayTracer::ggxBRDF(const RayHit& rayHit, PointLightPtr light) const{
     Vector3 hitWorldPos = rayHit.getWorldPos();
-    // Vector3 hitViewPos = rayHit.getViewPos();
 
-    // auto viewMat = Matrix4x4::transpose(_Frame._Camera->getView());
     Vector3 wi = Vector3::normalize(light->_Position.xyz() - hitWorldPos);
     Vector3 wo = Vector3::normalize(-rayHit.getDirection());
     MaterialPtr material = rayHit.getTriangle()._Material;
@@ -99,7 +97,14 @@ Vector3 RayTracer::ggxBRDF(const RayHit& rayHit, PointLightPtr light) const{
     Vector3 lightRadiance = GGX::getAttenuation(light, hitWorldPos);
     float wiDotN = std::max(0.f, Vector3::dot(wi, hitNormal));
 
-    return lightRadiance * materialReflectance * wiDotN;
+    // cast shadow ray
+    Vector3 lightDir = Vector3::normalize((light->_Position.xyz() - rayHit.getWorldPos()));
+    RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), lightDir));
+    float distToLight = (light->_Position.xyz() - rayHit.getWorldPos()).getNorm();
+    if (!isInShadow(shadowRay, distToLight)){
+        return lightRadiance * materialReflectance * wiDotN;
+    }
+    return Color::BLACK;
 }
 
 
@@ -108,7 +113,7 @@ Vector3 RayTracer::ggxBRDF(const RayHit& rayHit, DirectionalLightPtr light) cons
     Vector3 wo = -rayHit.getDirection();
     MaterialPtr material = rayHit.getTriangle()._Material;
 
-    Vector3 hitNormal = rayHit.getNorm();
+    Vector3 hitNormal = rayHit.getWorldNorm();
     Vector3 surfaceColor = rayHit.getCol().xyz();
 
     Vector3 materialReflectance = GGX::BRDF(
@@ -122,7 +127,13 @@ Vector3 RayTracer::ggxBRDF(const RayHit& rayHit, DirectionalLightPtr light) cons
     Vector3 lightRadiance = GGX::getAttenuation(light);
     float wiDotN = std::max(0.f, Vector3::dot(wi, hitNormal));
 
-    return lightRadiance * materialReflectance * wiDotN;
+    // cast shadow ray
+    Vector3 lightDir = Vector3::normalize(light->_Direction.xyz());
+    RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), -lightDir));
+    if (!isInShadow(shadowRay)){
+        return lightRadiance * materialReflectance * wiDotN;
+    }
+    return Color::BLACK;
 }
 
 
@@ -228,6 +239,7 @@ Vector3 RayTracer::lambertBRDF(const RayHit& rayHit) const{
 //     return Vector3::zeros();
 // }
 
+
 Vector3 RayTracer::getClusterEstimate(const RayHit& rayHit, LightCutsTree::LightNodePtr cluster) const {
     switch(cluster->_Type){
         case POINT_LIGHT:{
@@ -236,11 +248,22 @@ Vector3 RayTracer::getClusterEstimate(const RayHit& rayHit, LightCutsTree::Light
             float geometric = 1.f; 
             // float geometric = cluster->getGeometric(rayHit.getWorldPos());
             float intensity = cluster->_TotalIntensity;
-            Vector3 material = lambertBRDF(rayHit, pointLight) / pointLight->_Intensity; // already in the lanbert model
+            Vector3 material{};
+            switch(_BRDF){
+                case LAMBERT_BRDF:
+                    material = lambertBRDF(rayHit, pointLight) / pointLight->_Intensity; // already in the lanbert model
+                    break;
+                case GGX_BRDF:
+                    material = ggxBRDF(rayHit, pointLight) / pointLight->_Intensity; // already in the lanbert model
+                    break;
+                // TODO:
+                default:
+                    break;
+            } 
             // cluster->_BRDF = material * intensity;
             return material*geometric*visibility*intensity; 
         }
-        // TODO:
+        // TODO: handle directional lighting
         default:{
             return Vector3::zeros();
         }
@@ -296,68 +319,60 @@ Vector3 RayTracer::shadeLightCuts(RayHits& hits, uint32_t depth) const {
     RayHit closestHit = hits.getClosestHit();
 
     Vector3 color = Vector3::zeros();
-    switch(_BRDF){
-        case LAMBERT_BRDF:{
-            // TODO: apply lightcuts
             
-            // init cut == root
-            CutHeap rootCut = {};
-            LightCutsTree::LightNodePtr root = _Scene->getLightTreeRoot();
-            rootCut._Cluster = root;
-            rootCut._ClusterEstimate = getClusterEstimate(closestHit, root);
-            rootCut._ClusterError = getClusterError(closestHit, root);
-            // setError(closestHit, root);
+    // init cut == root
+    CutHeap rootCut = {};
+    LightCutsTree::LightNodePtr root = _Scene->getLightTreeRoot();
+    rootCut._Cluster = root;
+    rootCut._ClusterEstimate = getClusterEstimate(closestHit, root);
+    rootCut._ClusterError = getClusterError(closestHit, root);
+    // setError(closestHit, root);
 
-            std::vector<CutHeap> cutHeap = {};
-            std::make_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
-            cutHeap.push_back(rootCut);
-            std::push_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
-            
-            while(getCutHeapError(cutHeap.front()) > _LightcutsErrorThreshold 
-                    && cutHeap.size() < _LightcutsMaxClusters
-                ){
-                // get worst cluster
-                auto worstCut = cutHeap.front();
-                std::pop_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
-                cutHeap.pop_back();
+    std::vector<CutHeap> cutHeap = {};
+    std::make_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
+    cutHeap.push_back(rootCut);
+    std::push_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
+    
+    while(getCutHeapError(cutHeap.front()) > _LightcutsErrorThreshold 
+            && cutHeap.size() < _LightcutsMaxClusters
+        ){
+        // get worst cluster
+        auto worstCut = cutHeap.front();
+        std::pop_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
+        cutHeap.pop_back();
 
-                auto worstCluster = worstCut._Cluster;
-                CutHeap leftCut{};
-                CutHeap rightCut{};
-                // get its two children
-                leftCut._Cluster = worstCluster->_LeftChild;
-                rightCut._Cluster = worstCluster->_RightChild;
-                // estimate their clusters
-                if(worstCluster->_IsLeftChildSame){
-                    leftCut._ClusterEstimate = worstCut._ClusterEstimate * (leftCut._Cluster->_TotalIntensity / worstCluster->_TotalIntensity);
-                    rightCut._ClusterEstimate = getClusterEstimate(closestHit, rightCut._Cluster);
-                } else {
-                    leftCut._ClusterEstimate = getClusterEstimate(closestHit, leftCut._Cluster);
-                    rightCut._ClusterEstimate = worstCut._ClusterEstimate * (rightCut._Cluster->_TotalIntensity / worstCluster->_TotalIntensity);
-                }
-                // get their error
-                leftCut._ClusterError = getClusterError(closestHit, leftCut._Cluster);
-                rightCut._ClusterError = getClusterError(closestHit, rightCut._Cluster);
-
-                // setError(closestHit, leftChild);
-                // setError(closestHit, rightChild);
-
-                // add them to heap
-                cutHeap.push_back(leftCut);
-                cutHeap.push_back(rightCut);
-                std::push_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
-            }
-            // return sum of estimates
-            // fprintf(stdout, "cut size: %zu / %zu\n", cutHeap.size(), _Scene->getPointLights().size());
-            for(auto cluster : cutHeap){
-                // fprintf(stdout, "cur cluster: %s\n", cluster->toString().c_str());
-                color += cluster._ClusterEstimate;
-                // color += cluster->_BRDF;
-            }
-            break;
+        auto worstCluster = worstCut._Cluster;
+        CutHeap leftCut{};
+        CutHeap rightCut{};
+        // get its two children
+        leftCut._Cluster = worstCluster->_LeftChild;
+        rightCut._Cluster = worstCluster->_RightChild;
+        // estimate their clusters
+        if(worstCluster->_IsLeftChildSame){
+            leftCut._ClusterEstimate = worstCut._ClusterEstimate * (leftCut._Cluster->_TotalIntensity / worstCluster->_TotalIntensity);
+            rightCut._ClusterEstimate = getClusterEstimate(closestHit, rightCut._Cluster);
+        } else {
+            leftCut._ClusterEstimate = getClusterEstimate(closestHit, leftCut._Cluster);
+            rightCut._ClusterEstimate = worstCut._ClusterEstimate * (rightCut._Cluster->_TotalIntensity / worstCluster->_TotalIntensity);
         }
-        default:
-            return Color::WHITE;
+        // get their error
+        leftCut._ClusterError = getClusterError(closestHit, leftCut._Cluster);
+        rightCut._ClusterError = getClusterError(closestHit, rightCut._Cluster);
+
+        // setError(closestHit, leftChild);
+        // setError(closestHit, rightChild);
+
+        // add them to heap
+        cutHeap.push_back(leftCut);
+        cutHeap.push_back(rightCut);
+        std::push_heap(cutHeap.begin(), cutHeap.end(), cutHeapComparator);
+    }
+    // return sum of estimates
+    // fprintf(stdout, "cut size: %zu / %zu\n", cutHeap.size(), _Scene->getPointLights().size());
+    for(auto cluster : cutHeap){
+        // fprintf(stdout, "cur cluster: %s\n", cluster->toString().c_str());
+        color += cluster._ClusterEstimate;
+        // color += cluster->_BRDF;
     }
 
     if(depth == _MaxBounces){

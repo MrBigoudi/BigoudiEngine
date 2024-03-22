@@ -120,6 +120,7 @@ struct PointLight: public Light {
      * @return A std::string
     */
     std::string toString() const override;
+
 };
 
 struct DirectionalLight: public Light{

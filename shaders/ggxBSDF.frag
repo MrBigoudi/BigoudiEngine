@@ -109,6 +109,14 @@ struct Input{
     float _Intensity;
 };
 
+float sqr(float a){
+    return a*a;
+}
+
+float cube(float a){
+    return a*a*a;
+}
+
 
 // Diffuse
 // f base diffuse
@@ -126,15 +134,15 @@ vec3 getBaseDiffuse(vec3 baseColor, float roughness, vec3 h, vec3 n, vec3 win, v
     float fdwout = getFD(fd90, n, wout);
     float factor = abs(dot(n,wout));
     vec3 color = baseColor / PI;
-    return color * fdwin * fdwout * factor;
+    return color * factor * fdwin * fdwout;
 }
 // f subsurface diffuse
 float getFSS90(float roughness, vec3 h, vec3 wout){
-    float hwout = abs(dot(h,wout));
+    float hwout = abs(dot(h, wout));
     return roughness * hwout * hwout;
 }
 float getFSS(float fss90, vec3 n, vec3 w){
-    float nw = abs(dot(n,w));
+    float nw = abs(dot(n, w));
     return 1.f + (fss90 - 1.f)*(1.f-pow(nw, 5));
 }
 vec3 getSubsurfaceDiffuse(vec3 baseColor, float roughness, vec3 h, vec3 n, vec3 win, vec3 wout){
@@ -227,79 +235,97 @@ vec3 getFmetal(vec3 baseColor, vec3 h, vec3 wout, float specularTint, float inte
     // TODO: use eta instead of 1.5f
     vec3 c0 = specular*getR0eta(1.5f)*(1.f - metallic)*ks + metallic*baseColor;
     float hwout = abs(dot(h, wout));
-    return c0 + (vec3(1.f, 1.f, 1.f) - c0)*(1.f-pow(hwout, 5));
+    // return c0 + (vec3(1.f, 1.f, 1.f) - c0)*(1.f-pow(hwout, 5));
+    return baseColor + (1.f - baseColor)*pow((1-hwout), 5);
 }
 // Dm
 float getAspect(float anisotropic){
     return sqrt(1.f - 0.9f*anisotropic);
 }
 float getAlphaX(float roughness, float anisotropic){
-    float alphaMin = 1e-4;
+    // float alphaMin = 1e-4;
+    float alphaMin = 0.f;
     float aspect = getAspect(anisotropic);
     return max(alphaMin, roughness*roughness*aspect);
 }
 float getAlphaY(float roughness, float anisotropic){
-    float alphaMin = 1e-4;
+    // float alphaMin = 1e-4;
+    float alphaMin = 0.f;
     float aspect = getAspect(anisotropic);
     return max(alphaMin, roughness*roughness/aspect);
 }
-float getDmetal(vec3 h, float roughness, float anisotropic, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
-    // get local frame
-    vec3 hl = normalize(h.x*localTangent + h.y*localBiTangent + h.z*localNormal);
-    float alphaX = getAlphaX(roughness, anisotropic);
-    float alphaY = getAlphaY(roughness, anisotropic);
+// TODO:
+// need surface tangents to use the BSDF 
+float getDmetal(float roughness, float anisotropic, vec3 h, vec3 n){
+    float hn = clamp(dot(n, h), 0.f, 1.f);
+    float r = roughness;
+    float alphaX = getAlphaX(r, anisotropic);
+    float alphaY = getAlphaY(r, anisotropic);
+    float a2 = alphaX * alphaY;
 
-    float hlx = (hl.x*hl.x)/(alphaX*alphaX);
-    float hly = (hl.y*hl.y)/(alphaY*alphaY);
-    float hlz = hl.z * hl.z;
-    float hlSum = (hlx + hly + hlz);
-    
-    return 1.f / (PI * alphaX * alphaY * hlSum * hlSum);
+    float den = PI * sqr(1+(a2-1)*sqr(hn)) + EPSILON;
+    return a2 / den;
 }
 // Gm
-float getLambdaM(float roughness, float anisotropic, vec3 w, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
+float getGmetalSmith(vec3 w, vec3 n, float alpha){
+    float dotNW = clamp(dot(n, w), 0.f, 1.f);
+    float a2 = sqr(alpha);
+    float den = (dotNW + (sqrt(a2 + (1-a2) * sqr(dotNW)))) + EPSILON;
+    return (2.f*dotNW) / den;
+}
+// TODO:
+// need surface tangents to use the BSDF 
+float getLambdaM(float roughness, float anisotropic, vec3 w, vec3 n){
+    float wn = clamp(dot(n, w), 0.f, 1.f);
+
     float alphaX = getAlphaX(roughness, anisotropic);
     float alphaY = getAlphaY(roughness, anisotropic);
-    vec3 wl = normalize(w.x*localTangent + w.y*localBiTangent + w.z*localNormal);
-    float wx = (wl.x * alphaX) * (wl.x * alphaX);
-    float wy = (wl.y * alphaY) * (wl.y * alphaY);
-    float wz = wl.z * wl.z;
-    float factor = sqrt(1.f + (wx + wy) / wz);
-    return (factor - 1.f) / 2.f;
+    float a2 = clamp(alphaX*alphaY, 0.f, 1.f);
+
+    float den = wn + (sqrt(a2 + (1-a2) * sqr(wn)));
+    return (2.f*wn) / den;
 }
-float getGmetalW(float roughness, float anisotropic, vec3 w, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
-    return 1.f / (1.f + getLambdaM(roughness, anisotropic, w, localNormal, localTangent, localBiTangent));
+float getGmetalW(float roughness, float anisotropic, vec3 w, vec3 n){
+    // return 1.f / (1.f + getLambdaM(roughness, anisotropic, w, localNormal, localTangent, localBiTangent));
+    return 1.f / (1.f + getLambdaM(roughness, anisotropic, w, n));
 }
-float getGmetal(float roughness, float anisotropic, vec3 win, vec3 wout, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
-    float gwin = getGmetalW(roughness, anisotropic, win, localNormal, localTangent, localBiTangent);
-    float gwout = getGmetalW(roughness, anisotropic, wout, localNormal, localTangent, localBiTangent);
+// float getGmetal(float roughness, float anisotropic, vec3 win, vec3 wout, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
+float getGmetal(float roughness, float anisotropic, vec3 win, vec3 wout, vec3 n){
+    // float gwin = getGmetalW(roughness, anisotropic, win, localNormal, localTangent, localBiTangent);
+    // float gwout = getGmetalW(roughness, anisotropic, wout, localNormal, localTangent, localBiTangent);
+    float gwin = getGmetalSmith(win, n, roughness);
+    float gwout = getGmetalSmith(wout, n, roughness);
+    // float gwin = getGmetalW(roughness, anisotropic, win, n);
+    // float gwout = getGmetalW(roughness, anisotropic, wout, n);
     return  gwin*gwout;
 }
 // f metal
 vec3 getMetal(Input i){
     vec3 Fm = getFmetal(i._BaseColor, i._H, i._Wout, i._Material._SpecularTint, i._Intensity, i._Material._Specular, i._Material._Metallic);
-    float Dm = getDmetal(i._H, i._Material._Roughness, i._Material._Anisotropic, i._ShadingNormal, i._Tangent, i._Bitangent);
-    float Gm = getGmetal(i._Material._Roughness, i._Material._Anisotropic, i._Win, i._Wout, i._ShadingNormal, i._Tangent, i._Bitangent);
+    // float Dm = getDmetal(i._H, i._Material._Roughness, i._Material._Anisotropic, i._ShadingNormal, i._Tangent, i._Bitangent);
+    // float Gm = getGmetal(i._Material._Roughness, i._Material._Anisotropic, i._Win, i._Wout, i._ShadingNormal, i._Tangent, i._Bitangent);
+    float Dm = getDmetal(i._Material._Roughness, i._Material._Anisotropic, i._H, i._ShadingNormal);
+    float Gm = getGmetal(i._Material._Roughness, i._Material._Anisotropic, i._Win, i._Wout, i._ShadingNormal);
     return (Fm * Dm * Gm) / (4.f*abs(dot(i._ShadingNormal, i._Win)));
 }
 
 
 // helpers
-vec3 getWi(PointLight light, vec3 objWorldPos){
-    return normalize(light._Position.xyz - objWorldPos);
+vec3 getWo(PointLight light, vec3 objViewPos){
+    vec3 lightViewPos = vec3(cameraUbo._View * light._Position);
+    return normalize(lightViewPos - objViewPos);
 }
-vec3 getWi(DirectionalLight light){
+vec3 getWo(DirectionalLight light){
     return normalize(-light._Direction.xyz);
 }
-vec3 getWo(vec3 objViewPos){
-    vec4 ov = vec4(objViewPos, 0.f);
-    return normalize((inverse(cameraUbo._View) * ov).xyz);
+vec3 getWi(vec3 objViewPos){
+    return normalize(-objViewPos);
 }
 vec3 getWh(vec3 wi, vec3 wo){
     return normalize(wi+wo);
 }
-vec3 getAttenuation(PointLight l, vec3 lightWorldPos, vec3 fragWorldPos) {
-	float d = distance(lightWorldPos, fragWorldPos);
+vec3 getAttenuation(PointLight l, vec3 lightViewPos, vec3 fragViewPos) {
+	float d = distance(lightViewPos, fragViewPos);
     float den = d*d + EPSILON;
 	return l._Intensity * l._Color.xyz / den;
 }
@@ -315,21 +341,18 @@ vec3 getFdisney(Input i){
     vec3 clearcoat = 0.25f * i._Material._Clearcoat * getClearcoat(i);
     vec3 sheen = (1.f - i._Material._Metallic) * i._Material._Sheen * getSheen(i);
 
-    if(dot(i._Win, i._GeometricNormal) <= 0){
-        diffuse = vec3(0.f, 0.f, 0.f);
-        metal = vec3(0.f, 0.f, 0.f);
-        clearcoat = vec3(0.f, 0.f, 0.f);
-        sheen = vec3(0.f, 0.f, 0.f);
-    }
-
-    // return diffuse + metal + clearcoat + sheen;
-    return diffuse;
+    // float factor = 1.f;
+    // if(dot(i._Win, i._ShadingNormal) <= 0){
+    //     factor = 0.f;
+    // }
+    float factor = max(0, dot(i._Wout, i._ShadingNormal));
+    return factor * (diffuse + metal + clearcoat + sheen);
 }
 
 Input initInput(){
     Input i;
     i._ShadingNormal = normalize(fViewNorm);
-    i._Wout = getWo(fViewPos);
+    i._Win = getWi(fViewPos);
     i._Material = materialUbo._Materials[push._MaterialId];
     i._BaseColor = fCol.xyz;
     i._GeometricNormal = normalize(fWorldNorm);//TODO: change that
@@ -346,17 +369,21 @@ void main(){
     // point lights
     for(int k=0; k<min(MAX_NB_POINT_LIGHTS, lightsUbo._NbPointLights); k++){
         PointLight curPointLight = lightsUbo._PointLights[k];
-        i._Win = getWi(curPointLight, fWorldPos);
+        i._Wout = getWo(curPointLight, fViewPos);
         i._H = getWh(i._Win, i._Wout);
         i._Intensity = curPointLight._Intensity;
-        vec3 li = getAttenuation(curPointLight, curPointLight._Position.xyz, fWorldPos);
-        finalColor += li * getFdisney(i);
+        vec3 li = getAttenuation(
+            curPointLight, 
+            vec3(cameraUbo._View * curPointLight._Position),
+            fViewPos
+        );
+        finalColor += getFdisney(i) * li;
     }
 
     // directional lights
     for(int k=0; k<min(MAX_NB_DIRECTIONAL_LIGHTS, lightsUbo._NbDirectionalLights); k++){
         DirectionalLight curDirectionalLight = lightsUbo._DirectionalLights[k];
-        i._Win = getWi(curDirectionalLight);
+        i._Win = getWo(curDirectionalLight);
         i._H = getWh(i._Win, i._Wout);
         i._Intensity = curDirectionalLight._Intensity;
         vec3 li = getAttenuation(curDirectionalLight);
