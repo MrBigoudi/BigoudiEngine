@@ -53,11 +53,11 @@ class RayTracer{
 
     public:
         uint32_t _MaxBounces = 0;
-        uint32_t _SamplesPerPixels = 16;
+        uint32_t _SamplesPerPixels = 4;
         uint32_t _SamplesPerBounces = 8;
         float _ShadingFactor = 0.1f;
-        bool _UseLightCuts = true;
-        // bool _UseLightCuts = false;
+        // bool _UseLightCuts = true;
+        bool _UseLightCuts = false;
         float _LightcutsErrorThreshold = 0.02f; // 2%
         float _LightcutsMinIntensity = 1e-6;
         uint32_t _LightcutsMaxClusters = 100;

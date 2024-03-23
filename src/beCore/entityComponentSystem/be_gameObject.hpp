@@ -6,6 +6,7 @@
 #include <memory>
 #include <queue>
 #include <array>
+#include <limits>
 
 namespace be{
 
@@ -14,13 +15,13 @@ class GameCoordinator;
 class GameObjectManager;
 using GameObjectManagerPtr = std::shared_ptr<GameObjectManager>;
 
-const uint32_t MAX_NB_GAME_OBJECTS = 8192;
-
 using GameComponentType = std::uint8_t;
 const GameComponentType MAX_NB_GAME_COMPONENTS = 32;
 
 using GameObject = uint32_t;
 using GameObjectSignature = std::bitset<MAX_NB_GAME_COMPONENTS>;
+
+const uint32_t MAX_NB_GAME_OBJECTS = 8192;
 
 
 class GameObjectManager{

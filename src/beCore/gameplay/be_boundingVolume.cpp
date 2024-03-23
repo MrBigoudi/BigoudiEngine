@@ -122,6 +122,7 @@ Vector3 AxisAlignedBoundingBox::getDominantAxisPlaneNormal() const{
             return {0.f, 0.f, 1.f};
     }
     assert(false);
+    return Axis::X;
 }
 
 

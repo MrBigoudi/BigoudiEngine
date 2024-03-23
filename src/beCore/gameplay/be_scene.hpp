@@ -153,6 +153,13 @@ class Scene{
             float step = 0.1f
         );
 
+        GameObject addCubeOfLight(IRenderSubSystemPtr rss, 
+            const Vector3& center, const Vector3& scale, 
+            const Vector3& color, float intensity,
+            const Vector3& rotation = Vector3::zeros(),
+            const Vector3& step = Vector3(0.1f, 0.1f, 0.1f)
+        );
+
 };
 
 };

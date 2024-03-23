@@ -18,21 +18,21 @@ ComponentMaterial ComponentMaterial::create(
     float clearcoatGloss)
     {
 
-    Material material = {};
-    material._Metallic = metallic;
-    material._Roughness = roughness;
-    material._Subsurface = subsurface;
-    material._Specular = specular;
-    material._SpecularTint = specularTint;
-    material._Anisotropic = anisotropic;
-    material._Sheen = sheen;
-    material._SheenTint = sheenTint;
-    material._Clearcoat = clearcoat;
-    material._ClearcoatGloss = clearcoatGloss;
-
     ComponentMaterial newComponent{};
-    newComponent._Material = MaterialPtr(&material);
     newComponent._MaterialId = id;
+
+    newComponent._Material = MaterialPtr(new Material());
+    newComponent._Material->_Metallic = metallic;
+    newComponent._Material->_Roughness = roughness;
+    newComponent._Material->_Subsurface = subsurface;
+    newComponent._Material->_Specular = specular;
+    newComponent._Material->_SpecularTint = specularTint;
+    newComponent._Material->_Anisotropic = anisotropic;
+    newComponent._Material->_Sheen = sheen;
+    newComponent._Material->_SheenTint = sheenTint;
+    newComponent._Material->_Clearcoat = clearcoat;
+    newComponent._Material->_ClearcoatGloss = clearcoatGloss;
+
     return newComponent;
 }
 

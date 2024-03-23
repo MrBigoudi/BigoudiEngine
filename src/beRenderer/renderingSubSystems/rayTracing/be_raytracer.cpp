@@ -575,9 +575,7 @@ Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
 
 std::vector<Triangle> RayTracer::getTriangles(){
     std::vector<Triangle> allTriangles = {};
-    #ifndef NDEBUG
     fprintf(stdout, "There are %zu objects in the scene!\n", _Scene->getObjects().size());
-    #endif
 
     _BSH.clear();
     _BVH.clear();
@@ -586,9 +584,7 @@ std::vector<Triangle> RayTracer::getTriangles(){
         
         auto model = GameCoordinator::getComponent<ComponentModel>(obj)._Model;
         auto triangles = model->getTrianglePrimitives();
-        #ifndef NDEBUG
         fprintf(stdout, "\tThere are %zu triangles in the object `%d'\n", triangles.size(), obj);
-        #endif
 
         auto material = GameCoordinator::getComponent<ComponentMaterial>(obj)._Material;
         auto transform = GameCoordinator::getComponent<ComponentTransform>(obj)._Transform;
@@ -699,13 +695,12 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor){
         _Primitives = getTriangles();
         fprintf(stdout, "Done\n");
 
-        fprintf(stdout, "There are %zu lights in the scene\n", 
-            _Scene->getDirectionalLights().size()
-            + _Scene->getPointLights().size()
-        );
-
         if(_UseLightCuts){
             fprintf(stdout, "Start building LightTree...\n");
+            fprintf(stdout, "There are %zu lights in the scene\n", 
+                _Scene->getDirectionalLights().size()
+                + _Scene->getPointLights().size()
+            );
             _Scene->buildTree();
             fprintf(stdout, "Done\n");
         }
