@@ -76,7 +76,8 @@ class RenderSystem : public GameSystem{
             ComponentRenderSubSystem renderSubSystem,
             ComponentModel model,
             ComponentTransform transform = {},
-            ComponentMaterial material = {}
+            ComponentMaterial material = {},
+            ComponentLight light = {._IsLight = false}
         );
 };
 };

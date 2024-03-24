@@ -11,6 +11,8 @@
 namespace be{
 
 class GGX{
+    private:
+        GGX(){};
 
     private:
         // HELPERS

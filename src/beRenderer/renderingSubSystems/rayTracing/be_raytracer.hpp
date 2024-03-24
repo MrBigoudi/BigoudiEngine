@@ -31,7 +31,8 @@ class RayTracer{
             COLOR_BRDF,   // simple color pass through
             NORMAL_BRDF,  // simple normal pass through
             LAMBERT_BRDF, // lambert BRDF
-            GGX_BRDF, // ggx BRDF
+            GGX_BRDF,     // ggx BRDF
+            DISNEY_BRDF,  // disney BRDF
         };
 
     private:
@@ -48,14 +49,16 @@ class RayTracer{
         // raytracing parameters
         BoundingVolumeMethod _BoundingVolumeMethod = BVH_METHOD;
         SamplingDistribution _SamplingDistribution = LAMBERTIAN_SAMPLING;
-        BRDFModel _BRDF = GGX_BRDF;
+        BRDFModel _BRDF = DISNEY_BRDF;
+
+    public:
         uint32_t _MaxBounces = 0;
         uint32_t _SamplesPerPixels = 4;
         uint32_t _SamplesPerBounces = 8;
         float _ShadingFactor = 0.1f;
         // bool _UseLightCuts = true;
         bool _UseLightCuts = false;
-        float _LightcutsErrorThreshold = 0.02; // 2%
+        float _LightcutsErrorThreshold = 0.02f; // 2%
         float _LightcutsMinIntensity = 1e-6;
         uint32_t _LightcutsMaxClusters = 100;
 
@@ -66,7 +69,7 @@ class RayTracer{
             setResolution(width, height);
         }
         
-        void run(FrameInfo frame, Vector3 backgroundColor = {}, bool verbose = false);
+        void run(FrameInfo frame, Vector3 backgroundColor = {});
 
     public:
         ImagePtr getImage() const { 
@@ -115,6 +118,14 @@ class RayTracer{
         Vector3 ggxBRDF(const RayHit& rayHit, PointLightPtr light) const;
         Vector3 ggxBRDF(const RayHit& rayHit, DirectionalLightPtr light) const;
         Vector3 ggxBRDF(const RayHit& rayHit, 
+            const std::vector<PointLightPtr>& pointLights,
+            const std::vector<DirectionalLightPtr>& directionalLights 
+        ) const;
+
+        Vector3 disneyBRDF(const RayHit& rayHit) const;
+        Vector3 disneyBRDF(const RayHit& rayHit, PointLightPtr light) const;
+        Vector3 disneyBRDF(const RayHit& rayHit, DirectionalLightPtr light) const;
+        Vector3 disneyBRDF(const RayHit& rayHit, 
             const std::vector<PointLightPtr>& pointLights,
             const std::vector<DirectionalLightPtr>& directionalLights 
         ) const;

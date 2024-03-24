@@ -12,17 +12,17 @@ namespace be{
 /**
  * The maximum number of point lights in a scene
 */
-static const int MAX_NB_POINT_LIGHTS = 1024;
+static const int MAX_NB_POINT_LIGHTS = 2<<14;
 
 /**
  * The maximum number of directional lights in a scene
 */
-static const int MAX_NB_DIRECTIONAL_LIGHTS = 1024;
+static const int MAX_NB_DIRECTIONAL_LIGHTS = 2<<10;
 
 /**
  * The maximum number of oriented lights in a scene
 */
-static const int MAX_NB_ORIENTED_LIGHTS = 1024;
+static const int MAX_NB_ORIENTED_LIGHTS = 2<<10;
 
 /**
  * An enumeration to represent the type of lights

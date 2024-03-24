@@ -1,5 +1,6 @@
 #include "be_raytracer.hpp"
 #include "be_GGX.hpp"
+#include "be_disney.hpp"
 #include "be_color.hpp"
 #include "be_components.hpp" // IWYU pragma: keep
 #include "be_gameCoordinator.hpp"
@@ -45,16 +46,99 @@ bool RayTracer::isInShadow(RayPtr shadowRay, float distToLight) const {
         return false;
     }
     // check if the shadow ray hits any object before reaching the light source
-    bool isInShadow = false;
     for(auto hit: shadowHits._Hits){
-        RayHit shadowHit = shadowHits.getClosestHit();
-        float hitDist = (shadowHit.getWorldPos() - shadowRay->getOrigin()).getNorm();
+        if(hit.getTriangle()._IsLight){
+            continue;
+        }
+        float hitDist = (hit.getWorldPos() - shadowRay->getOrigin()).getNorm();
         if(hitDist < distToLight) {
-            isInShadow = true;
+            return true;
         }
     }
-    return isInShadow;
+    return false;
 }
+
+
+Vector3 RayTracer::disneyBRDF(const RayHit& rayHit) const{
+    return disneyBRDF(rayHit, _Scene->getPointLights(), _Scene->getDirectionalLights());
+}
+
+Vector3 RayTracer::disneyBRDF(const RayHit& rayHit, 
+            const std::vector<PointLightPtr>& pointLights,
+            const std::vector<DirectionalLightPtr>& directionalLights 
+        ) const{
+    Vector3 color = Color::BLACK;
+    // point lights
+    for(const auto& pointLight : pointLights){
+        color += disneyBRDF(rayHit, pointLight);
+    }
+    // directional lights
+    for(const auto& directionalLight : directionalLights){
+        color += disneyBRDF(rayHit, directionalLight);
+    }
+    return color;
+}
+
+Vector3 RayTracer::disneyBRDF(const RayHit& rayHit, PointLightPtr light) const{
+    Vector3 hitWorldPos = rayHit.getWorldPos();
+
+    Vector3 wo = Vector3::normalize(light->_Position.xyz() - hitWorldPos);
+    Vector3 wi = Vector3::normalize(-rayHit.getDirection());
+    MaterialPtr material = rayHit.getTriangle()._Material;
+
+    Vector3 hitNormal = rayHit.getWorldNorm();
+    Vector3 surfaceColor = rayHit.getCol().xyz();
+
+    Vector3 materialReflectance = Disney::BRDF(
+        wi, wo,
+        hitNormal, 
+        surfaceColor, 
+        material,
+        light
+    );
+
+    Vector3 lightRadiance = Disney::getAttenuation(light, hitWorldPos);
+    float wiDotN = std::max(0.f, Vector3::dot(wo, hitNormal));
+
+    // cast shadow ray
+    Vector3 lightDir = Vector3::normalize((light->_Position.xyz() - rayHit.getWorldPos()));
+    RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), lightDir));
+    float distToLight = (light->_Position.xyz() - rayHit.getWorldPos()).getNorm();
+    if (!isInShadow(shadowRay, distToLight)){
+        return lightRadiance * materialReflectance * wiDotN;
+    }
+    return Color::BLACK;
+}
+
+
+Vector3 RayTracer::disneyBRDF(const RayHit& rayHit, DirectionalLightPtr light) const{
+    Vector3 wo = -light->_Direction.xyz();
+    Vector3 wi = -rayHit.getDirection();
+    MaterialPtr material = rayHit.getTriangle()._Material;
+
+    Vector3 hitNormal = rayHit.getWorldNorm();
+    Vector3 surfaceColor = rayHit.getCol().xyz();
+
+   Vector3 materialReflectance = Disney::BRDF(
+        wi, wo,
+        hitNormal, 
+        surfaceColor, 
+        material,
+        light
+    );
+
+    Vector3 lightRadiance = Disney::getAttenuation(light);
+    float wiDotN = std::max(0.f, Vector3::dot(wo, hitNormal));
+
+    // cast shadow ray
+    Vector3 lightDir = Vector3::normalize(light->_Direction.xyz());
+    RayPtr shadowRay = RayPtr(new Ray(rayHit.getWorldPos(), -lightDir));
+    if (!isInShadow(shadowRay)){
+        return lightRadiance * materialReflectance * wiDotN;
+    }
+    return Color::BLACK;
+}
+
 
 Vector3 RayTracer::ggxBRDF(const RayHit& rayHit) const{
     return ggxBRDF(rayHit, _Scene->getPointLights(), _Scene->getDirectionalLights());
@@ -241,6 +325,9 @@ Vector3 RayTracer::lambertBRDF(const RayHit& rayHit) const{
 
 
 Vector3 RayTracer::getClusterEstimate(const RayHit& rayHit, LightCutsTree::LightNodePtr cluster) const {
+    if(rayHit.getTriangle()._IsLight){
+        return colorBRDF(rayHit);
+    }
     switch(cluster->_Type){
         case POINT_LIGHT:{
             PointLightPtr pointLight = std::dynamic_pointer_cast<PointLight>(cluster->_Representative);
@@ -251,60 +338,92 @@ Vector3 RayTracer::getClusterEstimate(const RayHit& rayHit, LightCutsTree::Light
             Vector3 material{};
             switch(_BRDF){
                 case LAMBERT_BRDF:
-                    material = lambertBRDF(rayHit, pointLight) / pointLight->_Intensity; // already in the lanbert model
+                    material = lambertBRDF(rayHit, pointLight) / pointLight->getIntensity();
                     break;
                 case GGX_BRDF:
-                    material = ggxBRDF(rayHit, pointLight) / pointLight->_Intensity; // already in the lanbert model
+                    material = ggxBRDF(rayHit, pointLight) / pointLight->getIntensity();
                     break;
-                // TODO:
+                case DISNEY_BRDF:
+                    material = disneyBRDF(rayHit, pointLight) / pointLight->getIntensity();
                 default:
                     break;
             } 
             // cluster->_BRDF = material * intensity;
             return material*geometric*visibility*intensity; 
         }
-        // TODO: handle directional lighting
-        default:{
-            return Vector3::zeros();
+        case DIRECTIONAL_LIGHT:{
+            DirectionalLightPtr directionalLight = std::dynamic_pointer_cast<DirectionalLight>(cluster->_Representative);
+            float visibility = 1.f; // already in Lambert shadow ray
+            float geometric = 1.f; 
+            // float geometric = cluster->getGeometric(rayHit.getWorldPos());
+            float intensity = cluster->_TotalIntensity;
+            Vector3 material{};
+            switch(_BRDF){
+                case LAMBERT_BRDF:
+                    material = lambertBRDF(rayHit, directionalLight) / directionalLight->getIntensity();
+                    break;
+                case GGX_BRDF:
+                    material = ggxBRDF(rayHit, directionalLight) / directionalLight->getIntensity();
+                    break;
+                case DISNEY_BRDF:
+                    material = disneyBRDF(rayHit, directionalLight) / directionalLight->getIntensity();
+                    break;
+                default:
+                    break;
+            } 
+            return material*geometric*visibility*intensity; 
         }
+        default:
+            return Vector3{};
     }
 }
 
 Vector3 RayTracer::getClusterError(const RayHit& rayHit, LightCutsTree::LightNodePtr cluster) const {
-    switch(cluster->_Type){
-        case POINT_LIGHT:{
-            PointLightPtr pointLight = std::dynamic_pointer_cast<PointLight>(cluster->_Representative);
-            float visibility = cluster->getVisibility();
-            float geometric = cluster->getGeometricBound(rayHit.getWorldPos());
-            float intensity = cluster->_TotalIntensity;
-            // material upper bound
-            // diffuse
-            Vector3 diffuseBound = cluster->_TotalColor * rayHit.getCol().xyz();
-            // cosine upper bound
-            float theta = std::acos(
-                be::Vector3::dot(rayHit.getWorldNorm(), {0.f, 0.f, 1.f})
-            );
-            AxisAlignedBoundingBox rotatedAABB = cluster->_AABB.rotate(theta);
-            float cosBound = 1.f;
-            float maxZ = rotatedAABB._MaxZ;
-            float maxZ2 = maxZ*maxZ;
-            if(maxZ >= 0){
-                float minX2 = std::min(rotatedAABB._MinX*rotatedAABB._MinX, rotatedAABB._MaxX*rotatedAABB._MaxX);
-                float minY2 = std::min(rotatedAABB._MinY*rotatedAABB._MinY, rotatedAABB._MaxY*rotatedAABB._MaxY);
-                cosBound = maxZ / std::sqrt(minX2 + minY2 + maxZ2);
-            } else {
-                float maxX2 = std::max(rotatedAABB._MinX*rotatedAABB._MinX, rotatedAABB._MaxX*rotatedAABB._MaxX);
-                float maxY2 = std::max(rotatedAABB._MinY*rotatedAABB._MinY, rotatedAABB._MaxY*rotatedAABB._MaxY);
-                cosBound = maxZ / std::sqrt(maxX2 + maxY2 + maxZ2);
-            }
-            Vector3 material = diffuseBound*std::max(0.f, cosBound);
-            return material*geometric*visibility*intensity; 
-        }
-        // TODO:
-        default:{
-            return Vector3::zeros();
-        }
+    if(rayHit.getTriangle()._IsLight){
+        return colorBRDF(rayHit);
     }
+    
+    float visibility = cluster->getVisibility();
+    float geometric = cluster->getGeometricBound(rayHit.getWorldPos());
+    float intensity = cluster->_TotalIntensity;
+    // material upper bound
+    Vector3 material{};
+    // diffuse
+    Vector3 diffuseBound = cluster->_TotalColor * rayHit.getCol().xyz();
+    // cosine upper bound
+    float theta = std::acos(
+        be::Vector3::dot(rayHit.getWorldNorm(), {0.f, 0.f, 1.f})
+    );
+    AxisAlignedBoundingBox rotatedAABB = cluster->_AABB.rotate(theta);
+    float cosBound = 1.f;
+    float maxZ = rotatedAABB._MaxZ;
+    float maxZ2 = maxZ*maxZ;
+    if(maxZ >= 0){
+        float minX2 = std::min(rotatedAABB._MinX*rotatedAABB._MinX, rotatedAABB._MaxX*rotatedAABB._MaxX);
+        float minY2 = std::min(rotatedAABB._MinY*rotatedAABB._MinY, rotatedAABB._MaxY*rotatedAABB._MaxY);
+        cosBound = maxZ / std::sqrt(minX2 + minY2 + maxZ2);
+    } else {
+        float maxX2 = std::max(rotatedAABB._MinX*rotatedAABB._MinX, rotatedAABB._MaxX*rotatedAABB._MaxX);
+        float maxY2 = std::max(rotatedAABB._MinY*rotatedAABB._MinY, rotatedAABB._MaxY*rotatedAABB._MaxY);
+        cosBound = maxZ / std::sqrt(maxX2 + maxY2 + maxZ2);
+    }
+
+    switch(_BRDF){
+        case LAMBERT_BRDF:
+            material = diffuseBound*std::max(0.f, cosBound);
+            break;
+        case GGX_BRDF:
+            material = diffuseBound*std::max(0.f, cosBound);
+            break;
+        // TODO: better bound
+        case DISNEY_BRDF:
+            material = diffuseBound*std::max(0.f, cosBound);
+            break;
+        default:
+            break;
+    }
+
+    return material*geometric*visibility*intensity; 
 }
 
 Vector3 RayTracer::shadeLightCuts(RayHits& hits, uint32_t depth) const {
@@ -411,19 +530,26 @@ Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
     RayHit closestHit = hits.getClosestHit();
 
     Vector3 color = Vector3::zeros();
-    switch(_BRDF){
-        case COLOR_BRDF:
-            color += colorBRDF(closestHit);
-            break;
-        case NORMAL_BRDF:
-            color += normalBRDF(closestHit);
-            break;
-        case LAMBERT_BRDF:
-            color += lambertBRDF(closestHit);
-            break;
-        case GGX_BRDF:
-            color += ggxBRDF(closestHit);
-            break;
+    if(closestHit.getTriangle()._IsLight){
+        color += colorBRDF(closestHit);
+    } else {
+        switch(_BRDF){
+            case COLOR_BRDF:
+                color += colorBRDF(closestHit);
+                break;
+            case NORMAL_BRDF:
+                color += normalBRDF(closestHit);
+                break;
+            case LAMBERT_BRDF:
+                color += lambertBRDF(closestHit);
+                break;
+            case GGX_BRDF:
+                color += ggxBRDF(closestHit);
+                break;
+            case DISNEY_BRDF:
+                color += disneyBRDF(closestHit);
+                break;
+        }
     }
 
     if(depth == _MaxBounces){
@@ -449,9 +575,7 @@ Vector3 RayTracer::shade(RayHits& hits, uint32_t depth) const {
 
 std::vector<Triangle> RayTracer::getTriangles(){
     std::vector<Triangle> allTriangles = {};
-    #ifndef NDEBUG
     fprintf(stdout, "There are %zu objects in the scene!\n", _Scene->getObjects().size());
-    #endif
 
     _BSH.clear();
     _BVH.clear();
@@ -460,12 +584,11 @@ std::vector<Triangle> RayTracer::getTriangles(){
         
         auto model = GameCoordinator::getComponent<ComponentModel>(obj)._Model;
         auto triangles = model->getTrianglePrimitives();
-        #ifndef NDEBUG
-        fprintf(stdout, "there are %zu triangles in the object `%d'\n", triangles.size(), obj);
-        #endif
+        fprintf(stdout, "\tThere are %zu triangles in the object `%d'\n", triangles.size(), obj);
 
         auto material = GameCoordinator::getComponent<ComponentMaterial>(obj)._Material;
         auto transform = GameCoordinator::getComponent<ComponentTransform>(obj)._Transform;
+        bool isLight = GameCoordinator::getComponent<ComponentLight>(obj)._IsLight;
         Matrix4x4 modelMatrix = transform->getModelTransposed();
         Matrix4x4 viewMatrix = Matrix4x4::transpose(_Frame._Camera->getView());
         Matrix4x4 normalMat = Matrix4x4::transpose(Matrix4x4::inverse(viewMatrix*transform->getModel()));
@@ -488,6 +611,8 @@ std::vector<Triangle> RayTracer::getTriangles(){
             triangle._Material = material;
             triangle._Model = modelMatrix;
             triangle._NormalMat = normalMat;
+
+            triangle._IsLight = isLight;
         }
 
         addObjectToAccelerationStructures(triangles);
@@ -548,7 +673,7 @@ void RayTracer::addObjectToAccelerationStructures(const std::vector<Triangle>& t
 
 
 
-void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
+void RayTracer::run(FrameInfo frame, Vector3 backgroundColor){
     if(!_IsRunning){
         _IsRunning = true;
         uint32_t width = _Image->getWidth();
@@ -560,15 +685,25 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
         Matrix4x4 projInv = camera->getPerspectiveInverse();
 
         Timer timer{};
-        if(verbose){
-            fprintf(stdout, "Start ray tracing at `%dx%d' resolution...\n", width, height);
-            fprintf(stdout, "Using OpenMP, max_threads = %d\n", omp_get_max_threads());
-        }
+        fprintf(stdout, "Start ray tracing at `%dx%d' resolution...\n", width, height);
+        fprintf(stdout, "Using OpenMP, max_threads = %d\n", omp_get_max_threads());
         timer.start();
         _BackgroundColor = backgroundColor;
         _Image->clear(_BackgroundColor);
 
+        fprintf(stdout, "Start building BVH...\n");
         _Primitives = getTriangles();
+        fprintf(stdout, "Done\n");
+
+        if(_UseLightCuts){
+            fprintf(stdout, "Start building LightTree...\n");
+            fprintf(stdout, "There are %zu lights in the scene\n", 
+                _Scene->getDirectionalLights().size()
+                + _Scene->getPointLights().size()
+            );
+            _Scene->buildTree();
+            fprintf(stdout, "Done\n");
+        }
 
         float step = 1.f;
         if(_SamplesPerPixels > 1){
@@ -578,13 +713,11 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
 
         # pragma omp parallel for
         for(uint32_t j = 0.f; j<height; j++){
-            #ifndef NDEBUG
             #ifndef _OPENMP
             float progress = j / (height+1.f);
             displayProgressBar(progress);
             #else
             displayProgressBarOpenMP((height+1.f));
-            #endif
             #endif
 
             # pragma omp parallel for
@@ -622,9 +755,7 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor, bool verbose){
             }
         }
 
-        if(verbose){
-            fprintf(stdout, "\nRay tracing executed in `%s'\n", Timer::format(timer.getTicks()).c_str());
-        }
+        fprintf(stdout, "\nRay tracing executed in `%s'\n", Timer::format(timer.getTicks()).c_str());
         _IsRunning = false;
     }
 }

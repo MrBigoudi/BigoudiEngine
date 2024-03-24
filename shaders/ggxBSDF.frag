@@ -17,9 +17,9 @@ layout(location = 5) in vec2 fTex;
 layout(location = 0) out vec4 outColor;
 
 // maximum number of point lights
-const int MAX_NB_POINT_LIGHTS = 1024;
+const int MAX_NB_POINT_LIGHTS = 2<<14;
 // maximum number of directional lights
-const int MAX_NB_DIRECTIONAL_LIGHTS = 1024;
+const int MAX_NB_DIRECTIONAL_LIGHTS = 2<<10;
 // maximum number of materials
 const int MAX_NB_MATERIALS = 10;
 
@@ -179,35 +179,43 @@ vec3 getFclearcoat(vec3 h, vec3 wout){
 float getAlphag(float clearcoatGloss){
     return (1.f - clearcoatGloss) * 0.1f + clearcoatGloss * 0.001;
 }
-float getDclearcoat(float clearcoatGloss, vec3 h, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
-    vec3 hl = normalize(h.x*localTangent + h.y*localBiTangent + h.z*localNormal);
+// TODO:
+// need surface tangents to use the BSDF 
+float getDclearcoat(float clearcoatGloss, vec3 h, vec3 n){
+    // vec3 hl = normalize(h.x*localTangent + h.y*localBiTangent + h.z*localNormal);
+    float hn = clamp(dot(n, h), 0.f, 1.f);
     float ag = getAlphag(clearcoatGloss) * getAlphag(clearcoatGloss);
     float num = ag - 1.f;
-    float den = PI * log(ag) * (1.f + (ag - 1.f) * (hl.z * hl.z));
+    float den = PI * log(ag) * (1.f + (ag - 1.f) * (hn * hn));
     return num / den;
 }
 // Gc
-float getLambdaC(vec3 w, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
-    vec3 wl = normalize(w.x*localTangent + w.y*localBiTangent + w.z*localNormal);
-    float wx = (wl.x * 0.25f) * (wl.x * 0.25f);
-    float wy = (wl.y * 0.25f) * (wl.y * 0.25f);
-    float wz = wl.z * wl.z;
-    float factor = sqrt(1.f + (wx + wy) / wz);
+// TODO:
+// need surface tangents to use the BSDF 
+// float getLambdaC(vec3 w, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
+float getLambdaC(vec3 w, vec3 n){
+    // vec3 wl = normalize(w.x*localTangent + w.y*localBiTangent + w.z*localNormal);
+    // float wx = (wl.x * 0.25f) * (wl.x * 0.25f);
+    // float wy = (wl.y * 0.25f) * (wl.y * 0.25f);
+    // float wz = wl.z * wl.z;
+    float wn = clamp(dot(n, w), 0.f, 1.f);
+    float factor = sqrt(1.f + wn);
     return (factor - 1.f) / 2.f;
 }
-float getGclearcoatW(vec3 w, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
-    return 1.f / (1.f + getLambdaC(w, localNormal, localTangent, localBiTangent));
+float getGclearcoatW(vec3 w, vec3 n){
+    // return 1.f / (1.f + getLambdaC(w, localNormal, localTangent, localBiTangent));
+    return 1.f / (1.f + getLambdaC(w, n));
 }
-float getGclearcoat(vec3 win, vec3 wout, vec3 localNormal, vec3 localTangent, vec3 localBiTangent){
-    float gwin = getGclearcoatW(win, localNormal, localTangent, localBiTangent);
-    float gwout = getGclearcoatW(wout, localNormal, localTangent, localBiTangent);
+float getGclearcoat(vec3 win, vec3 wout, vec3 n){
+    float gwin = getGclearcoatW(win, n);
+    float gwout = getGclearcoatW(wout, n);
     return  gwin*gwout;
 }
 // f clearcoat
 vec3 getClearcoat(Input i){
     vec3 Fc = getFclearcoat(i._H, i._Wout);
-    float Dc = getDclearcoat(i._Material._ClearcoatGloss, i._H, i._ShadingNormal, i._Tangent, i._Bitangent);
-    float Gc = getGclearcoat(i._Win, i._Wout, i._ShadingNormal, i._Tangent, i._Bitangent);
+    float Dc = getDclearcoat(i._Material._ClearcoatGloss, i._H, i._ShadingNormal);
+    float Gc = getGclearcoat(i._Win, i._Wout, i._ShadingNormal);
     return (Fc * Dc * Gc) / (4.f*abs(dot(i._ShadingNormal, i._Win)));
 }
 
@@ -235,22 +243,19 @@ vec3 getFmetal(vec3 baseColor, vec3 h, vec3 wout, float specularTint, float inte
     // TODO: use eta instead of 1.5f
     vec3 c0 = specular*getR0eta(1.5f)*(1.f - metallic)*ks + metallic*baseColor;
     float hwout = abs(dot(h, wout));
-    // return c0 + (vec3(1.f, 1.f, 1.f) - c0)*(1.f-pow(hwout, 5));
-    return baseColor + (1.f - baseColor)*pow((1-hwout), 5);
+    return c0 + (vec3(1.f, 1.f, 1.f) - c0)*(1.f-pow(hwout, 5));
 }
 // Dm
 float getAspect(float anisotropic){
     return sqrt(1.f - 0.9f*anisotropic);
 }
 float getAlphaX(float roughness, float anisotropic){
-    // float alphaMin = 1e-4;
-    float alphaMin = 0.f;
+    float alphaMin = 1e-4;
     float aspect = getAspect(anisotropic);
     return max(alphaMin, roughness*roughness*aspect);
 }
 float getAlphaY(float roughness, float anisotropic){
-    // float alphaMin = 1e-4;
-    float alphaMin = 0.f;
+    float alphaMin = 1e-4;
     float aspect = getAspect(anisotropic);
     return max(alphaMin, roughness*roughness/aspect);
 }

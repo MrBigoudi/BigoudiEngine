@@ -440,7 +440,8 @@ float LightCutsTree::LightNode::getGeometricBound(const Vector3& pointToShade) c
     // get the distance between this point and the point to shade
     float d2 = (closestPoint-pointToShade).getSquaredNorm();
     // bound the distance
-    d2 = std::max(1.f, d2);
+    // d2 = std::min(1.f, d2);
+    if(Maths::isZero(d2)) return 1.f;
     return 1.f / d2;
 }
 
