@@ -407,17 +407,22 @@ Vector3 RayTracer::getClusterError(const RayHit& rayHit, LightCutsTree::LightNod
         float maxY2 = std::max(rotatedAABB._MinY*rotatedAABB._MinY, rotatedAABB._MaxY*rotatedAABB._MaxY);
         cosBound = maxZ / std::sqrt(maxX2 + maxY2 + maxZ2);
     }
+    // attenuation
+    float dlen2 = cluster->_AABB.getDistance(rayHit.getWorldPos());
+    dlen2 *= dlen2;
+    if (dlen2 < 1) dlen2 = 1;
+    float attenuation = 1.f/dlen2;
 
     switch(_BRDF){
         case LAMBERT_BRDF:
             material = diffuseBound*std::max(0.f, cosBound);
             break;
         case GGX_BRDF:
-            material = diffuseBound*std::max(0.f, cosBound);
+            material = attenuation*diffuseBound*std::max(0.f, cosBound);
             break;
-        // TODO: better bound
+        // TODO: better bound for disney brdf
         case DISNEY_BRDF:
-            material = diffuseBound*std::max(0.f, cosBound);
+            material = attenuation*diffuseBound*std::max(0.f, cosBound);
             break;
         default:
             break;
@@ -695,15 +700,16 @@ void RayTracer::run(FrameInfo frame, Vector3 backgroundColor){
         _Primitives = getTriangles();
         fprintf(stdout, "Done\n");
 
+        fprintf(stdout, "There are %zu lights in the scene\n", 
+            _Scene->getDirectionalLights().size()
+            + _Scene->getPointLights().size()
+        );
         if(_UseLightCuts){
             fprintf(stdout, "Start building LightTree...\n");
-            fprintf(stdout, "There are %zu lights in the scene\n", 
-                _Scene->getDirectionalLights().size()
-                + _Scene->getPointLights().size()
-            );
             _Scene->buildTree();
             fprintf(stdout, "Done\n");
         }
+
 
         float step = 1.f;
         if(_SamplesPerPixels > 1){
